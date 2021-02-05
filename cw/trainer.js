@@ -22,8 +22,8 @@ let CwTrainer = (function () {
     const SYMBOLS = ['.', ',', '/', '=', '?'];
     const NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-                     'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-                     'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
     // Our Morse Alphabet.
     const CHARS = {
@@ -121,8 +121,8 @@ let CwTrainer = (function () {
         'NAME', 'RST', 'CQ', 'AGN', 'ANT', 'DX', 'ES', 'FB',
         'GM', 'GA', 'GE', 'HI', 'HR', 'HW', 'NR', 'OM', 'PSE',
         'PWR', 'WX', '73', '5NN', '599', 'U', 'BTU', 'TST',
-	    'DE',
-'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'I', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'people', 'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new', 'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us', 'time', 'be', 'good', 'to', 'the', 'person', 'have', 'new', 'of', 'and', 'year', 'do', 'first', 'in', 'a', 'way', 'say', 'last', 'for', 'that', 'day', 'get', 'long', 'on', 'I', 'thing', 'make', 'great', 'with', 'it', 'man', 'go', 'little', 'at', 'not', 'world', 'know', 'own', 'by', 'he', 'life', 'take', 'other', 'from', 'as', 'hand', 'see', 'old', 'up', 'you', 'part', 'come', 'right', 'about', 'this', 'child', 'think', 'big', 'into', 'but', 'eye', 'look', 'high', 'over', 'his', 'woman', 'want', 'different', 'after', 'they', 'place', 'give', 'small', 'her', 'work', 'use', 'large', 'she', 'week', 'find', 'next', 'or', 'case', 'tell', 'early', 'an', 'point', 'ask', 'young', 'will', 'government', 'work', 'important', 'my', 'company', 'seem', 'few', 'one', 'number', 'feel', 'public', 'all', 'group', 'try', 'bad', 'would', 'problem', 'leave', 'same', 'there', 'fact', 'call', 'able', 'their'
+        'DE',
+        'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'I', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'people', 'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new', 'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us', 'time', 'be', 'good', 'to', 'the', 'person', 'have', 'new', 'of', 'and', 'year', 'do', 'first', 'in', 'a', 'way', 'say', 'last', 'for', 'that', 'day', 'get', 'long', 'on', 'I', 'thing', 'make', 'great', 'with', 'it', 'man', 'go', 'little', 'at', 'not', 'world', 'know', 'own', 'by', 'he', 'life', 'take', 'other', 'from', 'as', 'hand', 'see', 'old', 'up', 'you', 'part', 'come', 'right', 'about', 'this', 'child', 'think', 'big', 'into', 'but', 'eye', 'look', 'high', 'over', 'his', 'woman', 'want', 'different', 'after', 'they', 'place', 'give', 'small', 'her', 'work', 'use', 'large', 'she', 'week', 'find', 'next', 'or', 'case', 'tell', 'early', 'an', 'point', 'ask', 'young', 'will', 'government', 'work', 'important', 'my', 'company', 'seem', 'few', 'one', 'number', 'feel', 'public', 'all', 'group', 'try', 'bad', 'would', 'problem', 'leave', 'same', 'there', 'fact', 'call', 'able', 'their'
     ];
 
     const PROSIGN_LIST = [
@@ -148,17 +148,19 @@ let CwTrainer = (function () {
     class CwTrainer {
 
         constructor(wpm,
-                    fw,
-                    beforeCharCb,
-                    afterCharCb,
-                    afterSendCb,
-                    afterCancelCb) {
+            fw,
+            repeatNumber,
+            beforeCharCb,
+            afterCharCb,
+            afterSendCb,
+            afterCancelCb) {
 
             this.enableLetters = true;
             this.enableNumbers = true;
             this.enableSymbols = true;
             this.enableCallsigns = true;
             this.enableProsigns = true;
+            this.setRepeatNumber(repeatNumber);
 
             this.setWpm(wpm, fw);
 
@@ -168,8 +170,8 @@ let CwTrainer = (function () {
             afterCancelCallback = afterCancelCb;
 
             let AudioContext = (window.AudioContext ||
-                                window.webkitAudioContext ||
-                                false);
+                window.webkitAudioContext ||
+                false);
 
             if (AudioContext) {
                 audioContext = new AudioContext();
@@ -230,6 +232,11 @@ let CwTrainer = (function () {
 
             // There are 7 dots of silence between words
             wordSpace = fwDotWidth * 7.0;
+        }
+
+        setRepeatNumber(repeatNumber) {
+            this.repeatNumber = repeatNumber;
+            this.repeatCounter = this.repeatNumber;
         }
 
         //
@@ -295,19 +302,24 @@ let CwTrainer = (function () {
         //
         // Send a full text
         //
-        sendText(text) {
+        sendText(messages, updateDisplayCallback) {
             // Add a small 1/2 second delay after the send button
             // is clicked.
             gainNode.gain.setValueAtTime(OFF, audioContext.currentTime);
             time = audioContext.currentTime + 0.5;
 
-            let words = text.split(' ');
+            for (let idx in [...Array(messages.length)]) {
+                updateDisplayCallback(messages[idx])
 
-            for (let i = 0; i < words.length; i++) {
-                this._sendWord(words[i]);
-                if (i < words.length - 1) {
-                    time = time + wordSpace;
-                }
+                let words = messages[idx].split(' ');
+
+                for (let i = 0; i < words.length; i++) {
+                    this._sendWord(words[i]);
+                    if (i < words.length - 1) {
+                        time = time + wordSpace;
+                    }
+                } 
+                // console.log('sent:', idx)
             }
 
             if (afterSendCallback) {
@@ -389,7 +401,7 @@ let CwTrainer = (function () {
         //
         _doSend(morseValue, val) {
             if (beforeCharCallback) {
-                pendingTimeouts.push(setTimeout(function() {
+                pendingTimeouts.push(setTimeout(function () {
                     beforeCharCallback(val);
                 }, (time - audioContext.currentTime) * 1000.0));
             }
@@ -399,7 +411,7 @@ let CwTrainer = (function () {
             }
 
             if (afterCharCallback) {
-                pendingTimeouts.push(setTimeout(function() {
+                pendingTimeouts.push(setTimeout(function () {
                     afterCharCallback(val);
                 }, (time - audioContext.currentTime) * 1000.0));
             }
