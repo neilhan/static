@@ -244,6 +244,7 @@
 
     let messages = Array(0);
     let charNum = 0;
+    let messageIndex = 0;
 
     function $(id) {
         return document.getElementById(id);
@@ -342,7 +343,7 @@
     }
 
     function showChar(c) {
-        let newText = messages[messages.length-1].replace(/@/g, '');
+        let newText = messages[messageIndex].replace(/@/g, '');
 
         charNum += c.length;
 
@@ -402,11 +403,13 @@
             messages.push(text);
             console.log('messages after push:', messages)
         }
-        updateDisplayMessage(messages[0]);
+        updateDisplayMessage(0);
     }
 
-    function updateDisplayMessage(msg) {
-        $("sendText").innerHTML = msg.replace(/@/g, '');
+    function updateDisplayMessage(msgIndex) {
+        console.log('updateDisplayMessage() called. with:', msgIndex)
+        messageIndex = msgIndex;
+        $("sendText").innerHTML = messages[msgIndex].replace(/@/g, '');
     }
 
     function send() {
