@@ -9,7 +9,6 @@
 // - added top 500 words
 // - added repeat: 1, 5, 10, 20
 // - I prefer lower case strings
-// - Switch to async/await
 
 let CwTrainer = (function () {
     // The maximum output level our GainNode should produce.
