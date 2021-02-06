@@ -19,7 +19,7 @@ let CwTrainer = (function () {
     // Note that, due to a bug in some browsers, this must be
     // a positive value, not 0! Therefore, we default to a very
     // small (and therefore inaudible) level.
-    const OFF = 0.001;
+    const OFF = 0.0001;
 
     const FREQUENCY = 500;
 
