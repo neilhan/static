@@ -325,13 +325,14 @@ let CwTrainer = (function () {
         // Send a full text
         sendText(messages, updateDisplayCallback) {
             // Add a small 1/2 second delay after the send button
-            // is clicked.
+            // is clicked. 
             gainNode.gain.setValueAtTime(OFF, audioContext.currentTime);
             time = audioContext.currentTime + 0.5;
-
             for (let idx in [...Array(messages.length).keys()]) {
                 setTimeout(() => updateDisplayCallback(idx),
                     (time - audioContext.currentTime) * 1000.0);
+                gainNode.gain.setValueAtTime(OFF, time);
+                time = time + 0.5;
 
                 let words = messages[idx].split(' ');
 

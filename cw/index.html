@@ -408,6 +408,7 @@
 
     function updateDisplayMessage(msgIndex) {
         console.log('updateDisplayMessage() called. with:', msgIndex)
+        charNum = 0;
         messageIndex = msgIndex;
         $("sendText").innerHTML = messages[msgIndex].replace(/@/g, '');
     }
