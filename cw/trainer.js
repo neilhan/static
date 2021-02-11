@@ -4,11 +4,10 @@
 //
 // This software is licensed under the terms of the GNU Affero GPL
 // version 3.0. Please see the file LICENSE.txt for details.
-// Neil Han 2021
 // Making some changes for my need:
 // - added top 500 words
 // - added repeat: 1, 5, 10, 20
-// - I prefer lower case strings
+// - I prefer lower case strings. 
 
 let CwTrainer = (function () {
     // The maximum output level our GainNode should produce.
@@ -87,7 +86,7 @@ let CwTrainer = (function () {
     // horrible clicking from the speakers.  (NOTE: Only partially
     // works on Firefox browser at the present time, due to a known
     // bug.)
-    const RAMP = 0.010;
+    const RAMP = 0.005;
 
     // This is NOT an exhaustive list of US callsign prefixes,
     // but a good sampling.
