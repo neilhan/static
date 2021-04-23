@@ -268,7 +268,7 @@ let CwTrainer = (function () {
         randomText(numWords) {
             let words = [];
 
-            for (let i = 0; i < numWords; i++) {
+            for (let i = 0; words.length < numWords; i++) {
                 if (Math.random() < 0.05 && this.enableCallsigns) {
                     words.push(this._makeCallSign());
                 } else if (Math.random() < 0.05 && this.enableProsigns) {
@@ -280,6 +280,8 @@ let CwTrainer = (function () {
                         TOPWORD_LIST[Math.floor(Math.random() * TOPWORD_LIST.length)]
                     );
                 }
+                words.push(words[words.length - 1])
+                words.push(words[words.length - 1])
             }
 
             return words.join(" ").toLowerCase();
@@ -325,7 +327,8 @@ let CwTrainer = (function () {
             // Add a small 1/2 second delay after the send button
             // is clicked. 
             gainNode.gain.setValueAtTime(OFF, audioContext.currentTime);
-            time = audioContext.currentTime + 0.5;
+            time = audioContext.currentTime;  // + 0.5;
+
 
             for (let idx in [...Array(messages.length).keys()]) {
                 setTimeout(() => updateDisplayCallback(idx),
