@@ -38,7 +38,7 @@ h2 {
     margin: 5em 0 0 0;
 }
 
-#sendText {
+#sendTextDiv {
     font-family: Menlo, Consolas, monospace, monospace;
     font-size: 15pt;
     font-weight: bold;

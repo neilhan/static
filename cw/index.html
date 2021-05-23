@@ -83,7 +83,7 @@
 </div>
     </div>
     <div>
-        <div id="sendText"></div>
+        <div id="sendTextDiv"></div>
     </div>
     <input type="button" id="textButton" value="New Text"/>
     <input type="button" id="sendButton" value="Send"/>
@@ -241,7 +241,7 @@
     const textButton = $('textButton');
     const sendButton = $('sendButton');
     const cancelButton = $('cancelButton');
-    const sendText = $('sendText');
+    const sendTextDiv = $('sendTextDiv');
 
     let messages = Array(0);
     let charNum = 0;
@@ -259,7 +259,7 @@
         textButton.disabled = true;
         sendButton.disabled = true;
         cancelButton.disabled = false;
-        sendText.disabled = true;
+        sendTextDiv.disabled = true;
         typeSelect.disabled = true;
         if (type === 'words') {
             $('callsignsCheckbox').disabled = true;
@@ -281,7 +281,7 @@
         textButton.disabled = false;
         sendButton.disabled = false;
         cancelButton.disabled = true;
-        sendText.disabled = false;
+        sendTextDiv.disabled = false;
         typeSelect.disabled = false;
         if (type === 'words') {
             $('callsignsCheckbox').disabled = false;
@@ -362,7 +362,7 @@
             "<span class=\"hilighted\">" + newText.substring(0, charNum) + "</span>" +
             newText.substring(charNum, newText.length);
 
-        sendText.innerHTML = newText;
+        sendTextDiv.innerHTML = newText;
     }
 
     function hideChar(c) {
@@ -398,13 +398,13 @@
         for (_ in [...Array(parseInt(repeatSelect.value)).keys()]) {
             let text = '';
             if (typeSelect.value === 'words') { 
-                text = trainer.randomText(75);
+                text = trainer.randomWords(75);
             } else if (typeSelect.value === 'random'){
                 text = trainer.randomGroups(60, 5);
             } else {
                 // mixed
                 if (Math.random() > 0.2) {
-                    text = trainer.randomText(75);
+                    text = trainer.randomWords(75);
                 } else {
                     text = trainer.randomGroups(60, 5);
                 }
@@ -419,7 +419,7 @@
         console.log('updateDisplayMessage() called. with:', msgIndex)
         charNum = 0;
         messageIndex = msgIndex;
-        $("sendText").innerHTML = messages[msgIndex].replace(/@/g, '');
+        $("sendTextDiv").innerHTML = messages[msgIndex].replace(/@/g, '');
     }
 
     function send() {
@@ -428,7 +428,7 @@
         trainer.unsuspend();
         disableUi();
         charNum = 0;
-        trainer.sendText(messages, updateDisplayMessage);
+        trainer.sendTextToSound(messages, updateDisplayMessage);
     }
 
     function setWpm() {

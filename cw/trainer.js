@@ -265,7 +265,7 @@ let CwTrainer = (function () {
         }
 
         // Generate random text based on the most common words
-        randomText(numWords) {
+        randomWords(numWords) {
             let words = [];
 
             for (let i = 0; words.length < numWords; i++) {
@@ -323,12 +323,12 @@ let CwTrainer = (function () {
         }
 
         // Send a full text
-        sendText(messages, updateDisplayCallback) {
+        sendTextToSound(messages, updateDisplayCallback) {
             // Add a small 1/2 second delay after the send button
             // is clicked. 
             gainNode.gain.setValueAtTime(OFF, audioContext.currentTime);
             time = audioContext.currentTime;  // + 0.5;
-
+            gainNode.gain.setValueAtTime(OFF, time);
 
             for (let idx in [...Array(messages.length).keys()]) {
                 setTimeout(() => updateDisplayCallback(idx),
