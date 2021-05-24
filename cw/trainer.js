@@ -163,11 +163,11 @@ let CwTrainer = (function () {
     const contact =[
         "QRL QRL C yes no",
         "CQ CQ CQ DE ve7xrh ve7xrh K",
-        "ve7sgyt DE ve7xrh @ar",
-        "ve7sgyt DE ve7xrh GM tnx call ur 599 599 QTH Victoria BC CA victoria BC CA Name Neil Neil HW? @AR ve7sgyt DE ve7xrh @KN",
+        "ve7goy DE ve7xrh @ar",
+        "ve7goy DE ve7xrh GM tnx call ur 599 599 QTH Victoria BC CA victoria BC CA Name Neil Neil HW? @AR ve7goy DE ve7xrh @KN",
         "PSE QRS PSE RPT name PSE RPT RST PSE RPT QTH",
-        "ve7sgyt DE ve7xrh R RIG is IC 705 PWR 5W ant is EFHW = WX is Sunny ES warm = HW? @AR BK",
-        "ve7sgyt DE ve7xrh R ok Bob tnx nice qso hpe cul 73 @sk ve7sgyt DE ve7xrh K"
+        "ve7goy DE ve7xrh R RIG is IC 705 PWR 5W ant is EFHW = WX is Sunny ES warm = HW? @AR BK",
+        "ve7goy DE ve7xrh R ok Bob tnx nice qso hpe cul 73 @sk ve7goy DE ve7xrh K"
     ];
 
     let audioContext;
