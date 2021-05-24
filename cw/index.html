@@ -398,15 +398,14 @@
         for (_ in [...Array(parseInt(repeatSelect.value)).keys()]) {
             let text = '';
             if (typeSelect.value === 'words') { 
-                text = trainer.randomWords(75);
+                text = trainer.genRandomWords(75);
             } else if (typeSelect.value === 'random'){
-                text = trainer.randomGroups(60, 5);
-            } else {
-                // mixed
+                text = trainer.genRandomCharGroups(60, 5);
+            } else { // mixed, words and char groups
                 if (Math.random() > 0.2) {
-                    text = trainer.randomWords(75);
+                    text = trainer.genRandomWords(75);
                 } else {
-                    text = trainer.randomGroups(60, 5);
+                    text = trainer.genRandomCharGroups(60, 5);
                 }
             }
             messages.push(text);

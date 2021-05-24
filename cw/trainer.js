@@ -20,6 +20,7 @@ let CwTrainer = (function () {
     const OFF = 0.0001;
 
     const FREQUENCY = 500;
+    const FREQUENCY_2 = 600;
 
     const SYMBOLS = ['.', ',', '/', '=', '?'];
     const NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -104,58 +105,56 @@ let CwTrainer = (function () {
     // this site:
     //
     // http://www.4sqrp.com/resource/w0xi/w0xi-100/most_common.html
-    const TOPWORD_LIST = [
-        'I', 'AND', 'THE', 'YOU', 'THAT', 'A', 'TO', 'KNOW',
-        'OF', 'IT', 'YES', 'IN', 'THEY', 'DO', 'SO', 'BUT',
-        'IS', 'LIKE', 'HAVE', 'WAS', 'WE', 'ITS', 'JUST',
-        'ON', 'OR', 'NOT', 'THINK', 'FOR', 'WELL', 'WHAT',
-        'ABOUT', 'ALL', 'THATS', 'OH', 'REALLY', 'ONE',
-        'ARE', 'RIGHT', 'THEM', 'AT', 'HERE', 'THERE', 'MY',
-        'MEAN', 'DONT', 'NO', 'WITH', 'IF', 'WHEN', 'CAN', 'U',
-        'BE', 'AS', 'OUT', 'KIND', 'BECAUSE', 'PEOPLE',
-        'GO', 'GOT', 'THIS', 'SOME', 'IM', 'WOULD', 'THINGS',
-        'NOW', 'LOT', 'HAD', 'HOW', 'GOOD', 'GET', 'SEE',
-        'FROM', 'HE', 'ME', 'DONT', 'THEIR', 'MORE',
-        'TOO', 'OK', 'VERY', 'UP', 'BEEN', 'GUESS', 'TIME',
-        'GOING', 'INTO', 'THOSE', 'HERE', 'DID', 'WORK',
-        'OTHER', 'AND', 'IVE', 'THINGS', 'EVEN', 'OUR',
-        'ANY', 'IM', 'QRL', 'QRM', 'QRN', 'QRQ', 'QRS',
-        'QRZ', 'QTH', 'QSB', 'QSY', 'R', 'TU', 'RTU', 'TNX',
-        'NAME', 'RST', 'CQ', 'AGN', 'ANT', 'DX', 'ES', 'FB',
-        'GM', 'GA', 'GE', 'HI', 'HR', 'HW', 'NR', 'OM', 'PSE',
-        'PWR', 'WX', '73', '5NN', '599', 'U', 'BTU', 'TST',
-        'DE',
-        'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that',
-        'have', 'I', 'it', 'for', 'not', 'on', 'with', 'he',
-        'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by',
-        'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an',
-        'will', 'my', 'one', 'all', 'would', 'there', 'their',
-        'what', 'so', 'up', 'out', 'if', 'about', 'who', 'get',
-        'which', 'go', 'me', 'when', 'make', 'can', 'like',
-        'time', 'no', 'just', 'him', 'know', 'take', 'people',
-        'into', 'year', 'your', 'good', 'some', 'could', 'them',
-        'see', 'other', 'than', 'then', 'now', 'look', 'only',
-        'come', 'its', 'over', 'think', 'also', 'back', 'after',
-        'use', 'two', 'how', 'our', 'work', 'first', 'well',
-        'way', 'even', 'new', 'want', 'because', 'any', 'these',
-        'give', 'day', 'most', 'us', 'time', 'be', 'good', 'to',
-        'the', 'person', 'have', 'new', 'of', 'and', 'year', 'do',
-        'first', 'in', 'a', 'way', 'say', 'last', 'for', 'that',
-        'day', 'get', 'long', 'on', 'I', 'thing', 'make', 'great',
-        'with', 'it', 'man', 'go', 'little', 'at', 'not', 'world',
-        'know', 'own', 'by', 'he', 'life', 'take', 'other', 'from',
-        'as', 'hand', 'see', 'old', 'up', 'you', 'part', 'come',
-        'right', 'about', 'this', 'child', 'think', 'big', 'into',
-        'but', 'eye', 'look', 'high', 'over', 'his', 'woman',
-        'want', 'different', 'after', 'they', 'place', 'give',
-        'small', 'her', 'work', 'use', 'large', 'she', 'week',
-        'find', 'next', 'or', 'case', 'tell', 'early', 'an',
-        'point', 'ask', 'young', 'will', 'government', 'work',
-        'important', 'my', 'company', 'seem', 'few', 'one',
-        'number', 'feel', 'public', 'all', 'group', 'try', 'bad',
-        'would', 'problem', 'leave', 'same', 'there', 'fact',
-        'call', 'able', 'their'
-    ];
+    const TOPWORD_LIST = 
+    ["i","and","the","you","that","a","to","know","of","it","yes","in","they","do","so",
+    "but","is","like","have","was","we","its","just","on","or","not","think","for","well",
+    "what","about","all","thats","oh","really","one","are","right","them","at","here",
+    "there","my","mean","dont","no","with","if","when","can","u","be","as","out","kind",
+    "because","people","go","got","this","some","im","would","things","now","lot","had",
+    "how","good","get","see","from","he","me","their","more","too","ok","very","up","been",
+    "guess","time","going","into","those","did","work","other","ive","even","our","any",
+    "qrl","qrm","qrn","qrq","qrs","qrz","qth","qsb","qsy","r","tu","rtu","tnx","name",
+    "rst","cq","agn","ant","dx","es","fb","gm","ga","ge","hi","hr","hw","nr","om","pse",
+    "pwr","wx","73","5nn","599","btu","tst","de","his","by","say","her","she","an","will",
+    "who","which","make","him","take","year","your","could","than","then","look","only",
+    "come","over","also","back","after","use","two","first","way","new","want","these",
+    "give","day","most","us","person","last","long","thing","great","man","little",
+    "world","own","life","hand","old","part","child","big","eye","high","woman","different",
+    "place","small","large","week","find","next","case","tell","early","point","ask",
+    "young","government","important","company","seem","few","number","feel","public",
+    "group","try","bad","problem","leave","same","fact","call","able","hot","were",
+    "word","said","each","many","write","has","sound","water","may","down","side","made",
+    "live","where","round","came","show","every","under","through","form","much","help",
+    "low","line","before","turn","cause","differ","move","boy","does","sentence","set",
+    "three","air","play","end","put","home","read","port","spell","add","land","must",
+    "such","follow","act","why","men","change","went","light","off","need","house",
+    "picture","again","animal","mother","near","build","self","earth","father","head",
+    "stand","page","should","country","found","answer","school","grow","study","still",
+    "learn","plant","cover","food","sun","four","thought","let","keep","never","door",
+    "between","city","tree","cross","since","hard","start","might","story","saw","far",
+    "sea","draw","left","late","run","while","press","close","night","real","stop",
+    "open","together","white","children","begin","walk","example","ease","paper",
+    "often","always","music","both","mark","book","letter","until","mile","river","car",
+    "feet","care","second","carry","took","rain","eat","room","friend","began","idea",
+    "fish","mountain","north","once","base","hear","horse","cut","sure","watch","color",
+    "face","wood","main","enough","plain","girl","usual","ready","above","ever","red",
+    "list","though","talk","bird","soon","body","dog","family","direct","pose","song",
+    "measure","state","product","black","short","numeral","class","wind","question",
+    "happen","complete","ship","area","half","rock","order","fire","south","piece","told",
+    "knew","pass","farm","top","whole","king","size","heard","best","hour","better",
+    "true","during","hundred","am","remember","step","hold","west","ground","interest",
+    "reach","fast","five","sing","listen","six","table","travel","less","morning","ten",
+    "simple","several","vowel","toward","war","lay","against","pattern","slow","center",
+    "love","money","serve","appear","road","map","science","rule","govern","pull","cold",
+    "notice","voice","fall","power","town","fine","certain","fly","unit","lead","cry",
+    "dark","machine","note","wait","plan","figure","star","box","noun","field","rest",
+    "correct","pound","done","beauty","drive","stood","contain","front","teach","final",
+    "gave","green","quick","develop","sleep","warm","free","minute","strong","special",
+    "mind","behind","clear","tail","produce","street","inch","nothing","course","stay",
+    "wheel","full","force","blue","object","decide","surface","deep","moon","island",
+    "foot","yet","busy","test","record","boat","common","gold","possible","plane","age",
+    "dry","wonder","laugh","thousand","ago","ran","check","game","shape","miss","brought",
+    "heat","snow","bed","bring","sit","perhaps","fill","east","weight","language","among"];
 
     const PROSIGN_LIST = [
         '@AR', '@BT', '@SK', '@KN', '@BK'
@@ -265,7 +264,7 @@ let CwTrainer = (function () {
         }
 
         // Generate random text based on the most common words
-        randomWords(numWords) {
+        genRandomWords(numWords) {
             let words = [];
 
             for (let i = 0; words.length < numWords; i++) {
@@ -288,7 +287,7 @@ let CwTrainer = (function () {
         }
 
         // Generate random groups of characters
-        randomGroups(numGroups, groupSize) {
+        genRandomCharGroups(numGroups, groupSize) {
             let groups = [];
             let alphabet = [];
 
