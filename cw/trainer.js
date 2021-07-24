@@ -166,6 +166,7 @@ let CwTrainer = (function () {
         "CQ CQ CQ DE ve7xrh ve7xrh K",
         "ve7goy DE ve7xrh @AR @KN",
         "ve7goy DE ve7xrh = GM GA GD tnx call = ur RST 599 599 QTH Victoria BC CA, victoria BC CA Name HR Neil Neil HW? @AR ve7goy DE ve7xrh @KN",
+        "ve7xrh DE ve7goy = GM GA GD Neil TNX FB RPT UR RST 589 589 = Name is Steve Steve = QTH Victoria BC CA, victoria BC CA Name HR Neil Neil HW? @AR ve7goy DE ve7xrh @KN",
         "ve7goy DE ve7xrh = RIG is IC 705 PWR 5W ant is EFHW = WX is sunny ES warm WX is cloudy ES cold = HW? @KN",
         "ve7goy DE ve7xrh = FB TNX FER QSO = ok Bob Steve tnx nice qso hpe cul 73 @AR ve7goy DE ve7xrh @SK @CL"
     ];
