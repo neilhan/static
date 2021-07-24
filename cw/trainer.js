@@ -164,10 +164,10 @@ let CwTrainer = (function () {
         "QRL QRL C yes no",
         "PSE QRS PSE RPT name PSE RPT RST PSE RPT QTH",
         "CQ CQ CQ DE ve7xrh ve7xrh K",
-        "ve7goy DE ve7xrh @KN",
-        "ve7goy DE ve7xrh R GM tnx call ur RST 599 599 QTH Victoria BC CA victoria BC CA Name Neil Neil HW? @AR ve7goy DE ve7xrh @KN",
-        "ve7goy DE ve7xrh R RIG is IC 705 PWR 5W ant is EFHW = WX is sunny ES warm WX is cloudy ES cold = HW? @KN",
-        "ve7goy DE ve7xrh R ok Bob Steve tnx nice qso hpe cul 73 @ar ve7goy DE ve7xrh @sk"
+        "ve7goy DE ve7xrh @AR @KN",
+        "ve7goy DE ve7xrh = GM GA GD tnx call = ur RST 599 599 QTH Victoria BC CA, victoria BC CA Name HR Neil Neil HW? @AR ve7goy DE ve7xrh @KN",
+        "ve7goy DE ve7xrh = RIG is IC 705 PWR 5W ant is EFHW = WX is sunny ES warm WX is cloudy ES cold = HW? @KN",
+        "ve7goy DE ve7xrh = FB TNX FER QSO = ok Bob Steve tnx nice qso hpe cul 73 @AR ve7goy DE ve7xrh @SK @CL"
     ];
 
     const contacts =[
