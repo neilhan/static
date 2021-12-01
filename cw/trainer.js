@@ -506,8 +506,8 @@ let CwTrainer = (function () {
                         TOPWORD_LIST[Math.floor(Math.random() * TOPWORD_LIST.length)]
                     );
                 }
-                words.push(words[words.length - 1])
-                words.push(words[words.length - 1])
+                // duplicate the same word?
+                // words.push(words[words.length - 1])
             }
 
             return words.join(" ").toLowerCase();
