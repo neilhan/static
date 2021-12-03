@@ -402,12 +402,12 @@
             for (_ in [...Array(parseInt(repeatSelect.value)).keys()]) {
                 let text = '';
                 if (typeSelect.value === 'words') { 
-                    text = trainer.genRandomWords(75);
+                    text = trainer.genRandomWords(72);
                 } else if (typeSelect.value === 'random') {
                     text = trainer.genRandomCharGroups(60, 5);
                 } else { // mixed, words and char groups
                     if (Math.random() > 0.2) {
-                        text = trainer.genRandomWords(75);
+                        text = trainer.genRandomWords(72);
                     } else {
                         text = trainer.genRandomCharGroups(60, 5);
                     }
