@@ -1,5 +1,6 @@
 import { Program } from '../types';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
+import homeIcon from '../assets/home.svg';
 import './ProgramList.css';
 
 interface ProgramListProps {
@@ -14,7 +15,13 @@ export const ProgramList = ({ programs, onCreateNew, onEdit, onDelete, onRun }: 
   return (
     <div className="program-list">
       <div className="program-list-header">
-        <h1>Timers</h1>
+        <div className="header-title-group">
+          <a href="https://neilhan.github.io/static" className="btn-icon home-link" title="Back to Home">
+            <img src={homeIcon} alt="Home" width="24" height="24" />
+          </a>
+          <span className="breadcrumb-separator">/</span>
+          <h1>Timers</h1>
+        </div>
         <button className="btn-primary" onClick={onCreateNew}>
           + Create New Program
         </button>
@@ -56,10 +63,10 @@ export const ProgramList = ({ programs, onCreateNew, onEdit, onDelete, onRun }: 
                     <span className="value">
                       {program.rounds === 0 ? '∞' : formatTime(totalDuration * program.rounds)}
                       {program.rounds > 1 && (
-                        <span className="cycle-badge">{program.rounds} Rounds</span>
+                        <span className="cycle-badge">{program.rounds} x ({formatTime(totalDuration)})</span>
                       )}
                       {program.rounds === 0 && (
-                        <span className="cycle-badge">∞ Rounds</span>
+                        <span className="cycle-badge">∞ x ({formatTime(totalDuration)})</span>
                       )}
                     </span>
                   </div>
