@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Program, ViewMode } from './types';
 import { ProgramList } from './components/ProgramList';
 import { ProgramEditor } from './components/ProgramEditor';
@@ -8,9 +8,35 @@ import { generateId } from './utils/helpers';
 import './App.css';
 
 function App() {
+  // Load programs and migrate data if necessary
   const [programs, setPrograms] = useLocalStorage<Program[]>('sporttimer-programs', []);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+
+  // Migration effect: Check for legacy 'cycles' and map to 'rounds'
+  useEffect(() => {
+    let hasChanges = false;
+    const migratedPrograms = programs.map(p => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const anyP = p as any;
+      if (anyP.cycles !== undefined && p.rounds === undefined) {
+        hasChanges = true;
+        return { ...p, rounds: anyP.cycles, cycles: undefined };
+      }
+      // Ensure rounds is defined if it's missing entirely
+      if (p.rounds === undefined) {
+        hasChanges = true;
+        return { ...p, rounds: 1 };
+      }
+      return p;
+    });
+
+    if (hasChanges) {
+      console.log('Migrating legacy data: cycles -> rounds');
+      setPrograms(migratedPrograms);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
 
   const handleCreateNew = () => {
     // Create a new program immediately
@@ -18,7 +44,7 @@ function App() {
       id: generateId(),
       name: 'New Program',
       segments: [],
-      cycles: 1,
+      rounds: 1,
       beepEnabled: true,
       createdAt: Date.now(),
     };
@@ -99,3 +125,4 @@ function App() {
 }
 
 export default App;
+

@@ -14,7 +14,7 @@ export const ProgramList = ({ programs, onCreateNew, onEdit, onDelete, onRun }: 
   return (
     <div className="program-list">
       <div className="program-list-header">
-        <h1>My Programs</h1>
+        <h1>Timers</h1>
         <button className="btn-primary" onClick={onCreateNew}>
           + Create New Program
         </button>
@@ -54,12 +54,12 @@ export const ProgramList = ({ programs, onCreateNew, onEdit, onDelete, onRun }: 
                   <div className="info-item">
                     <span className="label">Duration:</span>
                     <span className="value">
-                      {program.cycles === 0 ? '∞' : formatTime(totalDuration * program.cycles)}
-                      {program.cycles > 1 && (
-                        <span className="cycle-badge">{program.cycles}×</span>
+                      {program.rounds === 0 ? '∞' : formatTime(totalDuration * program.rounds)}
+                      {program.rounds > 1 && (
+                        <span className="cycle-badge">{program.rounds} Rounds</span>
                       )}
-                      {program.cycles === 0 && (
-                        <span className="cycle-badge">∞</span>
+                      {program.rounds === 0 && (
+                        <span className="cycle-badge">∞ Rounds</span>
                       )}
                     </span>
                   </div>
@@ -74,18 +74,19 @@ export const ProgramList = ({ programs, onCreateNew, onEdit, onDelete, onRun }: 
                   </div>
                 </div>
 
-                <div className="segment-preview">
-                  {program.segments.map(segment => (
-                    <div
-                      key={segment.id}
-                      className="segment-preview-bar"
-                      style={{
-                        backgroundColor: segment.color,
-                        flex: segment.duration
-                      }}
-                      title={`${segment.name} - ${formatTime(segment.duration)}`}
-                    />
-                  ))}
+                <div className="segment-list-container">
+                  <div className="segment-list">
+                    {program.segments.map(segment => (
+                      <div key={segment.id} className="segment-row">
+                        <div 
+                          className="segment-color-dot" 
+                          style={{ backgroundColor: segment.color }}
+                        />
+                        <span className="segment-name">{segment.name}</span>
+                        <span className="segment-duration">{formatTime(segment.duration)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <button 

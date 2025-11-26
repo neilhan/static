@@ -9,7 +9,7 @@ export interface Program {
   id: string;
   name: string;
   segments: TimerSegment[];
-  cycles: number; // 1 = no repeat, 2+ = repeat that many times, 0 = infinite
+  rounds: number; // 1 = no repeat, 2+ = repeat that many times, 0 = infinite
   beepEnabled: boolean; // Play sound at end of each segment
   createdAt: number;
 }
@@ -21,7 +21,7 @@ export interface TimerState {
   remainingTime: number;
   isPaused: boolean;
   isComplete: boolean;
-  currentCycle: number;
-  totalCycles: number;
+  currentRound: number;
+  totalRounds: number;
 }
 

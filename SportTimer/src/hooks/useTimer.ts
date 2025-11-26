@@ -7,8 +7,8 @@ export const useTimer = (program: Program | null) => {
     remainingTime: program?.segments[0]?.duration || 0,
     isPaused: true,
     isComplete: false,
-    currentCycle: 1,
-    totalCycles: program?.cycles || 1,
+    currentRound: 1,
+    totalRounds: program?.rounds || 1,
   });
 
   const intervalRef = useRef<number | null>(null);
@@ -50,8 +50,8 @@ export const useTimer = (program: Program | null) => {
       remainingTime: program?.segments[0]?.duration || 0,
       isPaused: true,
       isComplete: false,
-      currentCycle: 1,
-      totalCycles: program?.cycles || 1,
+      currentRound: 1,
+      totalRounds: program?.rounds || 1,
     });
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -77,7 +77,7 @@ export const useTimer = (program: Program | null) => {
       }));
     } else {
       // End of segments - check if we should cycle again
-      const shouldCycle = program.cycles === 0 || timerState.currentCycle < program.cycles;
+      const shouldCycle = program.rounds === 0 || timerState.currentRound < program.rounds;
       
       if (shouldCycle) {
         playBeep();
@@ -86,14 +86,14 @@ export const useTimer = (program: Program | null) => {
           remainingTime: program.segments[0].duration,
           isPaused: false,
           isComplete: false,
-          currentCycle: prev.currentCycle + 1,
-          totalCycles: prev.totalCycles,
+          currentRound: prev.currentRound + 1,
+          totalRounds: prev.totalRounds,
         }));
       } else {
         setTimerState(prev => ({ ...prev, isComplete: true, isPaused: true }));
       }
     }
-  }, [program, timerState.currentSegmentIndex, timerState.currentCycle, playBeep]);
+  }, [program, timerState.currentSegmentIndex, timerState.currentRound, playBeep]);
 
   useEffect(() => {
     if (!program || timerState.isPaused || timerState.isComplete) {
@@ -122,7 +122,7 @@ export const useTimer = (program: Program | null) => {
             };
           } else {
             // End of segments - check if we should cycle again
-            const shouldCycle = program.cycles === 0 || prev.currentCycle < program.cycles;
+            const shouldCycle = program.rounds === 0 || prev.currentRound < program.rounds;
             
             if (shouldCycle) {
               playBeep();
@@ -131,8 +131,8 @@ export const useTimer = (program: Program | null) => {
                 remainingTime: program.segments[0].duration,
                 isPaused: false,
                 isComplete: false,
-                currentCycle: prev.currentCycle + 1,
-                totalCycles: prev.totalCycles,
+                currentRound: prev.currentRound + 1,
+                totalRounds: prev.totalRounds,
               };
             } else {
               playBeep();

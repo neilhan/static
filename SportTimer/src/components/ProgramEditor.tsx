@@ -14,7 +14,7 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
   const [segments, setSegments] = useState<TimerSegment[]>(
     program?.segments || []
   );
-  const [cycles, setCycles] = useState<number>(program?.cycles || 1);
+  const [rounds, setRounds] = useState<number>(program?.rounds || 1);
   const [beepEnabled, setBeepEnabled] = useState<boolean>(program?.beepEnabled ?? true);
 
   const [editingSegment, setEditingSegment] = useState<{
@@ -53,7 +53,7 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
     if (program) {
       setProgramName(program.name);
       setSegments(program.segments);
-      setCycles(program.cycles);
+      setRounds(program.rounds);
       setBeepEnabled(program.beepEnabled);
     }
   }, [program]);
@@ -72,7 +72,7 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
     // Check if anything has changed from the original program
     const hasChanges = 
       programName.trim() !== program.name ||
-      cycles !== program.cycles ||
+      rounds !== program.rounds ||
       beepEnabled !== program.beepEnabled ||
       JSON.stringify(segments) !== JSON.stringify(program.segments);
 
@@ -92,7 +92,7 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
         id: program.id,
         name: programName.trim() || 'Untitled Program',
         segments,
-        cycles,
+        rounds,
         beepEnabled,
         createdAt: program.createdAt,
       };
@@ -107,7 +107,7 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [programName, cycles, beepEnabled, segments, program, onSave]); // Watch all data fields and program
+  }, [programName, rounds, beepEnabled, segments, program, onSave]); // Watch all data fields and program
 
   const addSegment = () => {
     const minutes = parseInt(editingSegment.minutes) || 0;
@@ -232,7 +232,7 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
         id: program.id,
         name: programName.trim() || 'Untitled Program',
         segments,
-        cycles,
+        rounds,
         beepEnabled,
         createdAt: program.createdAt,
       };
@@ -285,48 +285,48 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
 
         <div className="form-row">
           <div className="form-group flex-1">
-            <label htmlFor="program-cycles">
-              Cycles 
+            <label htmlFor="program-rounds">
+              Rounds 
               <span className="label-hint">
-                {cycles === 0 ? ' (Infinite)' : cycles === 1 ? ' (No repeat)' : ` (Repeat ${cycles} times)`}
+                {rounds === 0 ? ' (Infinite)' : rounds === 1 ? ' (No repeat)' : ` (Repeat ${rounds} times)`}
               </span>
             </label>
             <div className="cycle-controls">
               <input
-                id="program-cycles"
+                id="program-rounds"
                 type="range"
                 min="0"
                 max="10"
-                value={cycles}
-                onChange={e => setCycles(parseInt(e.target.value))}
+                value={rounds}
+                onChange={e => setRounds(parseInt(e.target.value))}
                 className="input-range"
               />
               <div className="cycle-buttons">
                 <button
                   type="button"
-                  className={`btn-cycle ${cycles === 1 ? 'active' : ''}`}
-                  onClick={() => setCycles(1)}
+                  className={`btn-cycle ${rounds === 1 ? 'active' : ''}`}
+                  onClick={() => setRounds(1)}
                 >
                   1×
                 </button>
                 <button
                   type="button"
-                  className={`btn-cycle ${cycles === 3 ? 'active' : ''}`}
-                  onClick={() => setCycles(3)}
+                  className={`btn-cycle ${rounds === 3 ? 'active' : ''}`}
+                  onClick={() => setRounds(3)}
                 >
                   3×
                 </button>
                 <button
                   type="button"
-                  className={`btn-cycle ${cycles === 5 ? 'active' : ''}`}
-                  onClick={() => setCycles(5)}
+                  className={`btn-cycle ${rounds === 5 ? 'active' : ''}`}
+                  onClick={() => setRounds(5)}
                 >
                   5×
                 </button>
                 <button
                   type="button"
-                  className={`btn-cycle ${cycles === 0 ? 'active' : ''}`}
-                  onClick={() => setCycles(0)}
+                  className={`btn-cycle ${rounds === 0 ? 'active' : ''}`}
+                  onClick={() => setRounds(0)}
                 >
                   ∞
                 </button>
@@ -528,13 +528,13 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
 
         <div className="editor-summary">
           <div className="summary-item">
-            <span className="summary-label">Duration per Cycle:</span>
+            <span className="summary-label">Duration per Round:</span>
             <span className="summary-value">{formatTime(totalDuration)}</span>
           </div>
           <div className="summary-item">
             <span className="summary-label">Total Duration:</span>
             <span className="summary-value">
-              {cycles === 0 ? '∞' : formatTime(totalDuration * cycles)}
+              {rounds === 0 ? '∞' : formatTime(totalDuration * rounds)}
             </span>
           </div>
           <div className="summary-item">

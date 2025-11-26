@@ -32,7 +32,7 @@ export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
     >
       <div className="runner-container">
         <div className="runner-header">
-          <button className="btn-back" onClick={onExit}>
+          <button className="btn-back" onClick={() => onExit()}>
             ← Back
           </button>
           <h2>
@@ -52,7 +52,7 @@ export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
               <button className="btn-large btn-primary" onClick={reset}>
                 ↻ Restart
               </button>
-              <button className="btn-large btn-secondary" onClick={onExit}>
+              <button className="btn-large btn-secondary" onClick={() => onExit()}>
                 ← Back to Programs
               </button>
             </div>
@@ -85,12 +85,12 @@ export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
                 </div>
               </div>
               <div className="info-card">
-                <div className="info-label">Cycle</div>
+                <div className="info-label">Round</div>
                 <div className="info-value">
-                  {program.cycles === 0 ? (
-                    <>∞ <span className="cycle-count-small">(Round {timerState.currentCycle})</span></>
+                  {program.rounds === 0 ? (
+                    <>∞ <span className="cycle-count-small">(Round {timerState.currentRound})</span></>
                   ) : (
-                    `${timerState.currentCycle} of ${program.cycles}`
+                    `${timerState.currentRound} of ${program.rounds}`
                   )}
                 </div>
               </div>
@@ -135,7 +135,7 @@ export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
               <button 
                 className="btn-control"
                 onClick={skip}
-                disabled={timerState.currentSegmentIndex === program.segments.length - 1}
+                disabled={timerState.currentSegmentIndex === program.segments.length - 1 && program.rounds !== 0 && timerState.currentRound >= program.rounds}
                 title="Skip"
               >
                 ⏭
