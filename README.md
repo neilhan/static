@@ -4,7 +4,7 @@
 
 [<img src="./FarnsworthCWTrainer/public/key.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Farnsworth CW Trainer](./FarnsworthCWTrainer/dist/index.html)
 
-[<img src="./Life/src/assets/svelte.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Life](./Life/dist/index.html)
+[<img src="./Life/public/calendar.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Life](./Life/dist/index.html)
 
 <iframe src="./Life/dist/index.html" width="100%" height="2400px" style="border: 1px solid #333; border-radius: 8px;" scrolling="no"></iframe>
 
