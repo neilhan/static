@@ -1,7 +1,25 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Program, TimerState } from '../types';
+import { Program, TimerState } from '../types.ts';
 
-export const useTimer = (program: Program | null) => {
+type UseTimerResult = {
+  timerState: TimerState;
+  togglePause: () => void;
+  reset: () => void;
+  skip: () => void;
+};
+
+const createAudioContext = (): AudioContext | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const AudioContextClass =
+    window.AudioContext ||
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).webkitAudioContext;
+  return AudioContextClass ? new AudioContextClass() : null;
+};
+
+export const useTimer = (program: Program | null): UseTimerResult => {
   const [timerState, setTimerState] = useState<TimerState>({
     currentSegmentIndex: 0,
     remainingTime: program?.segments[0]?.duration || 0,
@@ -19,12 +37,13 @@ export const useTimer = (program: Program | null) => {
     audioRef.current = new Audio();
   }, []);
 
-  const playBeep = useCallback(() => {
+  const playBeep = useCallback((): void => {
     if (!program?.beepEnabled) return;
     
     try {
       // Simple beep using Web Audio API
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = createAudioContext();
+      if (!audioContext) return;
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -44,7 +63,7 @@ export const useTimer = (program: Program | null) => {
     }
   }, [program?.beepEnabled]);
 
-  const reset = useCallback(() => {
+  const reset = useCallback((): void => {
     setTimerState({
       currentSegmentIndex: 0,
       remainingTime: program?.segments[0]?.duration || 0,
@@ -58,17 +77,22 @@ export const useTimer = (program: Program | null) => {
     }
   }, [program]);
 
-  const togglePause = useCallback(() => {
-    setTimerState(prev => ({ ...prev, isPaused: !prev.isPaused }));
-  }, []);
+  const togglePause = useCallback((): void => {
+    setTimerState((prev: TimerState) => {
+      if (prev.isPaused && !prev.isComplete) {
+        playBeep();
+      }
+      return { ...prev, isPaused: !prev.isPaused };
+    });
+  }, [playBeep]);
 
-  const skip = useCallback(() => {
+  const skip = useCallback((): void => {
     if (!program) return;
 
     const nextIndex = timerState.currentSegmentIndex + 1;
     if (nextIndex < program.segments.length) {
       playBeep();
-      setTimerState(prev => ({
+      setTimerState((prev: TimerState) => ({
         ...prev,
         currentSegmentIndex: nextIndex,
         remainingTime: program.segments[nextIndex].duration,
@@ -81,7 +105,7 @@ export const useTimer = (program: Program | null) => {
       
       if (shouldCycle) {
         playBeep();
-        setTimerState(prev => ({
+        setTimerState((prev: TimerState) => ({
           currentSegmentIndex: 0,
           remainingTime: program.segments[0].duration,
           isPaused: false,
@@ -90,7 +114,7 @@ export const useTimer = (program: Program | null) => {
           totalRounds: prev.totalRounds,
         }));
       } else {
-        setTimerState(prev => ({ ...prev, isComplete: true, isPaused: true }));
+        setTimerState((prev: TimerState) => ({ ...prev, isComplete: true, isPaused: true }));
       }
     }
   }, [program, timerState.currentSegmentIndex, timerState.currentRound, playBeep]);
@@ -105,7 +129,7 @@ export const useTimer = (program: Program | null) => {
     }
 
     intervalRef.current = window.setInterval(() => {
-      setTimerState(prev => {
+      setTimerState((prev: TimerState) => {
         const newRemainingTime = prev.remainingTime - 1;
 
         if (newRemainingTime <= 0) {

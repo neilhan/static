@@ -49,7 +49,7 @@ function App() {
     const newId = generateId();
     const newProgram: Program = {
       id: newId,
-      name: 'New Program',
+      name: 'New Timer',
       segments: [],
       rounds: 1,
       beepEnabled: true,
@@ -77,8 +77,6 @@ function App() {
     if (!displayOrder.includes(program.id)) {
       setDisplayOrder([...displayOrder, program.id]);
     }
-    
-    setSelectedProgram(null);
   };
 
   const handleDelete = (programId: string) => {
@@ -128,8 +126,6 @@ function App() {
       setTrackers([...trackers, tracker]);
       setDisplayOrder([...displayOrder, tracker.id]);
     }
-    
-    setSelectedTracker(null);
   };
 
   const handleCancelTracker = () => {
@@ -247,6 +243,19 @@ function App() {
     setDisplayOrder(newOrder);
   };
 
+  const handleToggleProgramSound = (programId: string) => {
+    setPrograms(prevPrograms => prevPrograms.map(program =>
+      program.id === programId ? { ...program, beepEnabled: !program.beepEnabled } : program
+    ));
+
+    setSelectedProgram(prev => {
+      if (prev && prev.id === programId) {
+        return { ...prev, beepEnabled: !prev.beepEnabled };
+      }
+      return prev;
+    });
+  };
+
   return (
     <div className="app">
       {viewMode === 'list' && (
@@ -290,6 +299,7 @@ function App() {
         <TimerRunner
           program={selectedProgram}
           onExit={handleExitTimerRunner}
+          onToggleSound={handleToggleProgramSound}
         />
       )}
 

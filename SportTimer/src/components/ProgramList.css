@@ -44,6 +44,92 @@
   font-size: 2.5rem;
 }
 
+.quick-start-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.75rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1b1f3a, #111316);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 2rem;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.quick-start-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-start-label {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: #8fa2ff;
+  margin: 0 0 0.5rem;
+}
+
+.quick-start-info h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.quick-start-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0 0;
+  font-size: 0.95rem;
+  color: #cdd4ff;
+}
+
+.quick-start-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.quick-start-chips {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.quick-start-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+}
+
+.quick-start-chip.muted {
+  opacity: 0.7;
+}
+
+.quick-start-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 220px;
+}
+
+.quick-start-start {
+  width: 100%;
+  margin-top: 0;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
+
+.quick-start-edit {
+  width: 100%;
+  padding: 0.9rem;
+}
+
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
@@ -153,8 +239,25 @@
 }
 
 .counter-card-style {
-  background: #222;
-  border: 1px solid #333;
+  background: linear-gradient(135deg, #0f1b24, #071017);
+  border: 1px solid rgba(82, 196, 255, 0.45);
+  box-shadow: 0 6px 18px rgba(4, 34, 51, 0.6);
+}
+
+.counter-card-style .program-card-header h3 {
+  color: #d5f2ff;
+}
+
+.counter-card-style .btn-run {
+  background: #3ba4d7;
+}
+
+.counter-card-style .btn-run:hover {
+  background: #2f8bb7;
+}
+
+.counter-card-style .btn-run:active {
+  background: #26779c;
 }
 
 .program-card-header {
@@ -618,6 +721,16 @@
     display: grid;
     grid-template-columns: 1fr 2fr;
     width: 100%;
+  }
+
+  .quick-start-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quick-start-actions {
+    width: 100%;
+    min-width: unset;
   }
 
   .program-list-header h1 {

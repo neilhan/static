@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Tracker, CounterItem } from '../types';
 import { generateId } from '../utils/helpers';
 import './TrackerEditor.css';
@@ -20,6 +20,35 @@ export const TrackerEditor = ({ tracker, onSave, onCancel }: TrackerEditorProps)
 
   const modalRef = useRef<HTMLDivElement>(null);
   const newItemInputRef = useRef<HTMLInputElement>(null);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (!tracker) return;
+    setTrackerName(tracker.name);
+    setItems(tracker.items);
+  }, [tracker]);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (!tracker) return;
+
+    const hasChanges =
+      trackerName.trim() !== tracker.name ||
+      JSON.stringify(items) !== JSON.stringify(tracker.items);
+
+    if (!hasChanges) return;
+
+    const updatedTracker: Tracker = {
+      id: tracker.id,
+      name: trackerName.trim() || 'Untitled Tracker',
+      items,
+    };
+    onSave(updatedTracker);
+  }, [trackerName, items, tracker, onSave]);
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -33,22 +62,31 @@ export const TrackerEditor = ({ tracker, onSave, onCancel }: TrackerEditorProps)
   };
 
   const handleClose = () => {
+    if (tracker) {
+      const updatedTracker: Tracker = {
+        id: tracker.id,
+        name: trackerName.trim() || 'Untitled Tracker',
+        items,
+      };
+      onSave(updatedTracker);
+    }
     onCancel();
   };
 
   const handleSave = () => {
     if (!trackerName.trim()) {
       setValidationErrors(prev => ({ ...prev, trackerName: true }));
-      return;
+      return false;
     }
 
     const updatedTracker: Tracker = {
       id: tracker?.id || generateId(),
-      name: trackerName.trim(),
+      name: trackerName.trim() || 'Untitled Tracker',
       items: items,
     };
     
     onSave(updatedTracker);
+    return true;
   };
 
   const handleAddItem = (e?: React.FormEvent) => {
@@ -183,8 +221,15 @@ export const TrackerEditor = ({ tracker, onSave, onCancel }: TrackerEditorProps)
         </div>
 
         <div className="editor-footer">
-          <button className="btn-primary btn-done" onClick={handleSave}>
-            ✓ Done
+          <button
+            className="btn-primary btn-done"
+            onClick={() => {
+              if (handleSave()) {
+                onCancel();
+              }
+            }}
+          >
+            Done
           </button>
         </div>
       </div>

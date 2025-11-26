@@ -7,22 +7,31 @@ import './TimerRunner.css';
 interface TimerRunnerProps {
   program: Program;
   onExit: () => void;
+  onToggleSound: (programId: string) => void;
 }
 
-export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
+export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps) => {
   const { timerState, togglePause, reset, skip } = useTimer(program);
   const currentSegment = program.segments[timerState.currentSegmentIndex];
   const totalDuration = calculateTotalDuration(program.segments);
 
   const calculateProgress = (): number => {
+    if (totalDuration === 0) {
+      return 0;
+    }
     const completedDuration = program.segments
       .slice(0, timerState.currentSegmentIndex)
       .reduce((sum: number, seg: TimerSegment) => sum + seg.duration, 0);
-    const currentSegmentProgress = currentSegment.duration - timerState.remainingTime;
+    const currentSegmentDuration = currentSegment?.duration ?? 0;
+    const currentSegmentProgress = currentSegmentDuration - timerState.remainingTime;
     return ((completedDuration + currentSegmentProgress) / totalDuration) * 100;
   };
 
   const nextSegment = program.segments[timerState.currentSegmentIndex + 1];
+  const upcomingSegments: TimerSegment[] = program.segments.slice(
+    timerState.currentSegmentIndex + 2,
+    timerState.currentSegmentIndex + 4
+  );
 
   return (
     <div 
@@ -36,90 +45,129 @@ export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
           <button className="btn-back" onClick={() => onExit()}>
             ← Back
           </button>
-          <h2>
+          <h2 className="runner-title">
             {program.name}
-            <span
-              className={`sound-indicator ${!program.beepEnabled ? 'muted' : ''}`}
-              title={program.beepEnabled ? 'Sound alerts enabled' : 'Sound alerts disabled'}
+            <button
+              type="button"
+              className={`sound-toggle ${program.beepEnabled ? 'active' : 'muted'}`}
+              onClick={() => onToggleSound(program.id)}
+              aria-pressed={program.beepEnabled}
+              title={program.beepEnabled ? 'Mute sound alerts' : 'Enable sound alerts'}
             >
               <SoundIcon muted={!program.beepEnabled} />
-            </span>
+            </button>
           </h2>
         </div>
 
         {timerState.isComplete ? (
           <div className="completion-screen">
             <div className="completion-icon">🎉</div>
-            <h1>Program Complete!</h1>
+            <h1>Timer Complete!</h1>
             <p>Great job finishing your workout!</p>
             <div className="completion-actions">
               <button className="btn-large btn-primary" onClick={reset}>
                 ↻ Restart
               </button>
               <button className="btn-large btn-secondary" onClick={() => onExit()}>
-                ← Back to Programs
+                ← Back to Timers
               </button>
             </div>
           </div>
         ) : (
           <>
-            <div className="timer-display">
-              <div className="segment-name" style={{ color: currentSegment?.color }}>
-                {currentSegment?.name}
+            <section className="current-segment-card">
+              <p className="segment-label">Current Interval</p>
+              <div
+                className="segment-name"
+                style={{ color: currentSegment?.color }}
+                aria-live="assertive"
+              >
+                {currentSegment?.name ?? 'No segments configured'}
               </div>
-              <div className="time-display">
+              <div className="time-display" aria-live="polite">
                 {formatTime(timerState.remainingTime)}
               </div>
               <div className="segment-progress-bar">
                 <div 
                   className="segment-progress-fill"
                   style={{ 
-                    width: `${((currentSegment.duration - timerState.remainingTime) / currentSegment.duration) * 100}%`,
-                    backgroundColor: currentSegment?.color 
+                    width: `${currentSegment ? ((currentSegment.duration - timerState.remainingTime) / currentSegment.duration) * 100 : 0}%`,
+                    backgroundColor: currentSegment?.color || '#4ECDC4' 
                   }}
                 />
               </div>
-            </div>
-
-            <div className="timer-info">
-              <div className="info-card">
-                <div className="info-label">Segment</div>
-                <div className="info-value">
-                  {timerState.currentSegmentIndex + 1} of {program.segments.length}
+              <div className="segment-meta">
+                <div className="meta-item">
+                  <span className="meta-label">Segment</span>
+                  <span className="meta-value">
+                    {timerState.currentSegmentIndex + 1} / {program.segments.length}
+                  </span>
+                </div>
+                <div className="meta-item">
+                  <span className="meta-label">Round</span>
+                  <span className="meta-value">
+                    {program.rounds === 0
+                      ? '∞'
+                      : `${timerState.currentRound} / ${program.rounds}`}
+                  </span>
                 </div>
               </div>
-              <div className="info-card">
-                <div className="info-label">Round</div>
-                <div className="info-value">
-                  {program.rounds === 0 ? (
-                    <>∞ <span className="cycle-count-small">(Round {timerState.currentRound})</span></>
-                  ) : (
-                    `${timerState.currentRound} of ${program.rounds}`
+            </section>
+
+            <div className="timing-panels">
+              <div className="overall-progress">
+                <div className="progress-label">Overall Progress</div>
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill"
+                    style={{ width: `${calculateProgress()}%` }}
+                  />
+                </div>
+              </div>
+
+              <section className="next-up-panel" aria-live="polite">
+                <div className="next-up-header">
+                  <span className="next-label">Next Up</span>
+                  {nextSegment && (
+                    <span className="next-duration">
+                      {formatTime(nextSegment.duration)}
+                    </span>
                   )}
                 </div>
-              </div>
-              {nextSegment && (
-                <div className="info-card">
-                  <div className="info-label">Next Up</div>
-                  <div className="info-value next-segment">
-                    <span 
-                      className="next-color-dot" 
-                      style={{ backgroundColor: nextSegment.color }}
-                    />
-                    {nextSegment.name}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="overall-progress">
-              <div className="progress-label">Overall Progress</div>
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill"
-                  style={{ width: `${calculateProgress()}%` }}
-                />
-              </div>
+                {nextSegment ? (
+                  <>
+                    <div className="next-up-body">
+                      <span 
+                        className="next-color-dot" 
+                        style={{ backgroundColor: nextSegment.color }}
+                      />
+                      <div>
+                        <p className="next-name">{nextSegment.name}</p>
+                        <p className="next-round-hint">
+                          {program.rounds === 0
+                            ? `Round ${timerState.currentRound}`
+                            : `Round ${timerState.currentRound} of ${program.rounds}`}
+                        </p>
+                      </div>
+                    </div>
+                    {upcomingSegments.length > 0 && (
+                      <div className="upcoming-list" aria-label="Upcoming segments">
+                        {upcomingSegments.map(segment => (
+                          <span key={segment.id} className="upcoming-chip">
+                            <span
+                              className="chip-dot"
+                              style={{ backgroundColor: segment.color }}
+                            />
+                            {segment.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="next-name muted">Finish strong—last interval!</p>
+                )}
+              </section>
             </div>
 
             <div className="timer-controls">

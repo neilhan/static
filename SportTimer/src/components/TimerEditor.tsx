@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, SyntheticEvent } from 'react';
 import { Program, TimerSegment } from '../types';
 import { SoundIcon } from './icons/SoundIcon';
 import { generateId, getRandomColor, formatTime, calculateTotalDuration } from '../utils/helpers';
@@ -15,7 +15,8 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
   const [segments, setSegments] = useState<TimerSegment[]>(
     program?.segments || []
   );
-  const [rounds, setRounds] = useState<number>(program?.rounds || 1);
+  const [rounds, setRounds] = useState<number>(program?.rounds ?? 1);
+  const [roundsInput, setRoundsInput] = useState<string>((program?.rounds ?? 1).toString());
   const [beepEnabled, setBeepEnabled] = useState<boolean>(program?.beepEnabled ?? true);
 
   const [editingSegment, setEditingSegment] = useState<{
@@ -47,19 +48,28 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
 
   // Track if this is the initial load to prevent auto-save on mount
   const isInitialMount = useRef(true);
-  const autoSaveTimeoutRef = useRef<number | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const overlayMouseDownRef = useRef(false);
+
+  const stopSliderPropagation = (event: SyntheticEvent) => {
+    event.stopPropagation();
+  };
 
   useEffect(() => {
     if (program) {
       setProgramName(program.name);
       setSegments(program.segments);
       setRounds(program.rounds);
+      setRoundsInput(program.rounds.toString());
       setBeepEnabled(program.beepEnabled);
     }
   }, [program]);
 
-  // Centralized data change handler - watches all state and auto-saves
+  useEffect(() => {
+    setRoundsInput(rounds.toString());
+  }, [rounds]);
+
+  // Centralized data change handler - watches all state and saves immediately
   useEffect(() => {
     // Skip on initial mount
     if (isInitialMount.current) {
@@ -79,35 +89,16 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
 
     if (!hasChanges) return;
 
-    // Clear any pending auto-save
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-
-    // Debounce for program name (to avoid saving while typing)
-    // Immediate save for everything else
-    const saveDelay = programName.trim() !== program.name ? 500 : 0;
-
-    autoSaveTimeoutRef.current = window.setTimeout(() => {
-      const updatedProgram: Program = {
-        id: program.id,
-        name: programName.trim() || 'Untitled Program',
-        segments,
-        rounds,
-        beepEnabled,
-        createdAt: program.createdAt,
-      };
-      
-      // Save to storage
-      onSave(updatedProgram);
-    }, saveDelay);
-
-    // Cleanup
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
+    const updatedProgram: Program = {
+      id: program.id,
+      name: programName.trim() || 'Untitled Timer',
+      segments,
+      rounds,
+      beepEnabled,
+      createdAt: program.createdAt,
     };
+    
+    onSave(updatedProgram);
   }, [programName, rounds, beepEnabled, segments, program, onSave]); // Watch all data fields and program
 
   const addSegment = () => {
@@ -219,7 +210,15 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
   };
 
   // UI event handlers
+  const handleOverlayMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    overlayMouseDownRef.current = e.target === e.currentTarget;
+  };
+
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!overlayMouseDownRef.current) {
+      return;
+    }
+    overlayMouseDownRef.current = false;
     // Check if click is outside the modal content
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       // Prevent closing if text is being selected
@@ -236,7 +235,7 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
     if (program) {
       const updatedProgram: Program = {
         id: program.id,
-        name: programName.trim() || 'Untitled Program',
+        name: programName.trim() || 'Untitled Timer',
         segments,
         rounds,
         beepEnabled,
@@ -255,11 +254,37 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
     handleClose();
   };
 
+  const handleRoundsInputChange = (value: string) => {
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
+    setRoundsInput(value);
+    if (value !== '') {
+      const parsed = parseInt(value, 10);
+      setRounds(parsed);
+    }
+  };
+
+  const handleRoundsInputBlur = () => {
+    if (roundsInput === '') {
+      setRoundsInput(rounds.toString());
+      return;
+    }
+    const parsed = parseInt(roundsInput, 10);
+    if (Number.isNaN(parsed)) {
+      setRoundsInput(rounds.toString());
+      return;
+    }
+    setRounds(parsed);
+  };
+
   const totalDuration = calculateTotalDuration(segments);
+  const sliderMax = Math.max(10, rounds);
 
   return (
     <div 
       className="timer-editor-overlay" 
+      onMouseDown={handleOverlayMouseDown}
       onClick={handleOverlayClick}
     >
       <div 
@@ -267,13 +292,13 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
         className="timer-editor"
       >
         <div className="editor-header">
-          <h2>{program ? 'Edit Program' : 'Create New Program'}</h2>
+          <h2>{program ? 'Edit Timer' : 'Create New Timer'}</h2>
           <button className="btn-close" onClick={handleClose}>✕</button>
         </div>
 
       <div className="editor-content">
         <div className="form-group">
-          <label htmlFor="program-name">Program Name</label>
+          <label htmlFor="program-name">Timer Name</label>
           <input
             id="program-name"
             type="text"
@@ -298,15 +323,36 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
               </span>
             </label>
             <div className="cycle-controls">
-              <input
-                id="program-rounds"
-                type="range"
-                min="0"
-                max="10"
-                value={rounds}
-                onChange={e => setRounds(parseInt(e.target.value))}
-                className="input-range"
-              />
+              <div className="rounds-slider-wrapper">
+                <input
+                  id="program-rounds"
+                  type="range"
+                  min="0"
+                  max={sliderMax}
+                  value={Math.min(rounds, sliderMax)}
+                  onChange={e => setRounds(parseInt(e.target.value))}
+                  className="input-range"
+                  onPointerDown={stopSliderPropagation}
+                  onPointerUp={stopSliderPropagation}
+                  onMouseDown={stopSliderPropagation}
+                  onMouseUp={stopSliderPropagation}
+                  onClick={stopSliderPropagation}
+                />
+                <div className="rounds-input-row">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d*"
+                    className="input-text rounds-input"
+                    value={roundsInput}
+                    onChange={e => handleRoundsInputChange(e.target.value)}
+                    onBlur={handleRoundsInputBlur}
+                    aria-label="Set custom rounds"
+                    placeholder="Enter rounds"
+                  />
+                  <span className="rounds-input-hint">0 = Infinite rounds</span>
+                </div>
+              </div>
               <div className="cycle-buttons">
                 <button
                   type="button"

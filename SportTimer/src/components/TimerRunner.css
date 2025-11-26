@@ -34,7 +34,7 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.runner-header h2 {
+.runner-title {
   margin: 0;
   font-size: 1.5rem;
   opacity: 0.9;
@@ -43,24 +43,53 @@
   gap: 0.5rem;
 }
 
-.sound-indicator {
+.sound-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.7;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: inherit;
 }
 
-.sound-indicator.muted {
-  opacity: 0.35;
+.sound-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.timer-display {
+.sound-toggle.muted {
+  opacity: 0.4;
+}
+
+.sound-toggle:focus-visible {
+  outline: 2px solid #4ECDC4;
+  outline-offset: 2px;
+}
+
+.current-segment-card {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35);
+}
+
+.segment-label {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.5rem;
 }
 
 .segment-name {
-  font-size: 2rem;
+  font-size: 2.4rem;
   font-weight: 700;
   margin-bottom: 1rem;
   text-transform: uppercase;
@@ -68,91 +97,79 @@
 }
 
 .time-display {
-  font-size: 7rem;
+  font-size: clamp(4rem, 12vw, 7rem);
   font-weight: 700;
   line-height: 1;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-variant-numeric: tabular-nums;
 }
 
 .segment-progress-bar {
-  height: 12px;
+  height: 16px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  border-radius: 999px;
   overflow: hidden;
-  max-width: 400px;
-  margin: 0 auto;
+  max-width: 420px;
+  margin: 0 auto 1.5rem;
 }
 
 .segment-progress-fill {
   height: 100%;
   transition: width 0.3s linear;
-  border-radius: 6px;
+  border-radius: 999px;
 }
 
-.timer-info {
+.segment-meta {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
-.info-card {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 1.5rem;
-  border-radius: 12px;
+.meta-item {
   text-align: center;
 }
 
-.info-label {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 0.5rem;
+.meta-label {
+  display: block;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 0.25rem;
 }
 
-.info-value {
+.meta-value {
   font-size: 1.5rem;
   font-weight: 700;
 }
 
-.next-segment {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.next-color-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.cycle-count-small {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 400;
+.timing-panels {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .overall-progress {
-  margin-bottom: 3rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .progress-label {
-  text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .progress-bar {
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
   overflow: hidden;
 }
 
@@ -160,7 +177,92 @@
   height: 100%;
   background: linear-gradient(90deg, #4ECDC4, #45B7D1);
   transition: width 0.3s linear;
-  border-radius: 4px;
+  border-radius: 999px;
+}
+
+.next-up-panel {
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.next-up-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.next-label {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.next-duration {
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.next-up-body {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.next-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.next-up-body .next-color-dot {
+  width: 16px;
+  height: 16px;
+}
+
+.next-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.next-name.muted {
+  opacity: 0.6;
+}
+
+.next-round-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.upcoming-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.upcoming-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+}
+
+.chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }
 
 .timer-controls {
@@ -283,22 +385,25 @@
     font-size: 1.2rem;
   }
 
+  .current-segment-card {
+    padding: 1.5rem;
+  }
+
   .time-display {
-    font-size: 4.5rem;
+    font-size: 4rem;
   }
 
   .segment-name {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     letter-spacing: 1px;
   }
 
-  .timer-info {
-    flex-direction: column;
-    gap: 0.75rem;
+  .segment-meta {
+    gap: 1rem;
   }
 
-  .info-card {
-    padding: 1.25rem;
+  .timing-panels {
+    grid-template-columns: 1fr;
   }
 
   .btn-control {
