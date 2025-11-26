@@ -185,10 +185,12 @@ input[type=number] {
 }
 
 .year-row {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 30px 1fr;
   align-items: center;
   gap: 10px;
+  /* Ensure strict height behavior */
+  min-height: 0; 
 }
 
 .year-label {
@@ -197,6 +199,10 @@ input[type=number] {
   font-size: 0.8rem;
   color: #888;
   flex-shrink: 0;
+  /* Use absolute line-height to avoid variations */
+  line-height: 1; 
+  display: block; /* Reset from flex if needed, or keep simple */
+  height: auto; /* let it be natural, or constrained */
 }
 
 .weeks-grid {
@@ -204,7 +210,7 @@ input[type=number] {
   /* 53 columns max to accommodate leap years */
   grid-template-columns: repeat(53, 1fr); 
   gap: 3px;
-  flex-grow: 1;
+  width: 100%;
 }
 
 .cell {
