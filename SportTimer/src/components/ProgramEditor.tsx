@@ -221,6 +221,11 @@ export const ProgramEditor = ({ program, onSave, onCancel }: ProgramEditorProps)
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Check if click is outside the modal content
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      // Prevent closing if text is being selected
+      const selection = window.getSelection();
+      if (selection && selection.toString().length > 0) {
+        return;
+      }
       handleClose();
     }
   };

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { genRandomWords, genRandomCharGroups, genContact, ContentConfig } from '../utils/morse/contentGenerator';
+import { genRandomWords, genRandomCharGroups, genContact, ContentConfig } from '../morse/contentGenerator';
 
 export const useMessageGenerator = () => {
     const [messages, setMessages] = useState<string[]>([]);

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAudioEngine } from './useAudioEngine';
-import { calculateTiming, getMorseSequence } from '../utils/morse/morseTiming';
-import { ContentConfig } from '../utils/morse/contentGenerator';
+import { calculateTiming, getMorseSequence } from '../morse/morseTiming';
+import { ContentConfig } from '../morse/contentGenerator';
 
 // The trainer hook manages the orchestration of playing the Morse sequence
 export const useCwTrainer = (

@@ -19,6 +19,11 @@
   gap: 0.75rem;
 }
 
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
 .home-link {
   text-decoration: none;
   font-size: 1.5rem;
@@ -49,6 +54,58 @@
   font-size: 1.2rem;
 }
 
+.create-counter-section {
+  background: #222;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid #333;
+}
+
+.add-counter-form {
+  display: flex;
+  gap: 10px;
+}
+
+.counter-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.counter-input:focus {
+  outline: none;
+  border-color: #646cff;
+}
+
+.item-input {
+  flex: 1;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.item-input:focus {
+  outline: none;
+  border-color: #646cff;
+}
+
+.btn-sm {
+  padding: 0.75rem 1.5rem;
+}
+
+.btn-xs {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+}
+
 .program-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -60,14 +117,44 @@
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
   display: flex;
   flex-direction: column;
+  cursor: grab;
+}
+
+.program-card:active {
+  cursor: grabbing;
+}
+
+.program-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  border: 2px dashed #444;
 }
 
 .program-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.drag-handle {
+  cursor: grab;
+  color: #666;
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  user-select: none;
+}
+
+.drag-handle:hover {
+  color: #aaa;
+}
+
+.counter-card-style {
+  background: #222;
+  border: 1px solid #333;
 }
 
 .program-card-header {
@@ -83,6 +170,8 @@
   font-size: 1.4rem;
   flex: 1;
   word-break: break-word;
+  display: flex;
+  align-items: flex-start;
 }
 
 .program-card-actions {
@@ -110,6 +199,22 @@
   opacity: 1;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
+}
+
+.btn-icon-small {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.2rem;
+  opacity: 0.5;
+  color: #999;
+  transition: all 0.2s;
+}
+
+.btn-icon-small:hover {
+  opacity: 1;
+  color: #ff4444;
 }
 
 .btn-delete:hover {
@@ -164,11 +269,164 @@
   margin-left: 0.25rem;
 }
 
-/* New Segment List Styles */
+/* Tracker Specific Styles */
+.tracker-items-list {
+  flex: 1;
+  margin-bottom: 1.25rem;
+  background: rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.empty-tracker-msg {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+}
+
+.tracker-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin: 2px;
+  transition: background 0.2s;
+}
+
+.tracker-item-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tracker-item-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #ddd;
+  flex: 1;
+}
+
+.tracker-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tracker-item-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: bold;
+  font-size: 1.1rem;
+  min-width: 2rem;
+  text-align: center;
+  color: #646cff;
+  background: rgba(0,0,0,0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.btn-control-small {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-minus {
+  background-color: #333;
+  color: #ff6b6b;
+}
+
+.btn-minus:hover {
+  background-color: #444;
+}
+
+.btn-plus {
+  background-color: #333;
+  color: #4ecdc4;
+}
+
+.btn-plus:hover {
+  background-color: #444;
+}
+
+.btn-add-item {
+  width: 100%;
+  background: none;
+  border: 1px dashed #444;
+  color: #888;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  margin: 2px;
+}
+
+.btn-add-item:hover {
+  border-color: #666;
+  color: #bbb;
+  background: rgba(255,255,255,0.05);
+}
+
+.add-item-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  background: rgba(0,0,0,0.2);
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin: 2px;
+}
+
+.add-item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Tracker Card Actions */
+.tracker-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.btn-start-tracker {
+  flex: 1;
+}
+
+.btn-reset-tracker {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset-tracker:hover {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+/* Segment List Styles */
 .segment-list-container {
   flex: 1;
   margin-bottom: 1.25rem;
-  background: #222;
+  background: rgba(0,0,0,0.1);
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid #333;
@@ -182,7 +440,7 @@
   flex-direction: column;
   gap: 2px;
   scrollbar-width: thin;
-  scrollbar-color: #444 #222;
+  scrollbar-color: #444 rgba(0,0,0,0.1);
 }
 
 .segment-list::-webkit-scrollbar {
@@ -190,7 +448,7 @@
 }
 
 .segment-list::-webkit-scrollbar-track {
-  background: #222;
+  background: rgba(0,0,0,0.1);
 }
 
 .segment-list::-webkit-scrollbar-thumb {
@@ -203,9 +461,10 @@
   align-items: center;
   gap: 0.75rem;
   font-size: 0.9rem;
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.02);
+  transition: background 0.2s;
 }
 
 .segment-row:hover {
@@ -229,12 +488,12 @@
 
 .segment-duration {
   font-family: monospace;
-  opacity: 0.7;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
   background: rgba(0,0,0,0.2);
   padding: 2px 6px;
   border-radius: 4px;
+  color: #999;
 }
 
 .btn-primary {
@@ -258,6 +517,27 @@
   transform: scale(0.98);
 }
 
+.btn-secondary {
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #3a3a3a;
+  border-color: #666;
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
 .btn-run {
   width: 100%;
   background: #4ECDC4;
@@ -274,6 +554,7 @@
 
 .btn-run:hover {
   background: #45b7a8;
+  border-color: #4ecdc4;
 }
 
 .btn-run:active {
@@ -294,6 +575,18 @@
     padding: 1rem 0;
     z-index: 10;
     margin-bottom: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-title-group {
+    margin-bottom: 1rem;
+  }
+  
+  .header-actions {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    width: 100%;
   }
 
   .program-list-header h1 {
@@ -304,10 +597,10 @@
     grid-template-columns: 1fr;
   }
 
-  .btn-primary {
+  .btn-primary, .btn-secondary {
     width: 100%;
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
+    padding: 1rem;
+    font-size: 1rem;
   }
 
   .program-card {

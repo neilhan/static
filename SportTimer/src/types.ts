@@ -14,7 +14,19 @@ export interface Program {
   createdAt: number;
 }
 
-export type ViewMode = 'list' | 'editor' | 'runner';
+export interface CounterItem {
+  id: string;
+  name: string;
+  value: number;
+}
+
+export interface Tracker {
+  id: string;
+  name: string;
+  items: CounterItem[];
+}
+
+export type ViewMode = 'list' | 'timer_runner' | 'tracker_runner';
 
 export interface TimerState {
   currentSegmentIndex: number;
@@ -24,4 +36,3 @@ export interface TimerState {
   currentRound: number;
   totalRounds: number;
 }
-
