@@ -1,0 +1,263 @@
+.program-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.program-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.program-list-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #999;
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+}
+
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.program-card {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.program-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.program-card-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  flex: 1;
+  word-break: break-word;
+}
+
+.program-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  min-width: 36px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.btn-delete:hover {
+  background: rgba(255, 68, 68, 0.2);
+  color: #ff4444;
+}
+
+.btn-icon:active {
+  opacity: 0.5;
+}
+
+.program-card-info {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-item .label {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.info-item .value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cycle-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #646cff;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.beep-indicator {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-left: 0.25rem;
+}
+
+.segment-preview {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: #333;
+}
+
+.segment-preview-bar {
+  height: 100%;
+  min-width: 2px;
+}
+
+.btn-primary {
+  background: #646cff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #535bf2;
+}
+
+.btn-primary:active {
+  background: #4248d6;
+  transform: scale(0.98);
+}
+
+.btn-run {
+  width: 100%;
+  background: #4ECDC4;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-run:hover {
+  background: #45b7a8;
+}
+
+.btn-run:active {
+  background: #3ca896;
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .program-list {
+    padding: 1rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .program-list-header {
+    position: sticky;
+    top: 0;
+    background: #0f0f0f;
+    padding: 1rem 0;
+    z-index: 10;
+    margin-bottom: 1rem;
+  }
+
+  .program-list-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .program-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .program-card {
+    padding: 1.25rem;
+  }
+
+  .btn-icon {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-run {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .program-list {
+    padding: 0.75rem;
+  }
+
+  .program-list-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .program-card-header h3 {
+    font-size: 1.2rem;
+  }
+}
+

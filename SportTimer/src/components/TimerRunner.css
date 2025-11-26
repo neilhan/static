@@ -1,0 +1,400 @@
+.timer-runner {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  transition: background-color 0.5s ease;
+}
+
+.runner-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+.runner-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.runner-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sound-indicator {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+.timer-display {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.segment-name {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.time-display {
+  font-size: 7rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.segment-progress-bar {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.segment-progress-fill {
+  height: 100%;
+  transition: width 0.3s linear;
+  border-radius: 6px;
+}
+
+.timer-info {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.info-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.info-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.info-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.next-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.next-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.cycle-count-small {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+}
+
+.overall-progress {
+  margin-bottom: 3rem;
+}
+
+.progress-label {
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ECDC4, #45B7D1);
+  transition: width 0.3s linear;
+  border-radius: 4px;
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.btn-control {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-control:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.btn-control:active:not(:disabled) {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-control:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-play {
+  width: 80px;
+  height: 80px;
+  font-size: 2rem;
+  border-width: 3px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.completion-screen {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.completion-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+
+.completion-screen h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.completion-screen p {
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 3rem;
+}
+
+.completion-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-large:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .timer-runner {
+    padding: 1rem;
+    min-height: 100dvh;
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+
+  .runner-header {
+    position: sticky;
+    top: 0;
+    background: inherit;
+    padding: 1rem 0;
+    z-index: 10;
+    margin-bottom: 2rem;
+  }
+
+  .btn-back {
+    padding: 0.75rem 1.25rem;
+    font-size: 1.1rem;
+    min-height: 44px;
+  }
+
+  .runner-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .time-display {
+    font-size: 4.5rem;
+  }
+
+  .segment-name {
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+  }
+
+  .timer-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .info-card {
+    padding: 1.25rem;
+  }
+
+  .btn-control {
+    width: 70px;
+    height: 70px;
+    font-size: 1.75rem;
+  }
+
+  .btn-play {
+    width: 90px;
+    height: 90px;
+    font-size: 2.5rem;
+  }
+
+  .completion-screen h1 {
+    font-size: 2rem;
+  }
+
+  .completion-screen p {
+    font-size: 1.1rem;
+  }
+
+  .completion-icon {
+    font-size: 4rem;
+  }
+
+  .btn-large {
+    padding: 1.25rem 2rem;
+    font-size: 1.15rem;
+    min-height: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .timer-runner {
+    padding: 0.75rem;
+  }
+
+  .time-display {
+    font-size: 3.5rem;
+  }
+
+  .segment-name {
+    font-size: 1.1rem;
+  }
+
+  .runner-header h2 {
+    font-size: 1rem;
+  }
+
+  .info-value {
+    font-size: 1.2rem;
+  }
+
+  .btn-control {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .btn-play {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-height: 600px) and (orientation: landscape) {
+  .timer-display {
+    margin-bottom: 1rem;
+  }
+
+  .time-display {
+    font-size: 3rem;
+  }
+
+  .segment-name {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .timer-info {
+    flex-direction: row;
+  }
+
+  .overall-progress {
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-control {
+    width: 50px;
+    height: 50px;
+  }
+
+  .btn-play {
+    width: 60px;
+    height: 60px;
+  }
+
+  .runner-header {
+    margin-bottom: 1rem;
+  }
+}
+
