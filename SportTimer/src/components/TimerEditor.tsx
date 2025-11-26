@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Program, TimerSegment } from '../types';
+import { SoundIcon } from './icons/SoundIcon';
 import { generateId, getRandomColor, formatTime, calculateTotalDuration } from '../utils/helpers';
 import './TimerEditor.css';
 
@@ -348,7 +349,12 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
               onClick={() => setBeepEnabled(!beepEnabled)}
               title={beepEnabled ? 'Beep enabled' : 'Beep disabled'}
             >
-              <span className="toggle-icon">{beepEnabled ? '🔔' : '🔕'}</span>
+              <span className="toggle-icon">
+                <SoundIcon
+                  muted={!beepEnabled}
+                  title={beepEnabled ? 'Sound enabled' : 'Sound disabled'}
+                />
+              </span>
               <span className="toggle-text">{beepEnabled ? 'ON' : 'OFF'}</span>
             </button>
             <p className="toggle-description">

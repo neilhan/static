@@ -204,12 +204,15 @@
 .btn-icon-small {
   background: none;
   border: none;
-  font-size: 0.9rem;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 0.2rem;
+  padding: 0.35rem;
   opacity: 0.5;
   color: #999;
   transition: all 0.2s;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 50%;
 }
 
 .btn-icon-small:hover {
@@ -264,9 +267,15 @@
 }
 
 .beep-indicator {
-  font-size: 0.9rem;
-  opacity: 0.7;
-  margin-left: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.35rem;
+  opacity: 0.8;
+}
+
+.beep-indicator.muted {
+  opacity: 0.4;
 }
 
 /* Tracker Specific Styles */
@@ -277,6 +286,7 @@
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid #333;
+  padding: 0.5rem 0.25rem;
 }
 
 .empty-tracker-msg {
@@ -290,11 +300,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
   background: rgba(255, 255, 255, 0.02);
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  margin: 2px;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  margin: 6px 8px;
   transition: background 0.2s;
+  min-height: 56px;
 }
 
 .tracker-item-row:hover {
@@ -305,38 +317,40 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: #ddd;
   flex: 1;
+  line-height: 1.4;
 }
 
 .tracker-item-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .tracker-item-value {
   font-variant-numeric: tabular-nums;
   font-weight: bold;
-  font-size: 1.1rem;
-  min-width: 2rem;
+  font-size: 1.35rem;
+  min-width: 3rem;
   text-align: center;
   color: #646cff;
   background: rgba(0,0,0,0.2);
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
 }
 
 .btn-control-small {
-  width: 24px;
-  height: 24px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 10px;
+  font-size: 1.35rem;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
@@ -365,12 +379,13 @@
   background: none;
   border: 1px dashed #444;
   color: #888;
-  padding: 0.5rem;
-  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.9rem;
-  margin: 2px;
+  font-size: 1rem;
+  margin: 6px 8px;
+  min-height: 48px;
 }
 
 .btn-add-item:hover {
@@ -384,14 +399,30 @@
   gap: 0.5rem;
   align-items: center;
   background: rgba(0,0,0,0.2);
-  padding: 0.5rem;
-  border-radius: 6px;
-  margin: 2px;
+  padding: 0.75rem;
+  border-radius: 10px;
+  margin: 6px 8px;
 }
 
 .add-item-actions {
   display: flex;
   gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .tracker-item-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tracker-item-controls {
+    justify-content: space-between;
+  }
+
+  .btn-control-small {
+    flex: 1;
+    width: 100%;
+  }
 }
 
 /* Tracker Card Actions */

@@ -1,5 +1,6 @@
-import { Program } from '../types';
+import { Program, TimerSegment } from '../types';
 import { useTimer } from '../hooks/useTimer';
+import { SoundIcon } from './icons/SoundIcon';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
 import './TimerRunner.css';
 
@@ -16,7 +17,7 @@ export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
   const calculateProgress = (): number => {
     const completedDuration = program.segments
       .slice(0, timerState.currentSegmentIndex)
-      .reduce((sum, seg) => sum + seg.duration, 0);
+      .reduce((sum: number, seg: TimerSegment) => sum + seg.duration, 0);
     const currentSegmentProgress = currentSegment.duration - timerState.remainingTime;
     return ((completedDuration + currentSegmentProgress) / totalDuration) * 100;
   };
@@ -37,9 +38,12 @@ export const TimerRunner = ({ program, onExit }: TimerRunnerProps) => {
           </button>
           <h2>
             {program.name}
-            {program.beepEnabled && (
-              <span className="sound-indicator" title="Sound alerts enabled">🔔</span>
-            )}
+            <span
+              className={`sound-indicator ${!program.beepEnabled ? 'muted' : ''}`}
+              title={program.beepEnabled ? 'Sound alerts enabled' : 'Sound alerts disabled'}
+            >
+              <SoundIcon muted={!program.beepEnabled} />
+            </span>
           </h2>
         </div>
 

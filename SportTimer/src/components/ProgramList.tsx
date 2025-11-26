@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Program, Tracker, CounterItem, TimerSegment } from '../types';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
 import homeIcon from '../assets/home.svg';
+import { SoundIcon } from './icons/SoundIcon';
 import './ProgramList.css';
 
 interface ProgramListProps {
@@ -282,9 +283,12 @@ export const ProgramList = ({
                       <span className="label">Segments:</span>
                       <span className="value">
                         {(data as Program).segments.length}
-                        {(data as Program).beepEnabled && (
-                          <span className="beep-indicator" title="Sound enabled">🔔</span>
-                        )}
+                        <span
+                          className={`beep-indicator ${!(data as Program).beepEnabled ? 'muted' : ''}`}
+                          title={(data as Program).beepEnabled ? 'Sound enabled' : 'Sound disabled'}
+                        >
+                          <SoundIcon muted={!(data as Program).beepEnabled} />
+                        </span>
                       </span>
                     </div>
                   </div>
