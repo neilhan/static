@@ -1,4 +1,4 @@
-import { Program, TimerSegment } from '../types';
+import { Program, TimerSegment } from '../types.ts';
 import { useTimer } from '../hooks/useTimer';
 import { SoundIcon } from './icons/SoundIcon';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';

@@ -1,4 +1,4 @@
-import { Tracker, CounterItem } from '../types';
+import { Tracker, CounterItem } from '../types.ts';
 import './TrackerRunner.css';
 
 interface TrackerRunnerProps {

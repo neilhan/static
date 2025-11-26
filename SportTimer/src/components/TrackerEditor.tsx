@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Tracker, CounterItem } from '../types';
+import { Tracker, CounterItem } from '../types.ts';
 import { generateId } from '../utils/helpers';
 import './TrackerEditor.css';
 

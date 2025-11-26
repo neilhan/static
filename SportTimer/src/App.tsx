@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Program, ViewMode, Tracker } from './types';
+import { Program, ViewMode, Tracker } from './types.ts';
 import { ProgramList } from './components/ProgramList';
 import { TimerEditor } from './components/TimerEditor';
 import { TrackerEditor } from './components/TrackerEditor';

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, SyntheticEvent } from 'react';
-import { Program, TimerSegment } from '../types';
+import { Program, TimerSegment } from '../types.ts';
 import { SoundIcon } from './icons/SoundIcon';
 import { generateId, getRandomColor, formatTime, calculateTotalDuration } from '../utils/helpers';
 import './TimerEditor.css';

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Program, Tracker, CounterItem, TimerSegment } from '../types';
+import { Program, Tracker, CounterItem, TimerSegment } from '../types.ts';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
 import homeIcon from '../assets/home.svg';
 import { SoundIcon } from './icons/SoundIcon';
