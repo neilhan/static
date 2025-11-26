@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="#646cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="0" y="0" width="32" height="32" fill="#242424" stroke="none" rx="6" />
+  
+  <!-- Base -->
+  <rect x="4" y="24" width="24" height="3" rx="1" fill="#646cff" stroke="none" />
+  
+  <!-- Rear Pivot (Axle on the left) -->
+  <circle cx="7" cy="18" r="1.5" fill="#242424" stroke-width="2" />
+  <line x1="7" y1="19.5" x2="7" y2="24" stroke-width="2" />
+
+  <!-- Lever Arm -->
+  <!-- Angle reduced: y2 changed from 15 to 16 -->
+  <line x1="6" y1="18" x2="26" y2="16" stroke-width="2" />
+  
+  <!-- Middle Contact Points -->
+  <!-- Upper contact start adjusted for new angle -->
+  <line x1="16" y1="17" x2="16" y2="19" stroke-width="2" />
+  <line x1="16" y1="24" x2="16" y2="21.5" stroke-width="2" />
+  <line x1="14" y1="24" x2="18" y2="24" stroke-width="2" /> 
+
+  <!-- Mushroom Knob -->
+  <!-- Rotated less (~ -5.7 degrees) and shifted down to align with lever end at y=16 -->
+  <g transform="rotate(-6, 26, 16)">
+    <line x1="26" y1="16" x2="26" y2="12" stroke-width="2" />
+    <path d="M22 12 A 4 3 0 0 1 30 12 L 22 12" stroke-width="2" fill="#242424" />
+  </g>
+</svg>
