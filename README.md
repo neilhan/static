@@ -2,9 +2,9 @@
 
 ## Apps
 
-[Sport Timer](./SportTimer/index.html)
+[Sport Timer](./SportTimer/dist/index.html)
 
-[Farnsworth CW Trainer](./FarnsworthCWTrainer/public/index.html)
+[Farnsworth CW Trainer](./FarnsworthCWTrainer/dist/index.html)
 
 [CW Trainer](./cw/index.html)
 
