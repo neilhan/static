@@ -122,8 +122,8 @@ SportTimer/
 │   ├── components/
 │   │   ├── ProgramList.tsx    # Program list view
 │   │   ├── ProgramList.css
-│   │   ├── ProgramEditor.tsx  # Create/edit programs
-│   │   ├── ProgramEditor.css
+│   │   ├── TimerEditor.tsx    # Create/edit programs
+│   │   ├── TimerEditor.css
 │   │   ├── TimerRunner.tsx    # Timer execution view
 │   │   └── TimerRunner.css
 │   ├── hooks/

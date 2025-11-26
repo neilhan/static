@@ -1,4 +1,4 @@
-import { Tracker } from '../types';
+import { Tracker, CounterItem } from '../types';
 import './TrackerRunner.css';
 
 interface TrackerRunnerProps {
@@ -29,7 +29,7 @@ export const TrackerRunner = ({ tracker, onUpdateCounter, onResetTracker, onExit
         ) : (
           <>
             <div className="tracker-items-display">
-              {tracker.items.map(item => (
+              {tracker.items.map((item: CounterItem) => (
                 <div key={item.id} className="tracker-item-large">
                   <div className="item-name-large">{item.name}</div>
                   <div className="item-value-large">{item.value}</div>

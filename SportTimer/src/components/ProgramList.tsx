@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Program, Tracker } from '../types';
+import { Program, Tracker, CounterItem, TimerSegment } from '../types';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
 import homeIcon from '../assets/home.svg';
 import './ProgramList.css';
@@ -207,7 +207,7 @@ export const ProgramList = ({
                      <div className="empty-tracker-msg">No counters yet</div>
                   )}
                   
-                  {(data as Tracker).items.map(item => (
+                  {(data as Tracker).items.map((item: CounterItem) => (
                     <div key={item.id} className="tracker-item-row">
                        <div className="tracker-item-name">
                          {item.name}
@@ -291,7 +291,7 @@ export const ProgramList = ({
 
                   <div className="segment-list-container">
                     <div className="segment-list">
-                      {(data as Program).segments.map(segment => (
+                      {(data as Program).segments.map((segment: TimerSegment) => (
                         <div key={segment.id} className="segment-row">
                           <div 
                             className="segment-color-dot" 

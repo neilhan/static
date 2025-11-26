@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Program, ViewMode, Tracker } from './types';
 import { ProgramList } from './components/ProgramList';
-import { ProgramEditor } from './components/ProgramEditor';
+import { TimerEditor } from './components/TimerEditor';
 import { TrackerEditor } from './components/TrackerEditor';
 import { TimerRunner } from './components/TimerRunner';
 import { TrackerRunner } from './components/TrackerRunner';
@@ -96,7 +96,7 @@ function App() {
     setViewMode('list');
   };
 
-  const handleCancelProgramEditor = () => {
+  const handleCancelTimerEditor = () => {
     setSelectedProgram(null);
   };
 
@@ -271,10 +271,10 @@ function App() {
       )}
 
       {viewMode === 'list' && selectedProgram && (
-        <ProgramEditor
+        <TimerEditor
           program={selectedProgram}
           onSave={handleSave}
-          onCancel={handleCancelProgramEditor}
+          onCancel={handleCancelTimerEditor}
         />
       )}
 

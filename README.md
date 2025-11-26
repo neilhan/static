@@ -1,6 +1,6 @@
 # My tools
 
-[<img src="./SportTimer/public/stopwatch.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Sport Timer](./SportTimer/dist/index.html)
+[<img src="./SportTimer/public/stopwatch.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Timer & Tracker](./SportTimer/dist/index.html)
 
 [<img src="./FarnsworthCWTrainer/public/key.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Farnsworth CW Trainer](./FarnsworthCWTrainer/dist/index.html)
 

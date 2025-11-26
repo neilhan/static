@@ -1,4 +1,4 @@
-/* Reuse many styles from ProgramEditor to keep consistency */
+/* Reuse many styles from TimerEditor to keep consistency */
 .tracker-editor-overlay {
   position: fixed;
   top: 0;
@@ -28,7 +28,7 @@
   position: relative;
 }
 
-/* Reusing common classes from ProgramEditor.css via global CSS or duplicated here for isolation */
+/* Reusing common classes from TimerEditor.css via global CSS or duplicated here for isolation */
 /* We'll duplicate specific ones needed to ensure standalone functionality */
 
 .editor-header {
