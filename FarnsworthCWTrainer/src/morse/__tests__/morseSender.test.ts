@@ -16,32 +16,26 @@ const timing = {
 };
 
 const createAudioDriver = () => {
-  let now = 0;
   const driver: AudioDriver = {
     scheduleTone: vi.fn<(startTime: number, duration: number) => void>(),
     cancelScheduledValues: vi.fn<(time: number) => void>(),
-    getCurrentTime: vi.fn(() => now),
+    getCurrentTime: vi.fn(() => performance.now() / 1000),
     unsuspend: vi.fn(),
   };
 
-  return {
-    driver,
-    advance: (amount: number) => {
-      now += amount;
-    },
-  };
+  return { driver };
 };
 
 const createCallbacks = (): Required<SenderCallbacks> => ({
-  onCharStart: vi.fn<[string, SenderCharMeta?], void>(),
-  onCharEnd: vi.fn<[string, SenderCharMeta?], void>(),
-  onMessageStart: vi.fn<[number], void>(),
-  onFinish: vi.fn<[], void>(),
+  onCharStart: vi.fn<(char: string, meta?: SenderCharMeta) => void>(),
+  onCharEnd: vi.fn<(char: string, meta?: SenderCharMeta) => void>(),
+  onMessageStart: vi.fn<(index: number) => void>(),
+  onFinish: vi.fn<() => void>(),
 });
 
 const createSender = () => {
   const callbacks = createCallbacks();
-  const statusChanges = vi.fn<[SenderPlayState], void>();
+  const statusChanges = vi.fn<(state: SenderPlayState) => void>();
   const audioHarness = createAudioDriver();
   const sender = createMorseSender({
     audio: audioHarness.driver,
@@ -72,14 +66,26 @@ describe("createMorseSender", () => {
     vi.runAllTimers();
 
     expect(callbacks.onMessageStart).toHaveBeenCalledWith(0);
-    expect(callbacks.onCharStart.mock.calls.map(([char]) => char)).toEqual([
+    expect(callbacks.onCharStart).toHaveBeenNthCalledWith(
+      1,
       "C",
+      expect.any(Object)
+    );
+    expect(callbacks.onCharStart).toHaveBeenNthCalledWith(
+      2,
       "Q",
-    ]);
-    expect(callbacks.onCharEnd.mock.calls.map(([char]) => char)).toEqual([
+      expect.any(Object)
+    );
+    expect(callbacks.onCharEnd).toHaveBeenNthCalledWith(
+      1,
       "C",
+      expect.any(Object)
+    );
+    expect(callbacks.onCharEnd).toHaveBeenNthCalledWith(
+      2,
       "Q",
-    ]);
+      expect.any(Object)
+    );
     expect(callbacks.onFinish).toHaveBeenCalledTimes(1);
     expect(statusChanges).toHaveBeenCalledWith("playing");
     expect(statusChanges).toHaveBeenLastCalledWith("idle");
@@ -124,10 +130,8 @@ describe("createMorseSender", () => {
 
     vi.runAllTimers();
 
-    expect(callbacks.onMessageStart.mock.calls.map(([index]) => index)).toEqual([
-      0,
-      1,
-    ]);
+    expect(callbacks.onMessageStart).toHaveBeenNthCalledWith(1, 0);
+    expect(callbacks.onMessageStart).toHaveBeenNthCalledWith(2, 1);
 
     const display = sender.getDisplayMessage(1);
     expect(display).toBe("SK TEST");

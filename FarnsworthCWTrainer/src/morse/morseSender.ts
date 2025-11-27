@@ -98,6 +98,210 @@ type Timing = {
   wordSpace: number;
 };
 
+const EVENT_TICK_MS = 50;
+const TIME_EPSILON = 0.0005;
+
+type ToneInstruction = {
+  offset: number;
+  duration: number;
+};
+
+type CharSchedule = {
+  tokenIndex: number;
+  startOffset: number;
+  duration: number;
+  instructions: ToneInstruction[];
+};
+
+type MessageStartEvent = {
+  type: "messageStart";
+  timeOffset: number;
+  messageIndex: number;
+};
+
+type GapStartEvent = {
+  type: "gapStart";
+  timeOffset: number;
+  tokenIndex: number;
+  token: GapToken;
+};
+
+type CharEvent = {
+  type: "charStart" | "charEnd";
+  timeOffset: number;
+  tokenIndex: number;
+  displayChar: string;
+  meta: SenderCharMeta;
+};
+
+type TokenAdvanceEvent = {
+  type: "tokenAdvance";
+  timeOffset: number;
+  tokenIndex: number;
+};
+
+type FinishEvent = {
+  type: "finish";
+  timeOffset: number;
+};
+
+type PlaybackEvent =
+  | MessageStartEvent
+  | GapStartEvent
+  | CharEvent
+  | TokenAdvanceEvent
+  | FinishEvent;
+
+type PlaybackPlan = {
+  events: PlaybackEvent[];
+  charSchedules: CharSchedule[];
+};
+
+const buildCharInstructions = (
+  token: CharToken,
+  timing: Timing
+): { instructions: ToneInstruction[]; duration: number } => {
+  const instructions: ToneInstruction[] = [];
+  let cursor = 0;
+  const morse = getMorseSequence(token.raw);
+
+  if (morse && morse.length > 0) {
+    for (let i = 0; i < morse.length; i++) {
+      const symbol = morse[i];
+      const width = symbol === "." ? timing.dotWidth : timing.dashWidth;
+      instructions.push({ offset: cursor, duration: width });
+      cursor += width + ELEMENT_RAMP;
+      if (i < morse.length - 1) {
+        cursor += timing.dotWidth;
+      }
+    }
+  } else {
+    cursor += timing.dotWidth;
+  }
+
+  return { instructions, duration: cursor };
+};
+
+const buildPlaybackPlan = (
+  tokenList: Token[],
+  startIndex: number,
+  timing: Timing,
+  currentMessageIndex: number | null
+): PlaybackPlan | null => {
+  if (startIndex >= tokenList.length) {
+    return null;
+  }
+
+  const events: PlaybackEvent[] = [];
+  const charSchedules: CharSchedule[] = [];
+  let cursor = 0;
+  let messageTracker = currentMessageIndex;
+
+  for (let idx = startIndex; idx < tokenList.length; idx++) {
+    const token = tokenList[idx];
+
+    if (token.messageIndex !== messageTracker) {
+      events.push({
+        type: "messageStart",
+        timeOffset: cursor,
+        messageIndex: token.messageIndex,
+      });
+      messageTracker = token.messageIndex;
+    }
+
+    if (token.kind === "gap") {
+      events.push({
+        type: "gapStart",
+        timeOffset: cursor,
+        tokenIndex: idx,
+        token,
+      });
+      const duration = token.gap === "lead" ? MESSAGE_LEAD : MESSAGE_TAIL;
+      cursor += duration;
+      events.push({
+        type: "tokenAdvance",
+        timeOffset: cursor,
+        tokenIndex: idx,
+      });
+      continue;
+    }
+
+    if (token.kind === "space") {
+      const displayChar = " ";
+      const meta: SenderCharMeta = {
+        messageIndex: token.messageIndex,
+        length: 0,
+        isSpace: true,
+        raw: " ",
+      };
+      events.push({
+        type: "charStart",
+        timeOffset: cursor,
+        tokenIndex: idx,
+        displayChar,
+        meta,
+      });
+      cursor += timing.wordSpace;
+      events.push({
+        type: "charEnd",
+        timeOffset: cursor,
+        tokenIndex: idx,
+        displayChar,
+        meta,
+      });
+      events.push({
+        type: "tokenAdvance",
+        timeOffset: cursor,
+        tokenIndex: idx,
+      });
+      continue;
+    }
+
+    const displayChar = token.display === " " ? "" : token.display.toUpperCase();
+    const meta: SenderCharMeta = {
+      messageIndex: token.messageIndex,
+      length: token.display.length,
+      isSpace: false,
+      raw: token.display,
+    };
+    const charStart = cursor;
+    events.push({
+      type: "charStart",
+      timeOffset: charStart,
+      tokenIndex: idx,
+      displayChar,
+      meta,
+    });
+    const { instructions, duration } = buildCharInstructions(token, timing);
+    charSchedules.push({
+      tokenIndex: idx,
+      startOffset: charStart,
+      duration,
+      instructions,
+    });
+    cursor += duration;
+    events.push({
+      type: "charEnd",
+      timeOffset: cursor,
+      tokenIndex: idx,
+      displayChar,
+      meta,
+    });
+    events.push({
+      type: "tokenAdvance",
+      timeOffset: cursor,
+      tokenIndex: idx,
+    });
+
+    if (token.addCharSpace && timing.charSpace > 0) {
+      cursor += timing.charSpace;
+    }
+  }
+
+  events.push({ type: "finish", timeOffset: cursor });
+  return { events, charSchedules };
+};
+
 export type AudioDriver = {
   scheduleTone: (startTime: number, duration: number) => void;
   cancelScheduledValues: (time: number) => void;
@@ -145,30 +349,82 @@ export const createMorseSender = ({
   let tokens: Token[] = [];
   let displayMessages: string[] = [];
   let tokenIndex = 0;
-  let pendingTimeout: number | null = null;
   let lastMessageIndex: number | null = null;
   let activeToken: {
     token: Token | null;
+    tokenIndex: number;
     displayChar?: string;
     meta?: SenderCharMeta;
   } = {
     token: null,
+    tokenIndex: -1,
   };
   let status: SenderPlayState = "idle";
+  let playbackPlan: PlaybackPlan | null = null;
+  let planAnchorTime: number | null = null;
+  let nextEventIndex = 0;
+  let intervalId: number | null = null;
 
   const updateStatus = (next: SenderPlayState) => {
     status = next;
     onStatusChange?.(next);
   };
 
-  const clearPendingTimeout = () => {
-    if (pendingTimeout !== null) {
-      window.clearTimeout(pendingTimeout);
-      pendingTimeout = null;
+  const stopEventLoop = () => {
+    if (intervalId !== null) {
+      window.clearInterval(intervalId);
+      intervalId = null;
     }
   };
 
-  const completeActiveToken = (advanceIndex: boolean) => {
+  const clearPlaybackPlan = () => {
+    stopEventLoop();
+    playbackPlan = null;
+    planAnchorTime = null;
+    nextEventIndex = 0;
+  };
+
+  const schedulePlanAudio = (plan: PlaybackPlan, anchor: number) => {
+    plan.charSchedules.forEach(({ startOffset, instructions }) => {
+      const baseStart = anchor + startOffset;
+      instructions.forEach(({ offset, duration }) => {
+        audio.scheduleTone(baseStart + offset, duration);
+      });
+    });
+  };
+
+  const processDueEvents = (targetTime: number) => {
+    if (!playbackPlan || planAnchorTime === null) {
+      return;
+    }
+    const elapsed = targetTime - planAnchorTime;
+    if (elapsed < -TIME_EPSILON) {
+      return;
+    }
+
+    while (nextEventIndex < playbackPlan.events.length) {
+      const event = playbackPlan.events[nextEventIndex];
+      if (event.timeOffset - elapsed > TIME_EPSILON) {
+        break;
+      }
+      runPlaybackEvent(event);
+      nextEventIndex += 1;
+      if (event.type === "finish") {
+        break;
+      }
+    }
+  };
+
+  const ensureEventLoop = () => {
+    if (intervalId !== null) {
+      return;
+    }
+    intervalId = window.setInterval(() => {
+      processDueEvents(audio.getCurrentTime());
+    }, EVENT_TICK_MS);
+  };
+
+  const completeActiveToken = () => {
     const active = activeToken.token;
     if (!active) {
       return;
@@ -184,33 +440,85 @@ export const createMorseSender = ({
       callbacks.onCharEnd?.(displayChar, activeToken.meta);
     }
 
-    activeToken = { token: null };
-    if (advanceIndex) {
-      tokenIndex += 1;
+    tokenIndex = Math.max(tokenIndex, activeToken.tokenIndex + 1);
+    activeToken = { token: null, tokenIndex: -1 };
+  };
+
+  const finalizePlayback = () => {
+    clearPlaybackPlan();
+    activeToken = { token: null, tokenIndex: -1 };
+    tokenIndex = tokens.length;
+    lastMessageIndex = null;
+    if (status !== "idle") {
+      updateStatus("idle");
+    }
+    callbacks.onFinish?.();
+  };
+
+  const runPlaybackEvent = (event: PlaybackEvent) => {
+    switch (event.type) {
+      case "messageStart":
+        lastMessageIndex = event.messageIndex;
+        callbacks.onMessageStart?.(event.messageIndex);
+        break;
+      case "gapStart":
+        activeToken = { token: event.token, tokenIndex: event.tokenIndex };
+        break;
+      case "charStart":
+        activeToken = {
+          token: tokens[event.tokenIndex],
+          tokenIndex: event.tokenIndex,
+          displayChar: event.displayChar,
+          meta: event.meta,
+        };
+        callbacks.onCharStart?.(event.displayChar, event.meta);
+        break;
+      case "charEnd":
+        callbacks.onCharEnd?.(event.displayChar, event.meta);
+        activeToken = { token: null, tokenIndex: event.tokenIndex };
+        break;
+      case "tokenAdvance":
+        tokenIndex = event.tokenIndex + 1;
+        if (
+          activeToken.token &&
+          activeToken.tokenIndex === event.tokenIndex
+        ) {
+          activeToken = { token: null, tokenIndex: event.tokenIndex };
+        }
+        break;
+      case "finish":
+        finalizePlayback();
+        break;
     }
   };
 
-  const scheduleCharToken = (token: CharToken): number => {
-    const timing = getTiming();
-    const startTime = audio.getCurrentTime() + TOKEN_START_DELAY;
-    let cursor = startTime;
-    const morse = getMorseSequence(token.raw);
+  const syncToCurrentTime = () => {
+    if (status !== "playing") {
+      return;
+    }
+    processDueEvents(audio.getCurrentTime());
+  };
 
-    if (morse && morse.length > 0) {
-      for (let i = 0; i < morse.length; i++) {
-        const symbol = morse[i];
-        const width = symbol === "." ? timing.dotWidth : timing.dashWidth;
-        audio.scheduleTone(cursor, width);
-        cursor += width + ELEMENT_RAMP;
-        if (i < morse.length - 1) {
-          cursor += timing.dotWidth;
-        }
-      }
-    } else {
-      cursor += timing.dotWidth;
+  const startPlayback = () => {
+    if (!tokens.length || tokenIndex >= tokens.length) {
+      return;
+    }
+    const timing = getTiming();
+    const plan = buildPlaybackPlan(tokens, tokenIndex, timing, lastMessageIndex);
+    if (!plan) {
+      return;
     }
 
-    return cursor - startTime;
+    playbackPlan = plan;
+    const planStart = audio.getCurrentTime();
+    const audioStart = planStart + TOKEN_START_DELAY;
+    planAnchorTime = planStart;
+    nextEventIndex = 0;
+    activeToken = { token: null, tokenIndex: -1 };
+    schedulePlanAudio(plan, audioStart);
+    updateStatus("playing");
+    ensureEventLoop();
+    processDueEvents(planAnchorTime + TIME_EPSILON);
   };
 
   const seekToMessage = (messageIndex: number) => {
@@ -227,90 +535,12 @@ export const createMorseSender = ({
     );
 
     tokenIndex = nextIndex === -1 ? tokens.length : nextIndex;
-    activeToken = { token: null };
+    activeToken = { token: null, tokenIndex: -1 };
     lastMessageIndex = null;
   };
 
-  const scheduleNextToken = () => {
-    if (status !== "playing") {
-      return;
-    }
-
-    if (tokenIndex >= tokens.length) {
-      updateStatus("idle");
-      callbacks.onFinish?.();
-      return;
-    }
-
-    const token = tokens[tokenIndex];
-    activeToken = { token };
-
-    if (lastMessageIndex !== token.messageIndex) {
-      lastMessageIndex = token.messageIndex;
-      callbacks.onMessageStart?.(token.messageIndex);
-    }
-
-    if (token.kind === "gap") {
-      const duration = token.gap === "lead" ? MESSAGE_LEAD : MESSAGE_TAIL;
-      pendingTimeout = window.setTimeout(() => {
-        pendingTimeout = null;
-        completeActiveToken(true);
-        scheduleNextToken();
-      }, duration * 1000);
-      return;
-    }
-
-    if (token.kind === "space") {
-      const duration = getTiming().wordSpace;
-      const displayChar = " ";
-      const meta: SenderCharMeta = {
-        messageIndex: token.messageIndex,
-        length: 0,
-        isSpace: true,
-        raw: " ",
-      };
-      activeToken = { token, displayChar, meta };
-      callbacks.onCharStart?.(displayChar, meta);
-      pendingTimeout = window.setTimeout(() => {
-        completeActiveToken(true);
-        pendingTimeout = null;
-        scheduleNextToken();
-      }, duration * 1000);
-      return;
-    }
-
-    const displayChar =
-      token.display === " " ? "" : token.display.toUpperCase();
-    const meta: SenderCharMeta = {
-      messageIndex: token.messageIndex,
-      length: token.display.length,
-      isSpace: false,
-      raw: token.display,
-    };
-    activeToken = { token, displayChar, meta };
-    const toneDuration = scheduleCharToken(token);
-    callbacks.onCharStart?.(displayChar, meta);
-    pendingTimeout = window.setTimeout(() => {
-      pendingTimeout = null;
-      completeActiveToken(true);
-
-      if (token.addCharSpace) {
-        const spacingDuration = getTiming().charSpace;
-        if (spacingDuration > 0) {
-          pendingTimeout = window.setTimeout(() => {
-            pendingTimeout = null;
-            scheduleNextToken();
-          }, spacingDuration * 1000);
-          return;
-        }
-      }
-
-      scheduleNextToken();
-    }, toneDuration * 1000);
-  };
-
   const loadMessages = (messages: string[], startMessageIndex = 0) => {
-    clearPendingTimeout();
+    clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
 
     if (!messages || messages.length === 0) {
@@ -318,7 +548,7 @@ export const createMorseSender = ({
       displayMessages = [];
       tokenIndex = 0;
       lastMessageIndex = null;
-      activeToken = { token: null };
+      activeToken = { token: null, tokenIndex: -1 };
       updateStatus("idle");
       return;
     }
@@ -328,7 +558,7 @@ export const createMorseSender = ({
     displayMessages = artifacts.displayMessages;
     tokenIndex = 0;
     lastMessageIndex = null;
-    activeToken = { token: null };
+    activeToken = { token: null, tokenIndex: -1 };
 
     const safeStartIndex = Math.max(
       0,
@@ -344,11 +574,10 @@ export const createMorseSender = ({
     }
 
     audio.unsuspend();
-    clearPendingTimeout();
+    clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
 
-    updateStatus("playing");
-    scheduleNextToken();
+    startPlayback();
   };
 
   const resume = () => {
@@ -356,30 +585,30 @@ export const createMorseSender = ({
       return;
     }
     audio.unsuspend();
-    clearPendingTimeout();
+    clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
-    updateStatus("playing");
-    scheduleNextToken();
+    startPlayback();
   };
 
   const pause = () => {
     if (status !== "playing") {
       return;
     }
-    clearPendingTimeout();
+    syncToCurrentTime();
+    clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
-    completeActiveToken(true);
+    completeActiveToken();
     updateStatus("paused");
   };
 
   const stop = () => {
-    clearPendingTimeout();
+    clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
     tokens = [];
     displayMessages = [];
     tokenIndex = 0;
     lastMessageIndex = null;
-    activeToken = { token: null };
+    activeToken = { token: null, tokenIndex: -1 };
     updateStatus("idle");
   };
 
@@ -387,25 +616,27 @@ export const createMorseSender = ({
     if (tokens.length === 0) {
       return;
     }
+    syncToCurrentTime();
+    clearPlaybackPlan();
     seekToMessage(messageIndex);
     if (status === "playing") {
-      clearPendingTimeout();
       audio.cancelScheduledValues(audio.getCurrentTime());
-      scheduleNextToken();
+      startPlayback();
     }
   };
 
   const rewind = () => {
-    clearPendingTimeout();
+    syncToCurrentTime();
+    clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
     tokenIndex = 0;
     lastMessageIndex = null;
-    activeToken = { token: null };
+    activeToken = { token: null, tokenIndex: -1 };
     updateStatus("paused");
   };
 
   const cleanup = () => {
-    clearPendingTimeout();
+    clearPlaybackPlan();
   };
 
   const getStatus = () => status;
