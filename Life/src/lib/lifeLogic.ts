@@ -2,18 +2,18 @@ import { getWeeksInYear } from './dateUtils';
 
 export type CellStatus = 'lived' | 'active' | 'retirement';
 
-export interface WeekCell {
+export type WeekCell = {
   id: number; // Absolute week index
   weekInYear: number;
   status: CellStatus;
   year: number;
-}
+};
 
-export interface YearData {
+export type YearData = {
   year: number;
   age: number;
   weeks: WeekCell[];
-}
+};
 
 export const DEFAULT_LIFE_EXPECTANCY = 90;
 

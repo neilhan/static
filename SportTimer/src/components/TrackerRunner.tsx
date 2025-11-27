@@ -1,12 +1,12 @@
 import { Tracker, CounterItem } from '../types.ts';
 import './TrackerRunner.css';
 
-interface TrackerRunnerProps {
+type TrackerRunnerProps = {
   tracker: Tracker;
   onUpdateCounter: (counterId: string, delta: number) => void;
   onResetTracker: () => void;
   onExit: () => void;
-}
+};
 
 export const TrackerRunner = ({ tracker, onUpdateCounter, onResetTracker, onExit }: TrackerRunnerProps) => {
   return (

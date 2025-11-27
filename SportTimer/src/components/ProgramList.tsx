@@ -5,7 +5,7 @@ import homeIcon from '../assets/home.svg';
 import { SoundIcon } from './icons/SoundIcon';
 import './ProgramList.css';
 
-interface ProgramListProps {
+type ProgramListProps = {
   programs: Program[];
   trackers: Tracker[];
   displayOrder?: string[];
@@ -22,7 +22,7 @@ interface ProgramListProps {
   onUpdateCounter: (trackerId: string, counterId: string, delta: number) => void;
   onResetTracker: (trackerId: string) => void;
   onReorder: (newOrder: string[]) => void;
-}
+};
 
 type DashboardItem = 
   | { type: 'program'; data: Program }

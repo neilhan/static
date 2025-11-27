@@ -1,19 +1,23 @@
 import { Program, TimerSegment } from '../types.ts';
 import { useTimer } from '../hooks/useTimer';
+import { useScreenWakeLock } from '../hooks/useScreenWakeLock';
 import { SoundIcon } from './icons/SoundIcon';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
 import './TimerRunner.css';
 
-interface TimerRunnerProps {
+type TimerRunnerProps = {
   program: Program;
   onExit: () => void;
   onToggleSound: (programId: string) => void;
-}
+};
 
 export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps) => {
   const { timerState, togglePause, reset, skip } = useTimer(program);
   const currentSegment = program.segments[timerState.currentSegmentIndex];
   const totalDuration = calculateTotalDuration(program.segments);
+  const isTimerActive = !timerState.isPaused && !timerState.isComplete;
+
+  useScreenWakeLock(isTimerActive);
 
   const calculateProgress = (): number => {
     if (totalDuration === 0) {

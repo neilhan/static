@@ -38,6 +38,7 @@ export const genContact = (): string[] => {
     return msgs;
 };
 
+
 export const genRandomWords = (numWords: number, config: ContentConfig): string => {
     let words: string[] = [];
     for (let i = 0; words.length < numWords; i++) {

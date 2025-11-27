@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 
-export interface TrainerSettings {
+export type TrainerSettings = {
     wpm: number;
     fw: number;
     displayMode: string;
     type: string;
     repeat: number;
+    pagesByType: Record<string, number>;
     frequency: number;
     enableCallsigns: boolean;
     enableProsigns: boolean;
     enableLetters: boolean;
     enableNumbers: boolean;
     enableSymbols: boolean;
-}
+};
 
 const DEFAULT_SETTINGS: TrainerSettings = {
     wpm: 25,
@@ -20,6 +21,12 @@ const DEFAULT_SETTINGS: TrainerSettings = {
     displayMode: 'immediate',
     type: 'contact',
     repeat: 5,
+    pagesByType: {
+        contact: 1,
+        words: 1,
+        random: 1,
+        mix: 1
+    },
     frequency: 500,
     enableCallsigns: true,
     enableProsigns: true,
@@ -36,7 +43,15 @@ export const useTrainerSettings = () => {
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
-                return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+                const parsed = JSON.parse(stored);
+                return {
+                    ...DEFAULT_SETTINGS,
+                    ...parsed,
+                    pagesByType: {
+                        ...DEFAULT_SETTINGS.pagesByType,
+                        ...(parsed?.pagesByType || {})
+                    }
+                };
             }
         } catch (e) {
             console.error('Failed to load settings from storage', e);
@@ -57,5 +72,19 @@ export const useTrainerSettings = () => {
         setSettings(prev => ({ ...prev, [key]: value }));
     };
 
-    return { settings, updateSetting };
+    const updateSettings = (partial: Partial<TrainerSettings>) => {
+        setSettings(prev => ({ ...prev, ...partial }));
+    };
+
+    const updatePagesForType = (type: string, pages: number) => {
+        setSettings(prev => ({
+            ...prev,
+            pagesByType: {
+                ...prev.pagesByType,
+                [type]: pages
+            }
+        }));
+    };
+
+    return { settings, updateSetting, updateSettings, updatePagesForType };
 };

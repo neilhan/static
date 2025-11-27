@@ -4,11 +4,11 @@ import { SoundIcon } from './icons/SoundIcon';
 import { generateId, getRandomColor, formatTime, calculateTotalDuration } from '../utils/helpers';
 import './TimerEditor.css';
 
-interface TimerEditorProps {
+type TimerEditorProps = {
   program?: Program;
   onSave: (program: Program) => void;
   onCancel: (program?: Program) => void;
-}
+};
 
 export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => {
   const [programName, setProgramName] = useState(program?.name || '');

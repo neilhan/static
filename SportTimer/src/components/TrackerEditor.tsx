@@ -3,11 +3,11 @@ import { Tracker, CounterItem } from '../types.ts';
 import { generateId } from '../utils/helpers';
 import './TrackerEditor.css';
 
-interface TrackerEditorProps {
+type TrackerEditorProps = {
   tracker?: Tracker;
   onSave: (tracker: Tracker) => void;
   onCancel: () => void;
-}
+};
 
 export const TrackerEditor = ({ tracker, onSave, onCancel }: TrackerEditorProps) => {
   const [trackerName, setTrackerName] = useState(tracker?.name || '');
