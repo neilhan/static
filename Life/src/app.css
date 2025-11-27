@@ -105,15 +105,8 @@ h1 {
   line-height: 1.1;
 }
 
-.meta-unit {
-  font-size: 0.9rem;
-  color: #888;
-  margin-left: 0.2rem;
-}
-
 .meta-label {
   font-size: 0.85rem;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #888;
 }

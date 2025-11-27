@@ -97,23 +97,6 @@ input[type=checkbox] {
     font-style: italic;
 }
 
-.bigProsign, .prosign {
-    display: inline-block;
-    padding: 0;
-    margin-top: 0.04em;
-    line-height: 0.95em;
-    width: 1.2em;
-}
-
-.bigProsign {
-    border-top: .1em solid #ffff00;
-}
-
-.prosign {
-    padding-top: 0.1em;
-    border-top: .12em solid #ffffff;
-}
-
 input[type=button] {
     font-size: 18pt;
     margin: 9px;

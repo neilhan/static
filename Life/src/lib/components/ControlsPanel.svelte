@@ -45,8 +45,8 @@
 
   <div class="stats">
     <span>Lived: <strong>{livedWeeks}</strong></span>
-    <span>Active Remaining: <strong>{activeWeeks}</strong></span>
-    <span>Senior: <strong>{retirementWeeks}</strong></span>
+    <span>Active Weeks: <strong>{activeWeeks}</strong></span>
+    <span>Senior Weeks: <strong>{retirementWeeks}</strong></span>
     <span>Total: <strong>{totalWeeks}</strong></span>
   </div>
 </div>

@@ -16,12 +16,12 @@
   <div class="hero-group hero-active">
     <div class="hero-primary">
       <span class="hero-number active">{activeWeeks}</span>
-      <span class="hero-label">Active Remaining</span>
+      <span class="hero-label">Active Weeks</span>
     </div>
     <div class="hero-meta">
       <div class="hero-meta-item">
         <span class="meta-value">{activeYearsDisplay}</span>
-        <span class="meta-label"># yrs</span>
+        <span class="meta-label">Active years</span>
       </div>
       <div class="hero-meta-item">
         <span class="meta-value">{activeMonthsDisplay}</span>
@@ -32,7 +32,7 @@
   <div class="hero-divider"></div>
   <div class="hero-group">
     <span class="hero-number total">{remainingWeeks}</span>
-    <span class="hero-label">Total Remaining</span>
+    <span class="hero-label">Total Weeks</span>
   </div>
 </div>
 

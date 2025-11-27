@@ -93,7 +93,6 @@
 }
 
 .segment-label {
-  text-transform: uppercase;
   font-size: 0.8rem;
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.6);
@@ -143,7 +142,6 @@
 
 .meta-label {
   display: block;
-  text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.55);
@@ -178,7 +176,6 @@
 
 .progress-label {
   font-size: 0.85rem;
-  text-transform: uppercase;
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: 0.75rem;
@@ -215,7 +212,6 @@
 }
 
 .next-label {
-  text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.6);
@@ -300,7 +296,6 @@
 .control-caption {
   font-size: 0.75rem;
   letter-spacing: 0.15em;
-  text-transform: uppercase;
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -486,10 +481,6 @@
     font-size: 1rem;
   }
 
-  .info-value {
-    font-size: 1.2rem;
-  }
-
   .btn-control {
     width: 60px;
     height: 60px;
@@ -505,10 +496,6 @@
 
 /* Landscape mode optimizations */
 @media (max-height: 600px) and (orientation: landscape) {
-  .timer-display {
-    margin-bottom: 1rem;
-  }
-
   .time-display {
     font-size: 3rem;
   }
@@ -516,10 +503,6 @@
   .segment-name {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
-  }
-
-  .timer-info {
-    flex-direction: row;
   }
 
   .overall-progress {
