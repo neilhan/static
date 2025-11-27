@@ -62,6 +62,21 @@ export const ProgramList = ({
     setActiveTrackerIdForAdd(null);
   };
 
+  const confirmDeletion = (entityType: 'timer' | 'tracker', name: string) =>
+    window.confirm(`Delete ${entityType} "${name}"?`);
+
+  const handleDeleteProgram = (program: Program) => {
+    if (confirmDeletion('timer', program.name || 'Untitled Timer')) {
+      onDelete(program.id);
+    }
+  };
+
+  const handleDeleteTracker = (tracker: Tracker) => {
+    if (confirmDeletion('tracker', tracker.name || 'Untitled Tracker')) {
+      onDeleteTracker(tracker.id);
+    }
+  };
+
   // Merge and sort items
   const getSortedItems = (): DashboardItem[] => {
     const itemMap = new Map<string, DashboardItem>();
@@ -91,25 +106,6 @@ export const ProgramList = ({
   };
 
   const sortedItems = getSortedItems();
-  const primaryProgram = sortedItems.find(item => item.type === 'program')?.data as Program | undefined;
-  const primarySegmentPreview: TimerSegment[] = primaryProgram ? primaryProgram.segments.slice(0, 3) : [];
-  const remainingPrimarySegments = primaryProgram ? Math.max(primaryProgram.segments.length - primarySegmentPreview.length, 0) : 0;
-
-  const describeProgramDuration = (program: Program) => {
-    const perRoundSeconds = calculateTotalDuration(program.segments);
-    const perRoundLabel = formatTime(perRoundSeconds);
-
-    if (program.rounds === 0) {
-      return `Repeats • ${perRoundLabel} per round`;
-    }
-
-    if (program.rounds === 1) {
-      return perRoundLabel;
-    }
-
-    const totalSeconds = perRoundSeconds * program.rounds;
-    return `${formatTime(totalSeconds)} total • ${program.rounds} × ${perRoundLabel}`;
-  };
 
   // Drag handlers
   const handleDragStart = (e: React.DragEvent, id: string) => {
@@ -173,54 +169,6 @@ export const ProgramList = ({
         </div>
       </div>
 
-      {primaryProgram && (
-        <section className="quick-start-card" aria-label="Quick start program">
-          <div className="quick-start-info">
-            <p className="quick-start-label">Start your next session</p>
-            <h2>{primaryProgram.name}</h2>
-            <div className="quick-start-meta">
-              <span>{describeProgramDuration(primaryProgram)}</span>
-              {primaryProgram.segments.length > 0 && (
-                <span>{primaryProgram.segments.length} segments</span>
-              )}
-            </div>
-
-            {primaryProgram.segments.length > 0 && (
-              <div className="quick-start-chips" aria-label="Upcoming segments">
-                {primarySegmentPreview.map(segment => (
-                  <span key={segment.id} className="quick-start-chip">
-                    <span
-                      className="segment-color-dot"
-                      style={{ backgroundColor: segment.color }}
-                    />
-                    {segment.name}
-                  </span>
-                ))}
-                {remainingPrimarySegments > 0 && (
-                  <span className="quick-start-chip muted">
-                    +{remainingPrimarySegments} more
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="quick-start-actions">
-            <button
-              className="btn-run quick-start-start"
-              onClick={() => onRun(primaryProgram)}
-            >
-              ▶ Start now
-            </button>
-            <button
-              className="btn-secondary quick-start-edit"
-              onClick={() => onEdit(primaryProgram)}
-            >
-              Adjust timer
-            </button>
-          </div>
-        </section>
-      )}
-
       {sortedItems.length === 0 ? (
         <div className="empty-state">
           <p>No programs or trackers yet. Create one to get started!</p>
@@ -260,7 +208,9 @@ export const ProgramList = ({
                   </button>
                   <button 
                     className="btn-icon btn-delete" 
-                    onClick={() => type === 'program' ? onDelete(data.id) : onDeleteTracker(data.id)}
+                    onClick={() => type === 'program' 
+                      ? handleDeleteProgram(data as Program) 
+                      : handleDeleteTracker(data as Tracker)}
                     title="Delete"
                   >
                     ✕

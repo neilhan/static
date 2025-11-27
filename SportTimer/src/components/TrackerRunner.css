@@ -40,52 +40,6 @@
   opacity: 0.9;
 }
 
-.tracker-summary {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1.25rem 1.5rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.summary-block {
-  min-width: 120px;
-}
-
-.summary-label {
-  display: block;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 0.25rem;
-}
-
-.summary-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-}
-
-.btn-pill {
-  margin-left: auto;
-  padding: 0.65rem 1.5rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-pill:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 .empty-tracker-runner {
   text-align: center;
   padding: 4rem 2rem;
@@ -251,16 +205,6 @@
   .tracker-items-display {
     grid-template-columns: 1fr;
     gap: 1.25rem;
-  }
-
-  .tracker-summary {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .btn-pill {
-    width: 100%;
-    text-align: center;
   }
 
   .tracker-item-large {

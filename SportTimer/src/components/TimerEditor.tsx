@@ -145,10 +145,10 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
     setEditingField({ segmentId: segment.id, field: 'time' });
   };
 
-  const saveNameEdit = (segmentId: string) => {
+  const saveNameEdit = (segmentId: string): boolean => {
     if (!editingName.trim()) {
       setValidationErrors({ segmentName: true });
-      return;
+      return false;
     }
 
     setValidationErrors({});
@@ -156,16 +156,17 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
       seg.id === segmentId ? { ...seg, name: editingName.trim() } : seg
     ));
     setEditingField({ segmentId: null, field: null });
+    return true;
   };
 
-  const saveTimeEdit = (segmentId: string) => {
+  const saveTimeEdit = (segmentId: string): boolean => {
     const minutes = parseInt(editingMinutes) || 0;
     const seconds = parseInt(editingSeconds) || 0;
     const totalSeconds = minutes * 60 + seconds;
 
     if (totalSeconds <= 0) {
       setValidationErrors({ segmentName: true }); // Show error
-      return;
+      return false;
     }
 
     setValidationErrors({});
@@ -173,6 +174,7 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
       seg.id === segmentId ? { ...seg, duration: totalSeconds } : seg
     ));
     setEditingField({ segmentId: null, field: null });
+    return true;
   };
 
   const handleNameKeyDown = (e: React.KeyboardEvent, segmentId: string) => {
@@ -193,6 +195,40 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
       e.preventDefault();
       setEditingField({ segmentId: null, field: null });
     }
+  };
+
+  const handleTimeBlur = (
+    e: React.FocusEvent<HTMLInputElement>,
+    segmentId: string,
+    field: 'minutes' | 'seconds'
+  ) => {
+    const nextTarget = e.relatedTarget as HTMLElement | null;
+    const minutesKey = `${segmentId}-minutes`;
+    const secondsKey = `${segmentId}-seconds`;
+    const nextKey = nextTarget?.dataset?.segmentInput;
+
+    const movingWithinSegment =
+      (field === 'minutes' && nextKey === secondsKey) ||
+      (field === 'seconds' && nextKey === minutesKey);
+
+    if (movingWithinSegment) {
+      return;
+    }
+
+    saveTimeEdit(segmentId);
+  };
+
+  const finalizeActiveEdits = (): boolean => {
+    if (!editingField.segmentId) {
+      return true;
+    }
+    if (editingField.field === 'name') {
+      return saveNameEdit(editingField.segmentId!);
+    }
+    if (editingField.field === 'time') {
+      return saveTimeEdit(editingField.segmentId!);
+    }
+    return true;
   };
 
   const deleteSegment = (segmentId: string) => {
@@ -231,6 +267,9 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
   };
 
   const handleClose = () => {
+    if (!finalizeActiveEdits()) {
+      return;
+    }
     // Save current state before closing
     if (program) {
       const updatedProgram: Program = {
@@ -460,9 +499,11 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
                         max="99"
                         value={editingMinutes}
                         onChange={e => setEditingMinutes(e.target.value)}
+                        onBlur={e => handleTimeBlur(e, segment.id, 'minutes')}
                         onKeyDown={e => handleTimeKeyDown(e, segment.id)}
                         className="inline-input inline-input-time"
                         placeholder="min"
+                        data-segment-input={`${segment.id}-minutes`}
                         autoFocus
                       />
                       <span className="time-separator">:</span>
@@ -472,9 +513,10 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
                         max="59"
                         value={editingSeconds}
                         onChange={e => setEditingSeconds(e.target.value)}
-                        onBlur={() => saveTimeEdit(segment.id)}
+                        onBlur={e => handleTimeBlur(e, segment.id, 'seconds')}
                         onKeyDown={e => handleTimeKeyDown(e, segment.id)}
                         className="inline-input inline-input-time"
+                        data-segment-input={`${segment.id}-seconds`}
                         placeholder="sec"
                       />
                     </div>

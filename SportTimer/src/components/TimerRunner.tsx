@@ -32,6 +32,17 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
     timerState.currentSegmentIndex + 2,
     timerState.currentSegmentIndex + 4
   );
+  const remainingSegmentsInRound = program.segments.slice(timerState.currentSegmentIndex + 1);
+  const remainingTimeThisRound = timerState.remainingTime + remainingSegmentsInRound.reduce(
+    (sum, segment) => sum + segment.duration,
+    0
+  );
+  const hasAnotherRound = program.rounds === 0 || (program.rounds > 0 && timerState.currentRound < program.rounds);
+  const nextRoundCopy = hasAnotherRound
+    ? `Next round in ${formatTime(remainingTimeThisRound)}`
+    : 'Final round — finish strong';
+  const soundLabel = program.beepEnabled ? 'Sound on' : 'Sound off';
+  const showRoundCopy = program.rounds === 0 || program.rounds > 1;
 
   return (
     <div 
@@ -53,8 +64,10 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
               onClick={() => onToggleSound(program.id)}
               aria-pressed={program.beepEnabled}
               title={program.beepEnabled ? 'Mute sound alerts' : 'Enable sound alerts'}
+              aria-label={soundLabel}
             >
               <SoundIcon muted={!program.beepEnabled} />
+              <span className="sr-only">{soundLabel}</span>
             </button>
           </h2>
         </div>
@@ -112,6 +125,11 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
                   </span>
                 </div>
               </div>
+              {showRoundCopy && (
+                <p className="meta-subcopy" aria-live="polite">
+                  {nextRoundCopy}
+                </p>
+              )}
             </section>
 
             <div className="timing-panels">
@@ -171,27 +189,40 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
             </div>
 
             <div className="timer-controls">
-              <button 
-                className="btn-control"
-                onClick={reset}
-                title="Reset"
-              >
-                ↻
-              </button>
-              <button 
-                className="btn-control btn-play"
-                onClick={togglePause}
-              >
-                {timerState.isPaused ? '▶' : '❚❚'}
-              </button>
-              <button 
-                className="btn-control"
-                onClick={skip}
-                disabled={timerState.currentSegmentIndex === program.segments.length - 1 && program.rounds !== 0 && timerState.currentRound >= program.rounds}
-                title="Skip"
-              >
-                ⏭
-              </button>
+              <div className="control-button">
+                <button 
+                  className="btn-control"
+                  onClick={reset}
+                  title="Reset timer"
+                  aria-label="Reset timer"
+                >
+                  ↻
+                </button>
+                <span className="control-caption">Reset</span>
+              </div>
+              <div className="control-button">
+                <button 
+                  className="btn-control btn-play"
+                  onClick={togglePause}
+                  aria-label={timerState.isPaused ? 'Resume timer' : 'Pause timer'}
+                  title={timerState.isPaused ? 'Resume timer' : 'Pause timer'}
+                >
+                  {timerState.isPaused ? '▶' : '❚❚'}
+                </button>
+                <span className="control-caption">{timerState.isPaused ? 'Resume' : 'Pause'}</span>
+              </div>
+              <div className="control-button">
+                <button 
+                  className="btn-control"
+                  onClick={skip}
+                  disabled={timerState.currentSegmentIndex === program.segments.length - 1 && program.rounds !== 0 && timerState.currentRound >= program.rounds}
+                  title="Skip segment"
+                  aria-label="Skip segment"
+                >
+                  ⏭
+                </button>
+                <span className="control-caption">Skip</span>
+              </div>
             </div>
           </>
         )}

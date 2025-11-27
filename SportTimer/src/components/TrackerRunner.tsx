@@ -9,8 +9,6 @@ interface TrackerRunnerProps {
 }
 
 export const TrackerRunner = ({ tracker, onUpdateCounter, onResetTracker, onExit }: TrackerRunnerProps) => {
-  const totalCount = tracker.items.reduce((sum, item) => sum + item.value, 0);
-
   return (
     <div className="tracker-runner">
       <div className="runner-container">
@@ -30,20 +28,6 @@ export const TrackerRunner = ({ tracker, onUpdateCounter, onResetTracker, onExit
           </div>
         ) : (
           <>
-            <div className="tracker-summary" aria-live="polite">
-              <div className="summary-block">
-                <span className="summary-label">Counters</span>
-                <span className="summary-value">{tracker.items.length}</span>
-              </div>
-              <div className="summary-block">
-                <span className="summary-label">Total reps</span>
-                <span className="summary-value">{totalCount}</span>
-              </div>
-              <button className="btn-pill" onClick={onResetTracker}>
-                ↻ Reset all
-              </button>
-            </div>
-
             <div className="tracker-items-display">
               {tracker.items.map((item: CounterItem) => (
                 <div key={item.id} className="tracker-item-large">

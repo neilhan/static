@@ -10,6 +10,7 @@
 
 ## Testing Production Builds Locally
 
+Source code: [https://github.com/neilhan/static](https://github.com/neilhan/static)
 To test a production build locally (avoiding CORS issues), navigate to the app directory and run:
 
 ```bash

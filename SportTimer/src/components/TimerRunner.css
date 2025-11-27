@@ -7,6 +7,18 @@
   transition: background-color 0.5s ease;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .runner-container {
   max-width: 600px;
   width: 100%;
@@ -92,7 +104,6 @@
   font-size: 2.4rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  text-transform: uppercase;
   letter-spacing: 2px;
 }
 
@@ -142,6 +153,13 @@
 .meta-value {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.meta-subcopy {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-style: italic;
 }
 
 .timing-panels {
@@ -270,6 +288,20 @@
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
+}
+
+.control-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.control-caption {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .btn-control {
