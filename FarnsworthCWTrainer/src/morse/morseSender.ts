@@ -210,10 +210,6 @@ export const createMorseSender = ({
       cursor += timing.dotWidth;
     }
 
-    if (token.addCharSpace) {
-      cursor += timing.charSpace;
-    }
-
     return cursor - startTime;
   };
 
@@ -292,13 +288,25 @@ export const createMorseSender = ({
       raw: token.display,
     };
     activeToken = { token, displayChar, meta };
-    const duration = scheduleCharToken(token);
+    const toneDuration = scheduleCharToken(token);
     callbacks.onCharStart?.(displayChar, meta);
     pendingTimeout = window.setTimeout(() => {
-      completeActiveToken(true);
       pendingTimeout = null;
+      completeActiveToken(true);
+
+      if (token.addCharSpace) {
+        const spacingDuration = getTiming().charSpace;
+        if (spacingDuration > 0) {
+          pendingTimeout = window.setTimeout(() => {
+            pendingTimeout = null;
+            scheduleNextToken();
+          }, spacingDuration * 1000);
+          return;
+        }
+      }
+
       scheduleNextToken();
-    }, duration * 1000);
+    }, toneDuration * 1000);
   };
 
   const loadMessages = (messages: string[], startMessageIndex = 0) => {

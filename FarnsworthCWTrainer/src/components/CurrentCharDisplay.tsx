@@ -8,19 +8,19 @@ type CurrentCharDisplayProps = {
 };
 
 export const CurrentCharDisplay = ({ displayMode, senderProgress }: CurrentCharDisplayProps) => {
-    const { outputChar, lastOutputChar, isCharActive } = senderProgress;
+    const { outputChar, lastOutputChar, isCharSending } = senderProgress;
 
     const displayChar = useMemo(() => {
         switch (displayMode) {
             case 'immediate':
-                return isCharActive ? outputChar : '';
+                return isCharSending ? outputChar : '';
             case 'lingering':
-                return isCharActive ? outputChar : lastOutputChar;
+                return isCharSending ? outputChar : lastOutputChar;
             case 'delayed':
             default:
-                return isCharActive ? '' : lastOutputChar;
+                return isCharSending ? '' : lastOutputChar;
         }
-    }, [displayMode, isCharActive, outputChar, lastOutputChar]);
+    }, [displayMode, isCharSending, outputChar, lastOutputChar]);
 
     return (
         <div className="output">

@@ -16,7 +16,7 @@ export type SenderProgress = {
   charOffset: number;
   outputChar: string;
   lastOutputChar: string;
-  isCharActive: boolean;
+  isCharSending: boolean;
   displayMessage: string;
   doneText: string;
   remainingText: string;
@@ -27,7 +27,7 @@ const INITIAL_SENDER_PROGRESS: SenderProgress = {
   charOffset: 0,
   outputChar: "",
   lastOutputChar: "",
-  isCharActive: false,
+  isCharSending: false,
   displayMessage: "",
   doneText: "",
   remainingText: "",
@@ -150,7 +150,7 @@ export const useMorseSender = (
           const displayChar = char ? formatDisplayChar(char) : "";
           mergeSenderProgress({
             outputChar: displayChar,
-            isCharActive: displayChar !== "",
+            isCharSending: displayChar !== "",
           });
           callbacksRef.current.onCharStart?.(char ?? "");
           return;
@@ -162,7 +162,7 @@ export const useMorseSender = (
             messageIndex: meta.messageIndex,
             charOffset: currentOffset,
             outputChar: "",
-            isCharActive: false,
+            isCharSending: false,
           });
           callbacksRef.current.onCharStart?.(meta.raw);
           return;
@@ -174,7 +174,7 @@ export const useMorseSender = (
           messageIndex: meta.messageIndex,
           charOffset: nextOffset,
           outputChar: displayChar,
-          isCharActive: true,
+          isCharSending: true,
         });
         callbacksRef.current.onCharStart?.(meta.raw);
       },
@@ -185,12 +185,12 @@ export const useMorseSender = (
           mergeSenderProgress({
             outputChar: "",
             lastOutputChar: displayChar,
-            isCharActive: false,
+            isCharSending: false,
           });
         } else {
           mergeSenderProgress({
             outputChar: "",
-            isCharActive: false,
+            isCharSending: false,
           });
         }
         callbacksRef.current.onCharEnd?.(value);
@@ -203,7 +203,7 @@ export const useMorseSender = (
         callbacksRef.current.onMessageStart?.(messageIndex);
       },
       onFinish: () => {
-        mergeSenderProgress({ outputChar: "", isCharActive: false });
+        mergeSenderProgress({ outputChar: "", isCharSending: false });
         callbacksRef.current.onFinish?.();
       },
     }),
