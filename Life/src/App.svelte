@@ -3,6 +3,7 @@
   import HeroStats from './lib/components/HeroStats.svelte';
   import YearsGrid from './lib/components/YearsGrid.svelte';
   import ControlsPanel from './lib/components/ControlsPanel.svelte';
+  import homeIcon from './assets/home.svg';
   
   const currentYear = new Date().getFullYear();
 
@@ -27,7 +28,15 @@
 </script>
 
 <main>
-  <h1>Life to experience</h1>
+  <div class="header-row">
+    <div class="header-title-group">
+      <a href="https://neilhan.github.io/static" class="home-link" title="Back to Home">
+        <img src={homeIcon} alt="Home" width="24" height="24" />
+      </a>
+      <span class="breadcrumb-separator">/</span>
+      <h1>Life to experience</h1>
+    </div>
+  </div>
   
   <HeroStats
     activeWeeks={gridData.activeWeeks}
