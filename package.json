@@ -1,0 +1,19 @@
+{
+  "name": "static-apps",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.24.0",
+  "scripts": {
+    "build": "pnpm run -r build",
+    "dev": "pnpm run -r dev",
+    "dev:farnsworth": "pnpm --filter farnsworth-cw-trainer dev",
+    "dev:sporttimer": "pnpm --filter sporttimer dev",
+    "dev:life": "pnpm --filter life dev",
+    "dev:all": "concurrently \"pnpm --filter farnsworth-cw-trainer dev\" \"pnpm --filter SportTimer dev\" \"pnpm --filter life dev\"",
+    "lint": "pnpm run -r lint",
+    "test": "pnpm run -r test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

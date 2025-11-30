@@ -3,7 +3,7 @@
   import HeroStats from './lib/components/HeroStats.svelte';
   import YearsGrid from './lib/components/YearsGrid.svelte';
   import ControlsPanel from './lib/components/ControlsPanel.svelte';
-  import homeIcon from './assets/home.svg';
+  import homeIcon from '@static/shared/assets/home.svg';
   
   const currentYear = new Date().getFullYear();
 

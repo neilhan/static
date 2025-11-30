@@ -1,0 +1,6 @@
+packages:
+  - FarnsworthCWTrainer
+  - Life
+  - SportTimer
+  - packages/*
+

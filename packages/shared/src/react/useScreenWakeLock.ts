@@ -1,34 +1,24 @@
 import { useCallback, useEffect, useRef } from "react";
+import {
+  getDocument,
+  getNavigatorWithWakeLock,
+  getWindow,
+  isBrowserEnv,
+  isMobileDevice,
+  supportsWakeLock,
+  type WakeLockNavigator,
+} from "../wakeLockEnv";
 
-type WakeLockNavigator = Navigator & {
-  wakeLock?: {
-    request: (type: "screen") => Promise<WakeLockSentinel>;
-  };
-};
-
-const MOBILE_REGEX =
-  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-
-const isMobileDevice = (): boolean => {
-  if (typeof navigator === "undefined") {
-    return false;
-  }
-  const source = navigator.userAgent || navigator.vendor || "";
-  return MOBILE_REGEX.test(source);
-};
-
-const supportsWakeLock = (): boolean =>
-  typeof navigator !== "undefined" && "wakeLock" in navigator;
-
-const isBrowserEnv = (): boolean =>
-  typeof window !== "undefined" && typeof document !== "undefined";
+const defaultEnvSnapshot = () => ({
+  envReady: isBrowserEnv(),
+  isMobile: isMobileDevice(),
+  wakeLockSupported: supportsWakeLock(),
+});
 
 export const useScreenWakeLock = (shouldHold: boolean): void => {
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const shouldHoldRef = useRef<boolean>(shouldHold);
-  const envReadyRef = useRef<boolean>(isBrowserEnv());
-  const mobileRef = useRef<boolean>(isMobileDevice());
-  const wakeLockSupportedRef = useRef<boolean>(supportsWakeLock());
+  const envSnapshotRef = useRef(defaultEnvSnapshot());
 
   useEffect(() => {
     shouldHoldRef.current = shouldHold;
@@ -53,15 +43,16 @@ export const useScreenWakeLock = (shouldHold: boolean): void => {
   }, [handleSentinelRelease]);
 
   const requestWakeLock = useCallback(async () => {
-    if (
-      wakeLockRef.current ||
-      !envReadyRef.current ||
-      !wakeLockSupportedRef.current
-    ) {
+    const { envReady, wakeLockSupported } = envSnapshotRef.current;
+    if (wakeLockRef.current || !envReady || !wakeLockSupported) {
       return;
     }
 
-    const navWithWakeLock = navigator as WakeLockNavigator;
+    const navWithWakeLock = getNavigatorWithWakeLock();
+    if (!navWithWakeLock) {
+      return;
+    }
+
     try {
       const sentinel = await navWithWakeLock.wakeLock?.request("screen");
       if (!sentinel) {
@@ -76,17 +67,14 @@ export const useScreenWakeLock = (shouldHold: boolean): void => {
   }, [handleSentinelRelease]);
 
   useEffect(() => {
-    if (
-      !envReadyRef.current ||
-      !mobileRef.current ||
-      !wakeLockSupportedRef.current
-    ) {
-      releaseWakeLock();
+    const { envReady, isMobile, wakeLockSupported } = envSnapshotRef.current;
+    if (!envReady || !isMobile || !wakeLockSupported) {
+      void releaseWakeLock();
       return;
     }
 
     if (!shouldHold) {
-      releaseWakeLock();
+      void releaseWakeLock();
       return;
     }
 
@@ -99,26 +87,32 @@ export const useScreenWakeLock = (shouldHold: boolean): void => {
     };
 
     const handleVisibility = () => {
-      if (document.visibilityState === "visible" && shouldHoldRef.current) {
+      const doc = getDocument();
+      if (doc?.visibilityState === "visible" && shouldHoldRef.current) {
         ensureWakeLock();
       } else {
         void releaseWakeLock();
       }
     };
 
+    const win = getWindow();
+    const doc = getDocument();
+
     ensureWakeLock();
 
-    document.addEventListener("visibilitychange", handleVisibility);
-    window.addEventListener("pagehide", releaseWakeLock);
-    window.addEventListener("beforeunload", releaseWakeLock);
+    doc?.addEventListener("visibilitychange", handleVisibility);
+    win?.addEventListener("pagehide", releaseWakeLock);
+    win?.addEventListener("beforeunload", releaseWakeLock);
 
     return () => {
       cancelled = true;
-      document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("pagehide", releaseWakeLock);
-      window.removeEventListener("beforeunload", releaseWakeLock);
+      doc?.removeEventListener("visibilitychange", handleVisibility);
+      win?.removeEventListener("pagehide", releaseWakeLock);
+      win?.removeEventListener("beforeunload", releaseWakeLock);
       void releaseWakeLock();
     };
   }, [releaseWakeLock, requestWakeLock, shouldHold]);
 };
+
+export type { WakeLockNavigator };
 

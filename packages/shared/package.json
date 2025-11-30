@@ -1,0 +1,39 @@
+{
+  "name": "@static/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react/index.js",
+      "types": "./dist/react/index.d.ts"
+    },
+    "./react/useScreenWakeLock": {
+      "import": "./dist/react/useScreenWakeLock.js",
+      "types": "./dist/react/useScreenWakeLock.d.ts"
+    },
+    "./assets/home.svg": "./assets/home.svg",
+    "./assets/icons/play.svg": "./assets/icons/play.svg",
+    "./assets/icons/pause.svg": "./assets/icons/pause.svg",
+    "./assets/icons/fast-back.svg": "./assets/icons/fast-back.svg",
+    "./assets/icons/fast-forward.svg": "./assets/icons/fast-forward.svg"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.5",
+    "typescript": "^5.6.3"
+  }
+}
+

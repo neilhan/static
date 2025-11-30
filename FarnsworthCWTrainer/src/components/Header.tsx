@@ -1,4 +1,4 @@
-import homeIcon from '../assets/home.svg';
+import homeIcon from '@static/shared/assets/home.svg';
 
 export const Header = () => {
     return (

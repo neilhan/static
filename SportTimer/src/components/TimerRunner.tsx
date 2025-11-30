@@ -1,6 +1,6 @@
 import { Program, TimerSegment } from '../types.ts';
 import { useTimer } from '../hooks/useTimer';
-import { useScreenWakeLock } from '../hooks/useScreenWakeLock';
+import { useScreenWakeLock } from '@static/shared/react/useScreenWakeLock';
 import { SoundIcon } from './icons/SoundIcon';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
 import './TimerRunner.css';

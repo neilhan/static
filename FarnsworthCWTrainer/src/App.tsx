@@ -1,6 +1,6 @@
 import React from 'react';
 import './Trainer.css';
-import { useScreenWakeLock } from './hooks/useScreenWakeLock';
+import { useScreenWakeLock } from '@static/shared/react/useScreenWakeLock';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { InfoSection } from './components/InfoSection';
