@@ -1,4 +1,9 @@
 import React from 'react';
+import fastBackIcon from '@static/shared/assets/icons/fast-back.svg?raw';
+import fastForwardIcon from '@static/shared/assets/icons/fast-forward.svg?raw';
+import pauseIcon from '@static/shared/assets/icons/pause.svg?raw';
+import playIcon from '@static/shared/assets/icons/play.svg?raw';
+import { IconGraphic } from '@static/shared/react';
 import { SenderPlayState } from '../../hooks/useMorseSender';
 
 type SenderActionsProps = {
@@ -9,14 +14,14 @@ type SenderActionsProps = {
     onNewText: () => void;
 };
 
-const getSenderLabel = (state: SenderPlayState): { icon: string; label: string } => {
+const getSenderLabel = (state: SenderPlayState): { iconMarkup: string; label: string } => {
     if (state === 'playing') {
-        return { icon: '⏸', label: 'Pause sending' };
+        return { iconMarkup: pauseIcon, label: 'Pause sending' };
     }
     if (state === 'paused') {
-        return { icon: '▶', label: 'Resume sending' };
+        return { iconMarkup: playIcon, label: 'Resume sending' };
     }
-    return { icon: '▶', label: 'Start sending' };
+    return { iconMarkup: playIcon, label: 'Start sending' };
 };
 
 export const SenderActions = ({
@@ -26,7 +31,7 @@ export const SenderActions = ({
     onSkipForward,
     onNewText,
 }: SenderActionsProps): React.ReactElement => {
-    const { icon, label } = getSenderLabel(senderPlayState);
+    const { iconMarkup, label } = getSenderLabel(senderPlayState);
     const isPlaying = senderPlayState === 'playing';
 
     return (
@@ -37,7 +42,7 @@ export const SenderActions = ({
                 </label>
                 <div id="actionsButtons" className="actions-buttons">
                     <button className="icon-button" onClick={onRestart} aria-label="Go back to beginning">
-                        <span aria-hidden="true">⏮</span>
+                        <IconGraphic svgMarkup={fastBackIcon} size="sm" />
                     </button>
                     <button
                         id="sendButton"
@@ -45,10 +50,10 @@ export const SenderActions = ({
                         onClick={onToggleSender}
                         aria-label={label}
                     >
-                        <span aria-hidden="true">{icon}</span>
+                        <IconGraphic svgMarkup={iconMarkup} size="lg" />
                     </button>
                     <button className="icon-button" onClick={onSkipForward} aria-label="Skip to next page">
-                        <span aria-hidden="true">⏭</span>
+                        <IconGraphic svgMarkup={fastForwardIcon} size="sm" />
                     </button>
                     <button id="textButton" onClick={onNewText} disabled={isPlaying}>
                         New Text

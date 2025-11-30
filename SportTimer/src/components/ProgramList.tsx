@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react';
+import { IconGraphic } from '@static/shared/react';
+import homeIcon from '@static/shared/assets/home.svg';
+import playIcon from '@static/shared/assets/icons/play.svg?raw';
 import { Program, Tracker, CounterItem, TimerSegment } from '../types.ts';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
-import homeIcon from '@static/shared/assets/home.svg';
 import { SoundIcon } from './icons/SoundIcon';
 import './ProgramList.css';
 
@@ -326,10 +328,11 @@ export const ProgramList = ({
                   </div>
 
                   <button 
-                    className="btn-run"
+                    className="btn-run btn-with-icon"
                     onClick={() => onRun(data as Program)}
                   >
-                    ▶ Start Timer
+                    <IconGraphic svgMarkup={playIcon} />
+                    <span>Start Timer</span>
                   </button>
                 </>
               )}
@@ -338,10 +341,11 @@ export const ProgramList = ({
               {type === 'tracker' && (
                 <div className="tracker-card-actions">
                   <button 
-                    className="btn-run btn-start-tracker"
+                    className="btn-run btn-start-tracker btn-with-icon"
                     onClick={() => onRunTracker(data as Tracker)}
                   >
-                    ▶ Start Tracker
+                    <IconGraphic svgMarkup={playIcon} />
+                    <span>Start Tracker</span>
                   </button>
                   <button 
                     className="btn-reset-tracker"

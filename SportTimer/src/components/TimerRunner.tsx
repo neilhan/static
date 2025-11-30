@@ -1,6 +1,11 @@
 import { Program, TimerSegment } from '../types.ts';
 import { useTimer } from '../hooks/useTimer';
 import { useScreenWakeLock } from '@static/shared/react/useScreenWakeLock';
+import fastBackIcon from '@static/shared/assets/icons/fast-back.svg?raw';
+import fastForwardIcon from '@static/shared/assets/icons/fast-forward.svg?raw';
+import pauseIcon from '@static/shared/assets/icons/pause.svg?raw';
+import playIcon from '@static/shared/assets/icons/play.svg?raw';
+import { IconGraphic } from '@static/shared/react';
 import { SoundIcon } from './icons/SoundIcon';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
 import './TimerRunner.css';
@@ -57,8 +62,9 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
     >
       <div className="runner-container">
         <div className="runner-header">
-          <button className="btn-back" onClick={() => onExit()}>
-            ← Back
+          <button className="btn-back btn-with-icon" onClick={() => onExit()}>
+            <IconGraphic svgMarkup={fastBackIcon} size="sm" />
+            <span>Back</span>
           </button>
           <h2 className="runner-title">
             {program.name}
@@ -85,8 +91,9 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
               <button className="btn-large btn-primary" onClick={reset}>
                 ↻ Restart
               </button>
-              <button className="btn-large btn-secondary" onClick={() => onExit()}>
-                ← Back to Timers
+              <button className="btn-large btn-secondary btn-with-icon" onClick={() => onExit()}>
+                <IconGraphic svgMarkup={fastBackIcon} size="sm" />
+                <span>Back to Timers</span>
               </button>
             </div>
           </div>
@@ -211,7 +218,10 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
                   aria-label={timerState.isPaused ? 'Resume timer' : 'Pause timer'}
                   title={timerState.isPaused ? 'Resume timer' : 'Pause timer'}
                 >
-                  {timerState.isPaused ? '▶' : '❚❚'}
+                  <IconGraphic
+                    svgMarkup={timerState.isPaused ? playIcon : pauseIcon}
+                    size="xl"
+                  />
                 </button>
                 <span className="control-caption">{timerState.isPaused ? 'Resume' : 'Pause'}</span>
               </div>
@@ -223,7 +233,7 @@ export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps
                   title="Skip segment"
                   aria-label="Skip segment"
                 >
-                  ⏭
+                  <IconGraphic svgMarkup={fastForwardIcon} size="lg" />
                 </button>
                 <span className="control-caption">Skip</span>
               </div>

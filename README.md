@@ -6,6 +6,8 @@
 
 [<img src="./Life/public/calendar.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Life in weeks](./Life/dist/index.html)
 
+[<img src="./packages/shared/assets/icons/language.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Learn Foreign Language](./LearnForeignLanguage/dist/index.html) — in-progress language practice workspace (dev server on port 3003).
+
 <iframe src="./Life/dist/index.html" width="100%" height="2400px" style="border: 1px solid #333; border-radius: 8px;" scrolling="no"></iframe>
 
 ## Development
@@ -22,7 +24,7 @@ This repo is a pnpm workspace. To work on any app:
 2. Use Node 22+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
 3. Install everything from the repo root: `pnpm install`
 4. Dev servers:
-   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, or `pnpm dev:life`
+   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, or `pnpm dev:language`
    - All apps together: `pnpm dev:all`
 5. Build every app at once: `pnpm run -r build` (or `./build_all.sh`)
 

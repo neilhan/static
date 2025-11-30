@@ -22,7 +22,8 @@
     "./assets/icons/play.svg": "./assets/icons/play.svg",
     "./assets/icons/pause.svg": "./assets/icons/pause.svg",
     "./assets/icons/fast-back.svg": "./assets/icons/fast-back.svg",
-    "./assets/icons/fast-forward.svg": "./assets/icons/fast-forward.svg"
+    "./assets/icons/fast-forward.svg": "./assets/icons/fast-forward.svg",
+    "./assets/icons/language.svg": "./assets/icons/language.svg"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

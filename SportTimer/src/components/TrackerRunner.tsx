@@ -1,3 +1,5 @@
+import { IconGraphic } from '@static/shared/react';
+import fastBackIcon from '@static/shared/assets/icons/fast-back.svg?raw';
 import { Tracker, CounterItem } from '../types.ts';
 import './TrackerRunner.css';
 
@@ -13,8 +15,9 @@ export const TrackerRunner = ({ tracker, onUpdateCounter, onResetTracker, onExit
     <div className="tracker-runner">
       <div className="runner-container">
         <div className="runner-header">
-          <button className="btn-back" onClick={onExit}>
-            ← Back
+          <button className="btn-back btn-with-icon" onClick={onExit}>
+            <IconGraphic svgMarkup={fastBackIcon} size="sm" />
+            <span>Back</span>
           </button>
           <h2>{tracker.name}</h2>
         </div>
@@ -22,8 +25,9 @@ export const TrackerRunner = ({ tracker, onUpdateCounter, onResetTracker, onExit
         {tracker.items.length === 0 ? (
           <div className="empty-tracker-runner">
             <p>No counter items in this tracker.</p>
-            <button className="btn-large btn-secondary" onClick={onExit}>
-              ← Back to Edit
+            <button className="btn-large btn-secondary btn-with-icon" onClick={onExit}>
+              <IconGraphic svgMarkup={fastBackIcon} size="sm" />
+              <span>Back to Edit</span>
             </button>
           </div>
         ) : (
