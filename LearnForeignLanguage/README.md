@@ -28,9 +28,12 @@ classDiagram
         string targetLang
         string nativeVoiceURI
         string nativeLang
+        PlaybackSettings playbackSettings
+        Record~string, SRSData~ srsData
+    }
+    class PlaybackSettings {
         boolean playNative
         boolean includePause
-        Record~string, SRSData~ srsData
     }
     class Conversation {
         string id
@@ -49,6 +52,7 @@ classDiagram
         number easeFactor
     }
     AppState --> ConversationCollection
+    ConversationCollection --> PlaybackSettings
     ConversationCollection --> Conversation
     ConversationCollection --> SRSData : map by contentHash
     Conversation --> Sentence

@@ -1,3 +1,2 @@
-export * from "./useScreenWakeLock";
-export * from "./IconGraphic";
-
+export * from "./useScreenWakeLock.js";
+export * from "./IconGraphic.js";

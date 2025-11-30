@@ -1,3 +1,3 @@
-export * from "./wakeLockEnv";
-export * from "./react";
+export * from "./wakeLockEnv.js";
+export * from "./react/index.js";
 //# sourceMappingURL=index.d.ts.map
