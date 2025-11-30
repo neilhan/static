@@ -6,7 +6,7 @@
 
 [<img src="./Life/public/calendar.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Life in weeks](./Life/dist/index.html)
 
-[<img src="./packages/shared/assets/icons/language.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Learn Foreign Language](./LearnForeignLanguage/dist/index.html) — in-progress language practice workspace (dev server on port 3003).
+[<img src="./packages/shared/assets/icons/language.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Learn Foreign Language](./LearnForeignLanguage/dist/index.html) — in-progress language practice workspace.
 
 <iframe src="./Life/dist/index.html" width="100%" height="2400px" style="border: 1px solid #333; border-radius: 8px;" scrolling="no"></iframe>
 
