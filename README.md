@@ -43,3 +43,7 @@ npx serve dist
 ```
 
 This will serve the built files over HTTP at `http://localhost:3000` (or another port if 3000 is busy).
+
+---
+
+_Last updated: 2025-11-30 19:00 PT_
