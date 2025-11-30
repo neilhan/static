@@ -1,0 +1,121 @@
+.current-conversation-panel {
+  background-color: var(--bg-panel-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.current-conversation-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.current-conversation-panel__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.current-conversation-panel__title strong {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.current-conversation-panel__status {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.queue-mode-tag {
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.queue-mode-tag--active {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+
+.current-conversation-panel__sentences {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.sentence-row {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color-alt);
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.sentence-row--active {
+  border-color: var(--accent-strong);
+  background-color: rgba(100, 108, 255, 0.08);
+  box-shadow: 0 0 0 1px rgba(100, 108, 255, 0.25);
+}
+
+.sentence-target {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sentence-native {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.current-conversation-panel__placeholder {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.current-conversation-panel__queue {
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.queue-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.queue-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.queue-chip {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+

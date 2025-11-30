@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import languageFavicon from "@static/shared/assets/icons/language.svg";
+import "@static/shared/styles.css";
 import App from "./App";
 import "./index.css";
 

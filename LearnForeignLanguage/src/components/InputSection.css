@@ -1,0 +1,112 @@
+/* Input Section Layout */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.language-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Select Groups */
+.select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.select-group label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.select-group select {
+  padding: 0.75rem;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: var(--control-bg);
+  color: var(--text-primary);
+}
+
+/* Control Row */
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.checkbox-control {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin: 0;
+  width: 1.1em;
+  height: 1.1em;
+  accent-color: var(--accent);
+}
+
+.delay-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.delay-control label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Text Input & Overlay */
+.text-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.text-input-container label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.editor-wrapper {
+  width: 100%;
+}
+
+.conversation-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  font-family: monospace;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 300px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--control-bg);
+  transition: background-color 0.2s;
+}
+
+.conversation-textarea:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}

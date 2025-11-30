@@ -72,7 +72,7 @@ main {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: inherit;
+  color: rgba(255, 255, 255, 0.95);
   opacity: 0.75;
   transition: opacity 0.2s ease;
 }
@@ -81,11 +81,33 @@ main {
   opacity: 1;
 }
 
+.home-icon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+}
+
+.home-link svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+}
+
 .breadcrumb-separator {
   color: #555;
   font-size: 1.4rem;
   font-weight: 300;
   margin-top: -2px;
+}
+
+.header-app-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent, #4ECDC4);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.25rem;
 }
 
 /* Hero Section */

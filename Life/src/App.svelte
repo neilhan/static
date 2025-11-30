@@ -3,9 +3,11 @@
   import HeroStats from './lib/components/HeroStats.svelte';
   import YearsGrid from './lib/components/YearsGrid.svelte';
   import ControlsPanel from './lib/components/ControlsPanel.svelte';
-  import homeIcon from '@static/shared/assets/home.svg';
+  import homeIcon from '@static/shared/assets/home.svg?raw';
   
   const currentYear = new Date().getFullYear();
+  const base = import.meta.env.BASE_URL ?? '/';
+  const appIcon = `${base}calendar.svg`;
 
   // Try to load from local storage, fallback to default
   const storedBirthYear = localStorage.getItem('life_birthYear');
@@ -30,10 +32,16 @@
 <main>
   <div class="header-row">
     <div class="header-title-group">
-      <a href="https://neilhan.github.io/static" class="home-link" title="Back to Home">
-        <img src={homeIcon} alt="Home" width="24" height="24" />
+      <a
+        href="https://neilhan.github.io/static"
+        class="home-link"
+        title="Back to Home"
+        aria-label="Back to Home"
+      >
+        <span class="home-icon" aria-hidden="true">{@html homeIcon}</span>
       </a>
       <span class="breadcrumb-separator">/</span>
+      <img src={appIcon} alt="Calendar icon" width="32" height="32" class="header-app-icon" />
       <h1>Life to experience</h1>
     </div>
   </div>

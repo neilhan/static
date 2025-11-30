@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { IconGraphic } from '@static/shared/react';
-import homeIcon from '@static/shared/assets/home.svg';
+import homeIcon from '@static/shared/assets/home.svg?raw';
 import playIcon from '@static/shared/assets/icons/play.svg?raw';
 import { Program, Tracker, CounterItem, TimerSegment } from '../types.ts';
 import { formatTime, calculateTotalDuration } from '../utils/helpers';
@@ -148,14 +148,29 @@ export const ProgramList = ({
     dragOverItem.current = null;
   };
 
+  const base = import.meta.env.BASE_URL ?? "/";
+  const appIcon = `${base}stopwatch.svg`;
+
   return (
     <div className="program-list">
       <div className="program-list-header">
         <div className="header-title-group">
           <a href="https://neilhan.github.io/static" className="btn-icon home-link" title="Back to Home">
-            <img src={homeIcon} alt="Home" width="24" height="24" />
+            <IconGraphic 
+              svgMarkup={homeIcon}
+              size="lg"
+              className="home-link__icon"
+              title="Home"
+            />
           </a>
           <span className="breadcrumb-separator">/</span>
+          <img 
+            src={appIcon}
+            alt="Stopwatch icon"
+            width="32"
+            height="32"
+            className="header-app-icon"
+          />
           <h1>Timers & Trackers</h1>
         </div>
         <div className="header-actions">

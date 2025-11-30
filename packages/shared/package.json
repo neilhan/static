@@ -18,12 +18,15 @@
       "import": "./dist/react/useScreenWakeLock.js",
       "types": "./dist/react/useScreenWakeLock.d.ts"
     },
+    "./styles.css": "./styles.css",
     "./assets/home.svg": "./assets/home.svg",
     "./assets/icons/play.svg": "./assets/icons/play.svg",
     "./assets/icons/pause.svg": "./assets/icons/pause.svg",
     "./assets/icons/fast-back.svg": "./assets/icons/fast-back.svg",
     "./assets/icons/fast-forward.svg": "./assets/icons/fast-forward.svg",
-    "./assets/icons/language.svg": "./assets/icons/language.svg"
+    "./assets/icons/language.svg": "./assets/icons/language.svg",
+    "./assets/icons/shuffle.svg": "./assets/icons/shuffle.svg",
+    "./assets/icons/loop.svg": "./assets/icons/loop.svg"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

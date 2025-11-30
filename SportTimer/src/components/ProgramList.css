@@ -30,6 +30,20 @@
   color: inherit;
   display: flex;
   align-items: center;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.home-link__icon {
+  color: var(--text-secondary, #b7b7b7);
+}
+
+.home-link:hover {
+  opacity: 1;
+}
+
+.home-link:hover .home-link__icon {
+  color: var(--text-primary, #ffffff);
 }
 
 .breadcrumb-separator {
@@ -37,6 +51,16 @@
   font-size: 1.5rem;
   font-weight: 300;
   margin-top: -2px;
+}
+
+.header-app-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent, #4ECDC4);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.25rem;
 }
 
 .program-list-header h1 {
