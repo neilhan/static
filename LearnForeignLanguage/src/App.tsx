@@ -58,7 +58,8 @@ function App() {
   // Initialize state from storage or default
   const [state, setState] = useState<AppState>(() => loadState());
   // Note: We removed 'isPlaying' from destructuring here because we track queue state locally
-  const { playConversation, stop, playingId, currentIndex } = useAudioPlayer();
+  const { playConversation, stop, updateSettings, playingId, currentIndex } =
+    useAudioPlayer();
 
   // Queue state for playing multiple conversations sequentially
   const [playQueue, setPlayQueue] = useState<string[]>([]);
@@ -192,6 +193,8 @@ function App() {
     updateActiveCollection({
       playbackSettings: { ...activeCollection.playbackSettings, playNative },
     });
+    // Update playing audio settings in real-time
+    updateSettings(playNative, activeCollection.playbackSettings.includePause);
   };
 
   const handleIncludePauseChange = (includePause: boolean) => {
@@ -199,6 +202,8 @@ function App() {
     updateActiveCollection({
       playbackSettings: { ...activeCollection.playbackSettings, includePause },
     });
+    // Update playing audio settings in real-time
+    updateSettings(activeCollection.playbackSettings.playNative, includePause);
   };
 
   // -------------------------------------------------------------------------
