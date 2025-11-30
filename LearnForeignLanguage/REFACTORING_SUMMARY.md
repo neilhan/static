@@ -33,6 +33,12 @@
   - Checkboxes (Include Pause, Play Translation) are on a separate row below the buttons
 - Removed `includePause` and `playNative` props from `InputSection` component usage
 
+### 6. **Improved Language Selectors**
+
+- **Layout**: Language selectors ("Learning" and "Translation") are now displayed side-by-side on larger screens.
+- **Labels**: Shortened labels to "Learning:" and "Translation:" to save space.
+- **Dropdown Items**: Optimized voice names to remove redundancy (e.g., "English - Google US English" becomes "Google US English").
+
 ### 5. **Updated Documentation** (`README.md`)
 
 - Updated the data structure diagram to show the new `PlaybackSettings` class

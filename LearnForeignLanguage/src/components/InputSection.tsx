@@ -98,7 +98,7 @@ export const InputSection = forwardRef<InputSectionRef, InputSectionProps>(
       <div className="input-section">
         <div className="language-controls">
           <div className="select-group">
-            <label>Target Language (Learning):</label>
+            <label>Learning:</label>
             <select
               value={targetVoiceURI}
               onChange={(e) => handleLanguageChange(e, onTargetChange)}
@@ -115,7 +115,7 @@ export const InputSection = forwardRef<InputSectionRef, InputSectionProps>(
           </div>
 
           <div className="select-group">
-            <label>Native Language (Translation):</label>
+            <label>Translation:</label>
             <select
               value={nativeVoiceURI}
               onChange={(e) => handleLanguageChange(e, onNativeChange)}

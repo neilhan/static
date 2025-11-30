@@ -7,8 +7,9 @@
 
 .language-controls {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 /* Select Groups */
@@ -16,6 +17,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 200px;
 }
 
 .select-group label {
