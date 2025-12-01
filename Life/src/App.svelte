@@ -1,11 +1,14 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { generateLifeGrid, DEFAULT_LIFE_EXPECTANCY } from './lib/lifeLogic';
   import HeroStats from './lib/components/HeroStats.svelte';
   import YearsGrid from './lib/components/YearsGrid.svelte';
   import ControlsPanel from './lib/components/ControlsPanel.svelte';
   import homeIcon from '@static/shared/assets/home.svg?raw';
   
-  const currentYear = new Date().getFullYear();
+  let now = new Date();
+  $: currentYear = now.getFullYear();
+
   const base = import.meta.env.BASE_URL ?? '/';
   const appIcon = `${base}calendar.svg`;
 
@@ -14,10 +17,18 @@
   const storedLifeExpectancy = localStorage.getItem('life_lifeExpectancy');
   const storedActiveAge = localStorage.getItem('life_activeAge');
 
-  let birthYear: number = storedBirthYear ? parseInt(storedBirthYear) : currentYear - 30;
+  let birthYear: number = storedBirthYear ? parseInt(storedBirthYear) : now.getFullYear() - 30;
   let lifeExpectancy: number = storedLifeExpectancy ? parseInt(storedLifeExpectancy) : 100;
   let activeAge: number = storedActiveAge ? parseInt(storedActiveAge) : 80;
   
+  onMount(() => {
+    const interval = setInterval(() => {
+      now = new Date();
+    }, 1000 * 60 * 60); // Update every hour
+
+    return () => clearInterval(interval);
+  });
+
   // Reactive statement to save to local storage when values change
   $: {
     if (birthYear) localStorage.setItem('life_birthYear', birthYear.toString());
@@ -25,8 +36,8 @@
     if (activeAge) localStorage.setItem('life_activeAge', activeAge.toString());
   }
 
-  // Reactive statement in Svelte: automatically re-runs when birthYear, lifeExpectancy or activeAge changes
-  $: gridData = generateLifeGrid(birthYear, lifeExpectancy, activeAge);
+  // Reactive statement in Svelte: automatically re-runs when birthYear, lifeExpectancy, activeAge or now changes
+  $: gridData = generateLifeGrid(birthYear, lifeExpectancy, activeAge, now);
 </script>
 
 <main>

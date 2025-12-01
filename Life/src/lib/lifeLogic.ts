@@ -1,6 +1,6 @@
-import { getWeeksInYear } from './dateUtils';
+import { getWeeksInYear } from "./dateUtils";
 
-export type CellStatus = 'lived' | 'active' | 'retirement';
+export type CellStatus = "lived" | "active" | "retirement";
 
 export type WeekCell = {
   id: number; // Absolute week index
@@ -17,16 +17,21 @@ export type YearData = {
 
 export const DEFAULT_LIFE_EXPECTANCY = 90;
 
-export const generateLifeGrid = (birthYear: number, lifeExpectancy: number = DEFAULT_LIFE_EXPECTANCY, activeAge: number = 80) => {
-  const currentYear = new Date().getFullYear();
-  const currentWeekDate = new Date(); // Now
-  
+export const generateLifeGrid = (
+  birthYear: number,
+  lifeExpectancy: number = DEFAULT_LIFE_EXPECTANCY,
+  activeAge: number = 80,
+  currentDate: Date = new Date()
+) => {
+  const currentYear = currentDate.getFullYear();
+  // const currentWeekDate = currentDate; // Not strictly used in the logic below, but good to know
+
   // Assumption: Birth is Jan 1st of birthYear for simplified "lived" logic
   // or we just check if the week's date is in the past.
-  
+
   let absoluteWeekIndex = 0;
   const years: YearData[] = [];
-  
+
   let livedWeeksCount = 0;
   let activeWeeksCount = 0;
   let retirementWeeksCount = 0;
@@ -36,7 +41,7 @@ export const generateLifeGrid = (birthYear: number, lifeExpectancy: number = DEF
     const weeksInThisYear = getWeeksInYear(year);
     const weeks: WeekCell[] = [];
     const age = i;
-    
+
     // Determine if this year is active or retirement phase
     // If activeAge is 80, then ages 0..79 are active. 80+ are retirement.
     const isRetirementYear = age >= activeAge;
@@ -48,46 +53,46 @@ export const generateLifeGrid = (birthYear: number, lifeExpectancy: number = DEF
       // We can check if the year < currentYear -> all lived.
       // If year > currentYear -> all future.
       // If year == currentYear -> check week index.
-      
-      let status: CellStatus = 'lived';
-      
+
+      let status: CellStatus = "lived";
+
       if (year < currentYear) {
-        status = 'lived';
+        status = "lived";
       } else if (year > currentYear) {
-        status = isRetirementYear ? 'retirement' : 'active';
+        status = isRetirementYear ? "retirement" : "active";
       } else {
         // Current year logic
         // We need to know roughly which week of the year we are in.
         // Simple approximation:
         const startOfYear = new Date(year, 0, 1);
-        const now = new Date();
+        const now = currentDate;
         const diff = now.getTime() - startOfYear.getTime();
         const currentWeekIndex = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
-        
+
         if (w < currentWeekIndex) {
-          status = 'lived';
+          status = "lived";
         } else {
-          status = isRetirementYear ? 'retirement' : 'active';
+          status = isRetirementYear ? "retirement" : "active";
         }
       }
-      
-      if (status === 'lived') livedWeeksCount++;
-      else if (status === 'active') activeWeeksCount++;
+
+      if (status === "lived") livedWeeksCount++;
+      else if (status === "active") activeWeeksCount++;
       else retirementWeeksCount++;
 
       weeks.push({
         id: absoluteWeekIndex,
         weekInYear: w + 1,
         status,
-        year
+        year,
       });
       absoluteWeekIndex++;
     }
-    
+
     years.push({
       year,
       age,
-      weeks
+      weeks,
     });
   }
 
@@ -97,6 +102,6 @@ export const generateLifeGrid = (birthYear: number, lifeExpectancy: number = DEF
     livedWeeks: livedWeeksCount,
     activeWeeks: activeWeeksCount,
     retirementWeeks: retirementWeeksCount,
-    remainingWeeks: activeWeeksCount + retirementWeeksCount
+    remainingWeeks: activeWeeksCount + retirementWeeksCount,
   };
 };
