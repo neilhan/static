@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import languageFavicon from "@static/shared/assets/icons/language.svg";
 import "@static/shared/styles.css";
 import App from "./App";
-import "./index.css";
 
 const selectFaviconLink = (): HTMLLinkElement | null =>
   document.querySelector('link[data-app-icon], link[rel~="icon"]');
@@ -29,4 +28,3 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <App />
   </React.StrictMode>
 );
-

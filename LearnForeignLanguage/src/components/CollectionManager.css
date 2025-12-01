@@ -112,7 +112,7 @@
 }
 
 .icon-btn:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
 }
 
@@ -136,24 +136,4 @@
 }
 
 /* Button Helpers */
-.btn-sm {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-}
-
-/* Removed specific button styles here as they are now in App.css or using shared classes */
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-outline:hover {
-  background: var(--bg-panel-alt);
-  border-color: var(--text-muted);
-  color: var(--text-primary);
-}
+/* .btn-sm and .btn-outline moved to App.css */

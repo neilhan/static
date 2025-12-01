@@ -35,49 +35,6 @@
   color: var(--text-primary);
 }
 
-/* Control Row */
-.control-row {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.checkbox-control {
-  display: flex;
-  align-items: center;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-  margin: 0;
-  width: 1.1em;
-  height: 1.1em;
-  accent-color: var(--accent);
-}
-
-.delay-control {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.delay-control label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 /* Text Input & Overlay */
 .text-input-container {
   display: flex;

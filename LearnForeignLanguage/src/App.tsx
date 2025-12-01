@@ -523,32 +523,10 @@ function App() {
 
           {/* Middle: Editor */}
           <section className="panel editor-panel">
-            <div
-              className="editor-header"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-                gap: "1rem",
-              }}
-            >
+            <div className="editor-header">
               <h2>{activeCollection.name}</h2>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  gap: "0.5rem",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.75rem",
-                    alignItems: "center",
-                  }}
-                >
+              <div className="player-controls-group">
+                <div className="player-main-actions">
                   <button
                     className={`btn-queue-mode ${
                       isRandomOrder ? "active" : ""
@@ -590,20 +568,10 @@ function App() {
                   </button>
                 </div>
 
-                <div
-                  style={{ display: "flex", gap: "1rem", alignItems: "center" }}
-                >
+                <div className="player-settings">
                   <label
                     className="playback-checkbox-control"
                     title="Pause for the same duration as the spoken text to allow repetition"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      cursor: "pointer",
-                      fontSize: "0.9rem",
-                      whiteSpace: "nowrap",
-                    }}
                   >
                     <input
                       type="checkbox"
@@ -611,7 +579,6 @@ function App() {
                       onChange={(e) =>
                         handleIncludePauseChange(e.target.checked)
                       }
-                      style={{ cursor: "pointer" }}
                     />
                     <span>Include pause for repetition</span>
                   </label>
@@ -619,20 +586,11 @@ function App() {
                   <label
                     className="playback-checkbox-control"
                     title="Play native translation after target text"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      cursor: "pointer",
-                      fontSize: "0.9rem",
-                      whiteSpace: "nowrap",
-                    }}
                   >
                     <input
                       type="checkbox"
                       checked={activeCollection.playbackSettings.playNative}
                       onChange={(e) => handlePlayNativeChange(e.target.checked)}
-                      style={{ cursor: "pointer" }}
                     />
                     <span>Include translation</span>
                   </label>
