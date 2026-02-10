@@ -30,20 +30,49 @@ export const useTimer = (program: Program | null): UseTimerResult => {
   });
 
   const intervalRef = useRef<number | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null); // New ref for AudioContext
+  const isAudioContextResumed = useRef(false); // To track if audio context has been resumed
 
+  // useEffect to initialize audio context and handle resume on user interaction
   useEffect(() => {
-    // Create audio context for beep sound
-    audioRef.current = new Audio();
-  }, []);
+    // Initialize AudioContext if it hasn't been yet
+    if (!audioContextRef.current) {
+      audioContextRef.current = createAudioContext();
+    }
 
-  const playBeep = useCallback((): void => {
-    if (!program?.beepEnabled) return;
-    
+    const resumeContext = () => {
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume().then(() => {
+          console.log('AudioContext resumed successfully');
+          isAudioContextResumed.current = true;
+          // Remove event listeners after successful resume
+          document.removeEventListener('click', resumeContext);
+          document.removeEventListener('touchstart', resumeContext);
+        }).catch(error => {
+          console.error('Error resuming AudioContext:', error);
+        });
+      } else if (audioContextRef.current && audioContextRef.current.state === 'running') {
+        isAudioContextResumed.current = true;
+        // Remove event listeners if context is already running
+        document.removeEventListener('click', resumeContext);
+        document.removeEventListener('touchstart', resumeContext);
+      }
+    };
+
+    // Attach event listeners to resume context on first user interaction
+    document.addEventListener('click', resumeContext, { once: true });
+    document.addEventListener('touchstart', resumeContext, { once: true });
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('click', resumeContext);
+      document.removeEventListener('touchstart', resumeContext);
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Helper function to create and play the oscillator
+  const _createAndPlayOscillator = useCallback((audioContext: AudioContext) => {
     try {
-      // Simple beep using Web Audio API
-      const audioContext = createAudioContext();
-      if (!audioContext) return;
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -59,9 +88,28 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
     } catch (error) {
-      console.error('Error playing beep:', error);
+      console.error('Error playing beep (oscillator creation):', error);
     }
-  }, [program?.beepEnabled]);
+  }, []);
+
+  const playBeep = useCallback((): void => {
+    if (!program?.beepEnabled || !audioContextRef.current) return;
+
+    const currentAudioContext = audioContextRef.current; // Extract to a non-nullable local variable
+
+    // Ensure context is running, attempt to resume if suspended
+    if (currentAudioContext.state === 'suspended' && !isAudioContextResumed.current) {
+      currentAudioContext.resume().then(() => {
+        console.log('AudioContext resumed from playBeep fallback');
+        isAudioContextResumed.current = true;
+        _createAndPlayOscillator(currentAudioContext); // Use the non-nullable local variable
+      }).catch(error => {
+        console.error('Error resuming AudioContext from playBeep fallback:', error);
+      });
+    } else if (currentAudioContext.state === 'running') {
+      _createAndPlayOscillator(currentAudioContext); // Use the non-nullable local variable
+    }
+  }, [program?.beepEnabled, _createAndPlayOscillator]);
 
   const reset = useCallback((): void => {
     setTimerState({
@@ -188,4 +236,3 @@ export const useTimer = (program: Program | null): UseTimerResult => {
     skip,
   };
 };
-

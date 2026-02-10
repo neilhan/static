@@ -50,6 +50,27 @@ export const useMorseSender = (
   callbacks: SenderCallbacks = {}
 ) => {
   const audio = useAudioEngine(frequency);
+
+  // Add useEffect to handle audio context resume on first user interaction
+  useEffect(() => {
+    const resumeAudioContext = () => {
+      // Calling unsuspend from useAudioEngine
+      audio.unsuspend();
+      // Remove listeners after the first interaction
+      document.removeEventListener('click', resumeAudioContext);
+      document.removeEventListener('touchstart', resumeAudioContext);
+    };
+
+    // Attach event listeners to resume context on first user interaction
+    document.addEventListener('click', resumeAudioContext, { once: true });
+    document.addEventListener('touchstart', resumeAudioContext, { once: true });
+
+    // Cleanup function to ensure listeners are removed if component unmounts early
+    return () => {
+      document.removeEventListener('click', resumeAudioContext);
+      document.removeEventListener('touchstart', resumeAudioContext);
+    };
+  }, [audio]); // Depend on 'audio' to ensure we have the unsuspend function
   const [status, setStatus] = useState<SenderPlayState>("idle");
   const [senderProgress, setSenderProgress] = useState<SenderProgress>(
     INITIAL_SENDER_PROGRESS

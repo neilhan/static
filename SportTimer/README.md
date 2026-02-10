@@ -48,7 +48,7 @@ A modern interval timer app for creating and running sequential timer programs. 
 
 ### Prerequisites
 
-- Node.js (v18 or higher recommended)
+- Node.js (v25 or higher recommended)
 - npm, yarn, or pnpm
 
 ### Installation

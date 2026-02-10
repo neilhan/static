@@ -12,7 +12,7 @@
 
 ## Development
 ```
-nvm use 22
+nvm use 25
 pnpm -r install
 pnpm build
 pnpm dev:all
@@ -21,7 +21,7 @@ pnpm dev:all
 This repo is a pnpm workspace. To work on any app:
 
 1. Enable pnpm via Corepack once: `corepack enable pnpm`
-2. Use Node 22+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
+2. Use Node 25+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
 3. Install everything from the repo root: `pnpm install`
 4. Dev servers:
    - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, or `pnpm dev:language`
@@ -48,4 +48,4 @@ This will serve the built files over HTTP at `http://localhost:3000` (or another
 
 ---
 
-_Last updated: 2025-12-01 13:13 PT_
+_Last updated: 2026-02-09 20:34 PT_

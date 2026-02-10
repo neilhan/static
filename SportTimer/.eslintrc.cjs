@@ -14,6 +14,21 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    // Disable the base ESLint rule as it can report incorrect errors with TypeScript
+    'no-unused-vars': 'off',
+    // Enable the TypeScript-specific rule with more precise configuration
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        args: 'after-used', // Don't check arguments that are used
+        vars: 'all',       // Check all variables
+        varsIgnorePattern: '^_', // Ignore variables that start with _
+        argsIgnorePattern: '^_', // Ignore arguments that start with _
+        caughtErrors: 'all', // Check caught errors
+        caughtErrorsIgnorePattern: '^_', // Ignore caught errors that start with _
+        ignoreRestSiblings: true, // Ignore rest siblings in object destructuring
+      },
+    ],
   },
 }
 
