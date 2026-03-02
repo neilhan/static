@@ -118,6 +118,10 @@ importers:
         version: 7.3.1(@types/node@24.10.12)
 
   LuckyNumberLookup:
+    dependencies:
+      '@static/shared':
+        specifier: workspace:*
+        version: link:../packages/shared
     devDependencies:
       typescript:
         specifier: ~5.9.3

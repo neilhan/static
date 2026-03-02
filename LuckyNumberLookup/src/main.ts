@@ -1,5 +1,6 @@
 import "./style.css";
 import { lookup, LOOKUP_TABLE, toLookupIndex } from "./data";
+import homeIcon from "@static/shared/assets/home.svg?raw";
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
@@ -8,9 +9,21 @@ function render(): void {
   const resultId = "lucky-result";
   const resultDetailId = "lucky-result-detail";
 
+  const base = import.meta.env.BASE_URL ?? "./";
+  const appIcon = `${base}number.svg`;
+
   app.innerHTML = `
     <header class="header">
-      <h1>Lucky Number Lookup</h1>
+      <div class="header-row">
+        <div class="header-title-group">
+          <a href="https://neilhan.github.io/static" class="home-link" title="Back to Home" aria-label="Back to Home">
+            <span class="home-icon" aria-hidden="true">${homeIcon}</span>
+          </a>
+          <span class="breadcrumb-separator">/</span>
+          <img src="${appIcon}" alt="Lucky number icon" width="32" height="32" class="header-app-icon" />
+          <h1>Lucky Number Lookup</h1>
+        </div>
+      </div>
       <p class="subtitle">Enter a number; it will be reduced modulo 81 (1–81) and looked up in the table below.</p>
     </header>
 

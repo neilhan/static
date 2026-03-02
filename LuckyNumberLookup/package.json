@@ -10,6 +10,9 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "@static/shared": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "~5.9.3",
     "vite": "^7.2.4",
