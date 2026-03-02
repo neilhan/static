@@ -10,7 +10,9 @@
     "dev:sporttimer": "pnpm --filter sporttimer dev",
     "dev:life": "pnpm --filter life dev",
     "dev:language": "pnpm --filter learn-foreign-language dev",
-    "dev:all": "concurrently \"pnpm --filter farnsworth-cw-trainer dev\" \"pnpm --filter SportTimer dev\" \"pnpm --filter life dev\" \"pnpm --filter learn-foreign-language dev\"",
+    "dev:lookup": "pnpm --filter lucky-number-lookup dev",
+    "dev:lucky": "pnpm --filter lucky-number-lookup dev",
+    "dev:all": "concurrently \"pnpm --filter farnsworth-cw-trainer dev\" \"pnpm --filter SportTimer dev\" \"pnpm --filter life dev\" \"pnpm --filter learn-foreign-language dev\" \"pnpm --filter lucky-number-lookup dev\"",
     "lint": "pnpm run -r lint",
     "test": "pnpm run -r test"
   },

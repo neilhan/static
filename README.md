@@ -8,6 +8,8 @@
 
 [<img src="./packages/shared/assets/icons/language.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Learn Foreign Language](./LearnForeignLanguage/dist/index.html) — in-progress language practice workspace.
 
+[🔢 Lucky Number Lookup](./LuckyNumberLookup/dist/index.html) — Enter a number (digits only); it is reduced modulo 81 (1–81) and looked up in the fortune table.
+
 <iframe src="./Life/dist/index.html" width="100%" height="2400px" style="border: 1px solid #333; border-radius: 8px;" scrolling="no"></iframe>
 
 ## Development
@@ -24,7 +26,7 @@ This repo is a pnpm workspace. To work on any app:
 2. Use Node 25+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
 3. Install everything from the repo root: `pnpm install`
 4. Dev servers:
-   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, or `pnpm dev:language`
+   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, `pnpm dev:language`, or `pnpm dev:lookup` (Lucky Number Lookup)
    - All apps together: `pnpm dev:all`
 5. Build every app at once: `pnpm run -r build` (or `./build_all.sh`)
 
@@ -48,4 +50,4 @@ This will serve the built files over HTTP at `http://localhost:3000` (or another
 
 ---
 
-_Last updated: 2026-02-19 21:41 PT_
+_Last updated: 2026-03-02 08:57 PT_
