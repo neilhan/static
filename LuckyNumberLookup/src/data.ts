@@ -94,24 +94,24 @@ export const LOOKUP_TABLE: LookupRow[] = [
  * How the 1–81 lookup index is calculated:
  *
  * 1. Any number in 1–81 maps to itself (direct lookup).
- * 2. Any other positive integer: take remainder when divided by 81.
+ * 2. Any other integer: take remainder when divided by 80.
  *    - remainder 1–80 → use that as the index (1–80).
- *    - remainder 0   → use 81 (e.g. 81, 162, 243 all map to index 81).
- * 3. Formula: index = (value % 81) with the rule that 0 is treated as 81.
- *    For negative numbers we use ((value % 81) + 81) % 81 so the result
- *    is in 0–80, then 0 → 81, else use the remainder.
+ *    - remainder 0    → use 80.
+ * 3. Formula for the remainder branch: r = ((value % 80) + 80) % 80 so the
+ *    result is in 0–80, then 0 → 80, else use the remainder.
  *
  * Examples:
- *   - 1 → 1,  80 → 80,  81 → 81
- *   - 82 → 1 (82 % 81 = 1),  162 → 81 (162 % 81 = 0 → 81),  243 → 81
- *   - 0 → 81 (0 % 81 = 0 → 81)
+ *   - 1 → 1,  80 → 80,  81 → 81 (direct)
+ *   - 82 → 2 (82 % 80 = 2),  161 → 1 (161 % 80 = 1),  160 → 80
+ *   - 0 → 80 (0 % 80 = 0 → 80)
  */
 export function toLookupIndex(value: number): number {
   const n = Number(value);
   if (!Number.isFinite(n)) return 1;
-  // Normalize modulo result to 0–80 even when n is negative.
-  const r = ((n % 81) + 81) % 81;
-  return r === 0 ? 81 : r;
+  if (n >= 1 && n <= 81) return n;
+  // Normalize modulo result to 0–80 even when n is negative (mod 80).
+  const r = ((n % 80) + 80) % 80;
+  return r === 0 ? 80 : r;
 }
 
 /** Get the lookup row for a number (1–81). */
