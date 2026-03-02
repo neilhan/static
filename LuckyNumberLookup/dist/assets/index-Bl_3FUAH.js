@@ -65,6 +65,7 @@
       </tr>
     `)}const t=i[80];return r.push(`
     <tr>
+    <td colspan="3"></td>
       <td>81</td>
       <td>${t.phrases.join(" ")}</td>
       <td class="result-cell result-${t.result}">${t.result}</td>

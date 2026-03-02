@@ -128,6 +128,7 @@ function renderTableBody(): string {
   const last = LOOKUP_TABLE[80];
   rows.push(`
     <tr>
+    <td colspan="3"></td>
       <td>81</td>
       <td>${last.phrases.join(" ")}</td>
       <td class="result-cell result-${last.result}">${last.result}</td>
