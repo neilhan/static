@@ -12,11 +12,12 @@
     "dev:language": "pnpm --filter learn-foreign-language dev",
     "dev:lookup": "pnpm --filter lucky-number-lookup dev",
     "dev:lucky": "pnpm --filter lucky-number-lookup dev",
-    "dev:all": "concurrently \"pnpm --filter farnsworth-cw-trainer dev\" \"pnpm --filter SportTimer dev\" \"pnpm --filter life dev\" \"pnpm --filter learn-foreign-language dev\" \"pnpm --filter lucky-number-lookup dev\"",
+    "dev:calc": "pnpm --filter rrsp-calculator dev",
+    "dev:all": "concurrently \"pnpm --filter farnsworth-cw-trainer dev\" \"pnpm --filter SportTimer dev\" \"pnpm --filter life dev\" \"pnpm --filter learn-foreign-language dev\" \"pnpm --filter lucky-number-lookup dev\" \"pnpm --filter rrsp-calculator dev\"",
     "lint": "pnpm run -r lint",
     "test": "pnpm run -r test"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.5"
   }
 }

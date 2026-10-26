@@ -10,11 +10,13 @@
 
 [<img src="./LuckyNumberLookup/public/number.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Lucky Number Lookup](./LuckyNumberLookup/dist/index.html) — Enter a number (digits only); it is reduced modulo 81 (1–81) and looked up in the fortune table.
 
+[<img src="./RRSPCalculator/public/calculator.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> RRSP vs. Personal Investment Calculator](./RRSPCalculator/dist/index.html) — Compare RRSP, Taxable Personal Accounts, and TFSA. Model your accumulation, decumulation, tax drag, and after-tax retirement longevity.
+
 <iframe src="./Life/dist/index.html" width="100%" height="2400px" style="border: 1px solid #333; border-radius: 8px;" scrolling="no"></iframe>
 
 ## Development
 ```
-nvm use 25
+nvm use 26
 pnpm -r install
 pnpm build
 pnpm dev:all
@@ -23,10 +25,10 @@ pnpm dev:all
 This repo is a pnpm workspace. To work on any app:
 
 1. Enable pnpm via Corepack once: `corepack enable pnpm`
-2. Use Node 25+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
+2. Use Node 26+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
 3. Install everything from the repo root: `pnpm install`
 4. Dev servers:
-   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, `pnpm dev:language`, or `pnpm dev:lookup` (Lucky Number Lookup)
+   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, `pnpm dev:language`, `pnpm dev:lookup`, or `pnpm dev:calc` (RRSP Calculator)
    - All apps together: `pnpm dev:all`
 5. Build every app at once: `pnpm run -r build` (or `./build_all.sh`)
 

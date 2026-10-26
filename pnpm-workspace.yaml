@@ -4,5 +4,6 @@ packages:
   - SportTimer
   - LearnForeignLanguage
   - LuckyNumberLookup
+  - RRSPCalculator
   - packages/*
 

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="calcGrad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="12" y1="12" x2="52" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#2563eb" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Body -->
+  <rect x="8" y="4" width="48" height="56" rx="12" fill="url(#calcGrad)" filter="url(#glow)"/>
+  <rect x="9" y="5" width="46" height="54" rx="11" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+  
+  <!-- Screen -->
+  <rect x="14" y="10" width="36" height="13" rx="4" fill="url(#screenGrad)"/>
+  <rect x="14" y="10" width="36" height="13" rx="4" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <!-- Digits simulation -->
+  <rect x="36" y="15" width="10" height="3" rx="1.5" fill="#38bdf8"/>
+  <circle cx="18" cy="16.5" r="1.5" fill="#10b981"/>
+
+  <!-- Keypad Buttons -->
+  <!-- Row 1 -->
+  <rect x="14" y="27" width="9" height="7" rx="2.5" fill="rgba(255,255,255,0.18)"/>
+  <rect x="27" y="27" width="9" height="7" rx="2.5" fill="rgba(255,255,255,0.18)"/>
+  <rect x="41" y="27" width="9" height="7" rx="2.5" fill="#f59e0b"/>
+  <!-- Row 2 -->
+  <rect x="14" y="37" width="9" height="7" rx="2.5" fill="rgba(255,255,255,0.18)"/>
+  <rect x="27" y="37" width="9" height="7" rx="2.5" fill="rgba(255,255,255,0.18)"/>
+  <rect x="41" y="37" width="9" height="7" rx="2.5" fill="rgba(255,255,255,0.25)"/>
+  <!-- Row 3 -->
+  <rect x="14" y="47" width="9" height="7" rx="2.5" fill="rgba(255,255,255,0.18)"/>
+  <rect x="27" y="47" width="9" height="7" rx="2.5" fill="rgba(255,255,255,0.18)"/>
+  <rect x="41" y="47" width="9" height="7" rx="2.5" fill="#10b981"/>
+</svg>
