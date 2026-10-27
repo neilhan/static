@@ -1262,6 +1262,89 @@ input[type="range"]::-moz-range-thumb:hover {
   line-height: 1.4;
 }
 
+/* Withdrawal Blueprint Card */
+.withdrawal-blueprint-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.blueprint-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.blueprint-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.blueprint-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.blueprint-col {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.blueprint-col.rrsp { border-left: 3px solid var(--rrsp-color); }
+.blueprint-col.pi { border-left: 3px solid var(--nonreg-color); }
+.blueprint-col.tfsa { border-left: 3px solid var(--tfsa-color); }
+.blueprint-col.net { border-left: 3px solid #10b981; }
+
+.blueprint-col-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.blueprint-amount {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.blueprint-note {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.blueprint-explanation {
+  background: rgba(99, 102, 241, 0.08);
+  border-left: 3px solid var(--primary-accent);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
 /* Advisor Card */
 .advisor-card {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(16, 185, 129, 0.08));
@@ -1445,6 +1528,84 @@ input[type="range"]::-moz-range-thumb:hover {
   white-space: nowrap;
 }
 
+/* Spending Optimizer & Scenario Playbook */
+.btn-optimize-spend {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15));
+  border: 1px dashed rgba(99, 102, 241, 0.45);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.btn-optimize-spend:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.28), rgba(16, 185, 129, 0.25));
+  border-color: var(--primary-accent);
+  transform: translateY(-1px);
+}
+
+.optimize-spend-banner {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  margin-top: 0.45rem;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: #34d399;
+}
+
+.scenario-playbook-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  margin-bottom: 0.85rem;
+  scrollbar-width: none;
+}
+
+.scenario-playbook-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.scenario-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.scenario-chip:hover {
+  border-color: var(--primary-accent);
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
+}
+
 /* Footer */
 .footer-note {
   margin-top: 3rem;
@@ -1453,6 +1614,438 @@ input[type="range"]::-moz-range-thumb:hover {
   font-size: 0.82rem;
   line-height: 1.6;
 }
+
+/* ========================================================
+   Guaranteed Pensions & Other Income Card (Sidebar & Detail)
+   ======================================================== */
+.pension-income-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  margin: 1rem 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.pension-income-card.enabled {
+  border-color: rgba(96, 165, 250, 0.55);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.pension-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pension-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.pension-card-title-group .icon {
+  font-size: 1rem;
+}
+
+.pension-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Toggle Switch */
+.pension-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.pension-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.pension-slider-toggle {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-subtle);
+  transition: 0.25s;
+  border-radius: 20px;
+}
+
+.pension-slider-toggle:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: 0.25s;
+  border-radius: 50%;
+}
+
+.pension-switch input:checked + .pension-slider-toggle {
+  background-color: #3b82f6;
+}
+
+.pension-switch input:checked + .pension-slider-toggle:before {
+  transform: translateX(16px);
+}
+
+.btn-toggle-expand {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.45rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-toggle-expand:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+/* Coverage Indicator Banner */
+.pension-coverage-banner {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.7rem;
+  margin-top: 0.65rem;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: #93c5fd;
+}
+
+.coverage-metrics-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.coverage-progress-bar {
+  display: flex;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.coverage-seg-pension {
+  background: #3b82f6;
+  transition: width 0.2s ease;
+}
+
+.coverage-seg-portfolio {
+  background: #10b981;
+  transition: width 0.2s ease;
+}
+
+/* Benchmark Presets Grid */
+.pension-presets-container {
+  margin-top: 0.65rem;
+}
+
+.pension-presets-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+}
+
+.pension-presets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.pension-preset-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pension-preset-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(96, 165, 250, 0.4);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Collapsible Details Body */
+.pension-details-body {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pension-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pension-field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+}
+
+.pension-field-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pension-field-tag {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.pension-subgrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* Income Stack Box for Blueprint Card */
+.income-stack-container {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.income-stack-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #93c5fd;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.income-stack-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+}
+
+.income-stack-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.income-stack-row.total {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+/* ========================================================
+   Dual-View Chart Toggle & Income Breakdown Explorer
+   ======================================================== */
+.chart-view-toggle {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.chart-view-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.chart-view-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.chart-view-btn.active {
+  background: var(--primary-accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+/* Blueprint Age Explorer Controls */
+.blueprint-age-explorer {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.blueprint-age-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.blueprint-age-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.blueprint-age-display {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary-accent);
+  background: rgba(99, 102, 241, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.blueprint-age-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.blueprint-age-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.age-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.age-chip:hover {
+  border-color: var(--primary-accent);
+  color: var(--text-primary);
+}
+
+.age-chip.active {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--primary-accent);
+  color: #a5b4fc;
+}
+
+/* Multi-Segment Income Breakdown Bar */
+.income-breakdown-bar-wrapper {
+  margin: 0.65rem 0 0.85rem 0;
+}
+
+.income-breakdown-bar {
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 0.4rem;
+}
+
+.income-bar-seg {
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.income-bar-seg.cpp { background: #3b82f6; }
+.income-bar-seg.oas { background: #60a5fa; }
+.income-bar-seg.db { background: #818cf8; }
+.income-bar-seg.rrsp { background: var(--rrsp-color); }
+.income-bar-seg.pi { background: var(--nonreg-color); }
+.income-bar-seg.tfsa { background: var(--tfsa-color); }
+
+.income-legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.income-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.income-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.income-legend-dot.cpp { background: #3b82f6; }
+.income-legend-dot.oas { background: #60a5fa; }
+.income-legend-dot.db { background: #818cf8; }
+.income-legend-dot.rrsp { background: var(--rrsp-color); }
+.income-legend-dot.pi { background: var(--nonreg-color); }
+.income-legend-dot.tfsa { background: var(--tfsa-color); }
+
+
 
 
 

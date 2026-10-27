@@ -8,6 +8,7 @@ import {
   runSimulation,
   simulatePortfolioStrategy,
   compareAllStrategies,
+  findMaxSafeSpending,
 } from "./calculator";
 
 describe("Canadian Tax Modeling", () => {
@@ -111,5 +112,73 @@ describe("Portfolio Strategy Simulator (Single & Couple)", () => {
     expect(coupleCustom.annualTaxRefund).toBe(13100);
     expect(coupleCustom.longevityYears).toBeGreaterThan(20);
   });
+
+  it("finds maximum safe annual net spending to age 95", () => {
+    const opt = findMaxSafeSpending({
+      ...baseSingleParams,
+      annualSaving: 40000,
+      yearsAccumulation: 15,
+      retireAge: 65,
+    }, 95);
+
+    expect(opt.maxSpending).toBeGreaterThan(60000);
+    expect(opt.strategyResult.longevityYears).toBeGreaterThanOrEqual(30);
+  });
+
+  it("simulates guaranteed other income (CPP + OAS) reducing portfolio draw and extending longevity", () => {
+    const withoutIncome = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      retireNetSpending: 85000,
+      decumStrategy: "oasShield",
+      includeOtherIncome: false,
+    });
+
+    const withIncome = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      retireNetSpending: 85000,
+      decumStrategy: "oasShield",
+      includeOtherIncome: true,
+      person1CppAnnual: 12000,
+      person1CppStartAge: 65,
+      person1OasAnnual: 8560,
+    });
+
+    expect(withIncome.annualGuaranteedGrossAtRetirement).toBe(20560);
+    expect(withIncome.annualGuaranteedNetAtRetirement).toBeGreaterThan(17000);
+
+    const firstRetireYear = withIncome.history.find((h) => h.notes !== "Accumulating");
+    expect(firstRetireYear).toBeDefined();
+    expect(firstRetireYear?.guaranteedGross).toBe(20560);
+    expect(firstRetireYear?.portfolioNetDraw).toBeLessThan(85000);
+    // Longevity with guaranteed pensions should significantly exceed baseline
+    expect(withIncome.longevityYears).toBeGreaterThan(withoutIncome.longevityYears);
+  });
+
+  it("factors in CPP, OAS, and employer DB pension for a 2-person couple", () => {
+    const coupleWithPensions = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      householdMode: "couple",
+      person2RetireAge: 65,
+      enableIncomeSplitting: true,
+      retireNetSpending: 100000,
+      decumStrategy: "oasShield",
+      includeOtherIncome: true,
+      person1CppAnnual: 12000,
+      person1CppStartAge: 65,
+      person2CppAnnual: 10000,
+      person2CppStartAge: 65,
+      person1OasAnnual: 8560,
+      person2OasAnnual: 8560,
+      employerPensionAnnual: 25000,
+      employerPensionStartAge: 65,
+    });
+
+    // Total gross guaranteed = 12000 + 10000 + 8560 + 8560 + 25000 = 64120
+    expect(coupleWithPensions.annualGuaranteedGrossAtRetirement).toBe(64120);
+    expect(coupleWithPensions.annualGuaranteedNetAtRetirement).toBeGreaterThan(50000);
+    expect(coupleWithPensions.longevityYears).toBeGreaterThan(25);
+  });
 });
+
+
 

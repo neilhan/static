@@ -58,6 +58,17 @@ export interface StrategySimulationParams {
   piSaving?: number;
   tfsaSaving?: number;
   reinvestRefundTo: "tfsa" | "pi" | "none";
+  // Other Income Sources (CPP, OAS, Employer DB Pension, Rental)
+  includeOtherIncome?: boolean;
+  person1CppAnnual?: number;
+  person1CppStartAge?: number;
+  person2CppAnnual?: number;
+  person2CppStartAge?: number;
+  person1OasAnnual?: number;
+  person2OasAnnual?: number;
+  employerPensionAnnual?: number;
+  employerPensionStartAge?: number;
+  otherTaxableIncome?: number;
   // Decumulation strategy
   decumStrategy: DecumulationStrategy;
 }
@@ -96,6 +107,14 @@ export interface StrategyYearRecord {
   rrspGrowth: number;
   piGrowth: number;
   tfsaGrowth: number;
+  // Guaranteed Other Income
+  guaranteedGross: number;
+  guaranteedNet: number;
+  portfolioNetDraw: number;
+  cppIncome: number;
+  oasIncome: number;
+  dbPensionIncome: number;
+  otherIncome: number;
   // Withdrawals (Decumulation)
   rrspGrossDraw: number;
   piGrossDraw: number;
@@ -138,6 +157,8 @@ export interface StrategyResult {
   person1RrspSaving?: number;
   person2RrspSaving?: number;
   piSaving?: number;
+  annualGuaranteedGrossAtRetirement?: number;
+  annualGuaranteedNetAtRetirement?: number;
   estateValueAtAge85: number;
   couplesAnnualTaxSavings?: number;
   history: StrategyYearRecord[];
@@ -920,6 +941,13 @@ export function simulatePortfolioStrategy(
       rrspGrowth: Math.round(rrspGrowth),
       piGrowth: Math.round(piGrowth),
       tfsaGrowth: Math.round(tfsaGrowth),
+      guaranteedGross: 0,
+      guaranteedNet: 0,
+      portfolioNetDraw: 0,
+      cppIncome: 0,
+      oasIncome: 0,
+      dbPensionIncome: 0,
+      otherIncome: 0,
       rrspGrossDraw: 0,
       piGrossDraw: 0,
       tfsaGrossDraw: 0,
@@ -949,6 +977,8 @@ export function simulatePortfolioStrategy(
   let yearsFunded = 0;
   let isPerpetual = false;
   let estateValueAtAge85 = 0;
+  let firstYearGuaranteedGross = 0;
+  let firstYearGuaranteedNet = 0;
   const maxRetireYears = 55;
   const piRetireRate = retireGrowthRate * 0.85;
 
@@ -975,7 +1005,56 @@ export function simulatePortfolioStrategy(
     const rrifFactor = getRRIFMinFactor(householdMode === "couple" ? minAge : age1);
     const rrifMinGross = rrifFactor > 0 ? Math.min(rrspAvail, rrspStart * rrifFactor) : 0;
 
-    let targetNet = retireNetSpending;
+    // Guaranteed Pensions & Other Income
+    let p1Cpp = 0;
+    let p2Cpp = 0;
+    let p1Oas = 0;
+    let p2Oas = 0;
+    let dbPension = 0;
+    let otherInc = 0;
+
+    if (params.includeOtherIncome) {
+      if (age1 >= (params.person1CppStartAge ?? 65)) {
+        p1Cpp = params.person1CppAnnual ?? 10000;
+      }
+      if (householdMode === "couple" && age2 >= (params.person2CppStartAge ?? 65)) {
+        p2Cpp = params.person2CppAnnual ?? 8000;
+      }
+      if (age1 >= 65) {
+        const baseOas = params.person1OasAnnual ?? 8560;
+        p1Oas = age1 >= 75 ? baseOas * 1.10 : baseOas; // CRA +10% boost at age 75+
+      }
+      if (householdMode === "couple" && age2 >= 65) {
+        const baseOas = params.person2OasAnnual ?? 8560;
+        p2Oas = age2 >= 75 ? baseOas * 1.10 : baseOas; // CRA +10% boost at age 75+
+      }
+      if (age1 >= (params.employerPensionStartAge ?? retireAge)) {
+        dbPension = params.employerPensionAnnual ?? 0;
+      }
+      otherInc = params.otherTaxableIncome ?? 0;
+    }
+
+    const guaranteedGross = p1Cpp + p2Cpp + p1Oas + p2Oas + dbPension + otherInc;
+    let guaranteedTax = 0;
+    if (guaranteedGross > 0) {
+      if (householdMode === "couple") {
+        const taxable1 = p1Cpp + p1Oas + dbPension * 0.5 + otherInc * 0.5;
+        const taxable2 = p2Cpp + p2Oas + dbPension * 0.5 + otherInc * 0.5;
+        const tax1 = calculateOntarioIncomeTax(taxable1, age1 >= 65);
+        const tax2 = calculateOntarioIncomeTax(taxable2, age2 >= 65);
+        guaranteedTax = tax1 + tax2;
+      } else {
+        guaranteedTax = calculateOntarioIncomeTax(guaranteedGross, age1 >= 65);
+      }
+    }
+    const guaranteedNet = Math.max(0, guaranteedGross - guaranteedTax);
+    let targetNet = Math.max(0, retireNetSpending - guaranteedNet);
+
+    if (y === 1) {
+      firstYearGuaranteedGross = guaranteedGross;
+      firstYearGuaranteedNet = guaranteedNet;
+    }
+
     let rrspGrossDraw = 0;
     let piGrossDraw = 0;
     let tfsaGrossDraw = 0;
@@ -1117,14 +1196,14 @@ export function simulatePortfolioStrategy(
 
     // Top up convergence
     for (let pass = 0; pass < 3; pass++) {
-      const taxable = rrspGrossDraw + piGrossDraw * piGainRatio * 0.5;
+      const taxable = guaranteedGross + rrspGrossDraw + piGrossDraw * piGainRatio * 0.5;
       const curTax =
         householdMode === "couple"
           ? calculateCoupleTax(taxable, age1, age2, enableIncomeSplitting).totalTax
           : calculateOntarioIncomeTax(taxable, age1 >= 65);
 
-      const curNet = rrspGrossDraw + piGrossDraw + tfsaGrossDraw - curTax;
-      const diff = targetNet - curNet;
+      const curNet = guaranteedGross + rrspGrossDraw + piGrossDraw + tfsaGrossDraw - curTax;
+      const diff = retireNetSpending - curNet;
       if (diff <= 300) break;
 
       if (tfsaAvail > tfsaGrossDraw) {
@@ -1144,7 +1223,7 @@ export function simulatePortfolioStrategy(
 
     // Taxes
     const piTaxableGain = piGrossDraw * piGainRatio * 0.5;
-    const combinedTaxableIncome = rrspGrossDraw + piTaxableGain;
+    const combinedTaxableIncome = guaranteedGross + rrspGrossDraw + piTaxableGain;
 
     const taxRes =
       householdMode === "couple"
@@ -1152,8 +1231,9 @@ export function simulatePortfolioStrategy(
         : { totalTax: calculateOntarioIncomeTax(combinedTaxableIncome, age1 >= 65), isSplit: false };
 
     const yearTotalTax = taxRes.totalTax;
-    const rrspTax = combinedTaxableIncome > 0 ? Math.round(yearTotalTax * (rrspGrossDraw / combinedTaxableIncome)) : 0;
-    const piTax = Math.round(yearTotalTax - rrspTax);
+    const portfolioTaxable = rrspGrossDraw + piTaxableGain;
+    const rrspTax = portfolioTaxable > 0 ? Math.round((yearTotalTax - guaranteedTax) * (rrspGrossDraw / portfolioTaxable)) : 0;
+    const piTax = Math.max(0, Math.round(yearTotalTax - guaranteedTax - rrspTax));
 
     totalLifetimeTax += yearTotalTax;
 
@@ -1162,7 +1242,8 @@ export function simulatePortfolioStrategy(
       totalOASClawback += clawback;
     }
 
-    const netReceived = Math.round(rrspGrossDraw + piGrossDraw + tfsaGrossDraw - yearTotalTax);
+    const netReceived = Math.round(guaranteedGross + rrspGrossDraw + piGrossDraw + tfsaGrossDraw - yearTotalTax);
+    const portfolioNetDraw = Math.max(0, netReceived - guaranteedNet);
 
     rrspBal = Math.max(0, rrspAvail - rrspGrossDraw);
     piBal = Math.max(0, piAvail - piGrossDraw);
@@ -1184,6 +1265,13 @@ export function simulatePortfolioStrategy(
       rrspGrowth: Math.round(rrspGrowth),
       piGrowth: Math.round(piGrowth),
       tfsaGrowth: Math.round(tfsaGrowth),
+      guaranteedGross: Math.round(guaranteedGross),
+      guaranteedNet: Math.round(guaranteedNet),
+      portfolioNetDraw: Math.round(portfolioNetDraw),
+      cppIncome: Math.round(p1Cpp + p2Cpp),
+      oasIncome: Math.round(p1Oas + p2Oas),
+      dbPensionIncome: Math.round(dbPension),
+      otherIncome: Math.round(otherInc),
       rrspGrossDraw: Math.round(rrspGrossDraw),
       piGrossDraw: Math.round(piGrossDraw),
       tfsaGrossDraw: Math.round(tfsaGrossDraw),
@@ -1203,10 +1291,10 @@ export function simulatePortfolioStrategy(
     });
 
     const totalRemaining = rrspBal + piBal + tfsaBal;
-    if (netReceived >= targetNet * 0.85) {
+    if (netReceived >= retireNetSpending * 0.85) {
       yearsFunded += 1;
     } else if (totalRemaining <= 100) {
-      yearsFunded += Math.max(0, netReceived / targetNet);
+      yearsFunded += Math.max(0, netReceived / retireNetSpending);
       break;
     } else {
       yearsFunded += 1;
@@ -1263,6 +1351,8 @@ export function simulatePortfolioStrategy(
     person1RrspSaving: Math.round(p1RrspAlloc),
     person2RrspSaving: Math.round(p2RrspAlloc),
     piSaving: Math.round(rawPi),
+    annualGuaranteedGrossAtRetirement: Math.round(firstYearGuaranteedGross),
+    annualGuaranteedNetAtRetirement: Math.round(firstYearGuaranteedNet),
     estateValueAtAge85,
     couplesAnnualTaxSavings,
     history,
@@ -1282,3 +1372,71 @@ export function compareAllStrategies(
     simulatePortfolioStrategy({ ...params, decumStrategy: strat })
   );
 }
+
+/**
+ * Binary search to find the maximum sustainable annual after-tax spending
+ * that funds retirement up to a target age (default age 95).
+ */
+export function findMaxSafeSpending(
+  params: Omit<StrategySimulationParams, "retireNetSpending" | "decumStrategy">,
+  targetDepletionAge: number = 95
+): {
+  maxSpending: number;
+  bestStrategy: DecumulationStrategy;
+  strategyResult: StrategyResult;
+} {
+  const targetLongevityYears = Math.max(1, targetDepletionAge - params.retireAge);
+  const strategies: DecumulationStrategy[] = [
+    "oasShield",
+    "rrspMeltdown",
+    "taxableFirst",
+    "proRata",
+  ];
+
+  let bestMax = 0;
+  let bestStrat: DecumulationStrategy = "oasShield";
+  let bestResult: StrategyResult | null = null;
+
+  for (const strat of strategies) {
+    let low = 15000;
+    let high = 400000;
+    let stratMax = 15000;
+    let stratRes: StrategyResult | null = null;
+
+    for (let iter = 0; iter < 16; iter++) {
+      const mid = Math.round((low + high) / 2 / 1000) * 1000;
+      const res = simulatePortfolioStrategy({
+        ...params,
+        retireNetSpending: mid,
+        decumStrategy: strat,
+      });
+
+      if (res.isPerpetual || res.longevityYears >= targetLongevityYears) {
+        stratMax = mid;
+        stratRes = res;
+        low = mid + 1000;
+      } else {
+        high = mid - 1000;
+      }
+    }
+
+    if (stratMax > bestMax && stratRes) {
+      bestMax = stratMax;
+      bestStrat = strat;
+      bestResult = stratRes;
+    }
+  }
+
+  return {
+    maxSpending: bestMax,
+    bestStrategy: bestStrat,
+    strategyResult:
+      bestResult ||
+      simulatePortfolioStrategy({
+        ...params,
+        retireNetSpending: bestMax,
+        decumStrategy: bestStrat,
+      }),
+  };
+}
+

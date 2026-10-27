@@ -3,10 +3,12 @@ import {
   runSimulation,
   simulatePortfolioStrategy,
   compareAllStrategies,
+  findMaxSafeSpending,
   FullSimulationComparison,
   StrategyResult,
   DecumulationStrategy,
   HouseholdMode,
+  StrategyYearRecord,
 } from "./calculator";
 import homeIcon from "@static/shared/assets/home.svg?raw";
 
@@ -39,9 +41,25 @@ let state = {
   reinvestRefundTo: "tfsa" as "tfsa" | "pi" | "none",
   decumStrategy: "oasShield" as DecumulationStrategy,
 
+  // Guaranteed Pensions & Other Income
+  includeOtherIncome: false,
+  otherIncomeExpanded: false,
+  person1CppAnnual: 10000,
+  person1CppStartAge: 65,
+  person2CppAnnual: 8000,
+  person2CppStartAge: 65,
+  person1OasAnnual: 8560,
+  person2OasAnnual: 8560,
+  employerPensionAnnual: 0,
+  employerPensionStartAge: 65,
+  otherTaxableIncome: 0,
+
   // Direct Comparator Specific State
   comparatorMode: "preTax" as "preTax" | "cashOut",
   comparatorReinvest: false,
+
+  chartViewMode: "balances" as "balances" | "incomeStreams",
+  blueprintSelectedAge: null as number | null,
 
   ledgerOpen: false,
   theme: (localStorage.getItem("theme") as "dark" | "light") || "dark",
@@ -97,6 +115,16 @@ function getStrategyParams() {
     piSaving: state.piSaving,
     tfsaSaving: state.tfsaSaving,
     reinvestRefundTo: state.reinvestRefundTo,
+    includeOtherIncome: state.includeOtherIncome,
+    person1CppAnnual: state.person1CppAnnual,
+    person1CppStartAge: state.person1CppStartAge,
+    person2CppAnnual: state.person2CppAnnual,
+    person2CppStartAge: state.person2CppStartAge,
+    person1OasAnnual: state.person1OasAnnual,
+    person2OasAnnual: state.person2OasAnnual,
+    employerPensionAnnual: state.employerPensionAnnual,
+    employerPensionStartAge: state.employerPensionStartAge,
+    otherTaxableIncome: state.otherTaxableIncome,
   };
 }
 
@@ -183,6 +211,26 @@ function renderApp(): void {
         </button>
       </nav>
 
+      <!-- Interactive Scenario Playbook Bar -->
+      <div class="scenario-playbook-bar" aria-label="Quick Experiment Scenarios">
+        <span class="scenario-playbook-label">🧪 Quick Scenarios:</span>
+        <button type="button" class="scenario-chip" id="chip-scenario-baseline">
+          🎯 Benchmark ($80k @ 65)
+        </button>
+        <button type="button" class="scenario-chip" id="chip-scenario-early">
+          🏖️ Early Freedom (Age 58, $65k)
+        </button>
+        <button type="button" class="scenario-chip" id="chip-scenario-fat">
+          🏰 High Lifestyle ($110k)
+        </button>
+        <button type="button" class="scenario-chip" id="chip-scenario-cppoas" style="border-color:rgba(59,130,246,0.45);color:#60a5fa;">
+          🛡️ +CPP & OAS Guaranteed
+        </button>
+        <button type="button" class="scenario-chip" id="chip-scenario-optimize" style="border-color:rgba(16,185,129,0.45);color:#10b981;">
+          ⚡ Auto-Max Safe Spend (to 95)
+        </button>
+      </div>
+
       <!-- Main Layout -->
       <main class="main-layout">
         <!-- Controls Sidebar (Persistent DOM Element) -->
@@ -209,6 +257,16 @@ function renderApp(): void {
   attachStaticEventListeners();
   attachControlsEventListeners();
   updateResultsOnly();
+}
+
+/**
+ * Re-renders the controls panel contents without recreating the outer container.
+ */
+function renderControlsPanel(): void {
+  const panel = document.getElementById("controls-panel");
+  if (!panel) return;
+  panel.innerHTML = renderControlsHTML(state.householdMode === "couple");
+  attachControlsEventListeners();
 }
 
 /**
@@ -303,10 +361,17 @@ function renderControlsHTML(isCouple: boolean): string {
         <span class="form-val-display" id="disp-spend">${formatCurrency(state.retireNetSpending)}/yr</span>
       </div>
       <div class="slider-container">
-        <input type="range" id="slider-spend" min="20000" max="250000" step="5000" value="${state.retireNetSpending}">
-        <input type="number" id="num-spend" class="form-input-number" min="10000" max="400000" step="5000" value="${state.retireNetSpending}">
+        <input type="range" id="slider-spend" min="20000" max="250000" step="2500" value="${state.retireNetSpending}">
+        <input type="number" id="num-spend" class="form-input-number" min="10000" max="400000" step="2500" value="${state.retireNetSpending}">
       </div>
+      <button type="button" id="btn-optimize-spending" class="btn-optimize-spend">
+        ⚡ Auto-Find Max Safe Spending (to Age 95)
+      </button>
+      <div id="optimize-spend-result" class="optimize-spend-banner" style="display:none;"></div>
     </div>
+
+    <!-- Guaranteed Pensions & Other Income Section -->
+    ${state.viewMode === "simulator" ? renderGuaranteedPensionsSection(isCouple) : ""}
 
     ${
       isCouple
@@ -571,6 +636,245 @@ function renderComparatorSidebarControls(): string {
 }
 
 /**
+ * Render Guaranteed Pensions & Other Income Card (Sidebar)
+ */
+function renderGuaranteedPensionsSection(isCouple: boolean): string {
+  let estGross = 0;
+  if (state.includeOtherIncome) {
+    if (state.retireAge >= state.person1CppStartAge) {
+      estGross += state.person1CppAnnual;
+    }
+    if (state.retireAge >= 65) {
+      estGross += state.person1OasAnnual;
+    }
+    if (isCouple) {
+      if (state.person2RetireAge >= state.person2CppStartAge) {
+        estGross += state.person2CppAnnual;
+      }
+      if (state.person2RetireAge >= 65) {
+        estGross += state.person2OasAnnual;
+      }
+    }
+    if (state.retireAge >= state.employerPensionStartAge) {
+      estGross += state.employerPensionAnnual;
+    }
+    estGross += state.otherTaxableIncome;
+  }
+
+  const estNet = Math.round(estGross * 0.85);
+  const coveragePct = Math.min(100, Math.round((estNet / Math.max(1, state.retireNetSpending)) * 100));
+  const portfolioShortfall = Math.max(0, state.retireNetSpending - estNet);
+
+  return `
+    <div class="pension-income-card ${state.includeOtherIncome ? "enabled" : ""}" id="pension-income-card">
+      <div class="pension-card-header">
+        <div class="pension-card-title-group">
+          <span class="icon">🛡️</span>
+          <span>Guaranteed Pensions & Income</span>
+        </div>
+        <div class="pension-header-actions">
+          <label class="pension-switch" title="Toggle Guaranteed Other Income (CPP/OAS/Pensions)">
+            <input type="checkbox" id="check-other-income" ${state.includeOtherIncome ? "checked" : ""}>
+            <span class="pension-slider-toggle"></span>
+          </label>
+          ${
+            state.includeOtherIncome
+              ? `<button type="button" id="btn-toggle-income-details" class="btn-toggle-expand">
+                  ${state.otherIncomeExpanded ? "Collapse ▲" : "Tune Details ▼"}
+                </button>`
+              : ""
+          }
+        </div>
+      </div>
+
+      ${
+        state.includeOtherIncome
+          ? `
+        <!-- Live Coverage Summary Banner -->
+        <div class="pension-coverage-banner" id="pension-coverage-banner">
+          <div class="coverage-metrics-row">
+            <span>🛡️ Covers: <strong>${formatCurrency(estNet)}/yr net</strong> (${coveragePct}%)</span>
+            <span>💼 Portfolio Bridges: <strong>${formatCurrency(portfolioShortfall)}/yr</strong></span>
+          </div>
+          <div class="coverage-progress-bar">
+            <div class="coverage-seg-pension" style="width: ${coveragePct}%;"></div>
+            <div class="coverage-seg-portfolio" style="width: ${100 - coveragePct}%;"></div>
+          </div>
+        </div>
+
+        <!-- Benchmark Presets Bar -->
+        <div class="pension-presets-container">
+          <div class="pension-presets-label">⚡ Quick Canadian Benchmarks</div>
+          <div class="pension-presets-grid">
+            <button type="button" class="pension-preset-btn" id="preset-pension-standard" title="Average Canadian CPP ($10k) + full OAS ($8,560)">
+              🇨🇦 Standard CPP + OAS
+            </button>
+            <button type="button" class="pension-preset-btn" id="preset-pension-max" title="Maximum CRA CPP ($16,375) + full OAS ($8,560)">
+              👑 Max CPP + OAS
+            </button>
+            <button type="button" class="pension-preset-btn" id="preset-pension-db" title="Adds a $30,000/yr Employer Defined Benefit pension">
+              🏢 DB Pension + CPP
+            </button>
+            <button type="button" class="pension-preset-btn" id="preset-pension-reset" title="Model purely on personal investment savings">
+              🚫 Private Only
+            </button>
+          </div>
+        </div>
+        `
+          : `
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.4;">
+          Turn on to factor in <strong>Canada Pension Plan (CPP)</strong>, <strong>Old Age Security (OAS)</strong>, and <strong>Company Pensions</strong>.
+        </div>
+        `
+      }
+
+      ${
+        state.includeOtherIncome && state.otherIncomeExpanded
+          ? `
+        <div class="pension-details-body" id="pension-details-body">
+          <!-- Person 1 CPP -->
+          <div class="pension-field-group">
+            <div class="pension-field-header">
+              <span class="pension-field-title">👤 ${isCouple ? "Person 1 CPP" : "Canada Pension Plan (CPP)"}</span>
+              <span class="pension-field-tag" id="disp-p1-cpp">${formatCurrency(state.person1CppAnnual)}/yr</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="slider-p1-cpp" min="0" max="22000" step="500" value="${state.person1CppAnnual}">
+              <input type="number" id="num-p1-cpp" class="form-input-number" min="0" max="30000" step="500" value="${state.person1CppAnnual}">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.2rem;font-size:0.73rem;">
+              <span style="color:var(--text-muted);">Start Age:</span>
+              <select id="select-p1-cpp-age" class="form-input-number" style="padding:0.15rem 0.4rem;font-size:0.75rem;">
+                ${[60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70]
+                  .map((a) => `<option value="${a}" ${state.person1CppStartAge === a ? "selected" : ""}>Age ${a} ${a === 65 ? "(Standard)" : a < 65 ? "(-" + ((65 - a) * 7.2).toFixed(0) + "%)" : "(+" + ((a - 65) * 8.4).toFixed(0) + "%)"}</option>`)
+                  .join("")}
+              </select>
+            </div>
+          </div>
+
+          <!-- Person 1 OAS -->
+          <div class="pension-field-group">
+            <div class="pension-field-header">
+              <span class="pension-field-title">🍁 ${isCouple ? "Person 1 OAS" : "Old Age Security (OAS)"}</span>
+              <span class="pension-field-tag" id="disp-p1-oas">${formatCurrency(state.person1OasAnnual)}/yr</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="slider-p1-oas" min="0" max="12000" step="250" value="${state.person1OasAnnual}">
+              <input type="number" id="num-p1-oas" class="form-input-number" min="0" max="15000" step="250" value="${state.person1OasAnnual}">
+            </div>
+            <div style="font-size:0.7rem;color:var(--text-muted);">Starts at Age 65 ($8,560 2024-2026 CRA rate). Subject to clawback above $91k.</div>
+          </div>
+
+          ${
+            isCouple
+              ? `
+            <!-- Person 2 CPP -->
+            <div class="pension-field-group">
+              <div class="pension-field-header">
+                <span class="pension-field-title">👤 Person 2 CPP</span>
+                <span class="pension-field-tag" id="disp-p2-cpp">${formatCurrency(state.person2CppAnnual)}/yr</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-p2-cpp" min="0" max="22000" step="500" value="${state.person2CppAnnual}">
+                <input type="number" id="num-p2-cpp" class="form-input-number" min="0" max="30000" step="500" value="${state.person2CppAnnual}">
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.2rem;font-size:0.73rem;">
+                <span style="color:var(--text-muted);">Start Age:</span>
+                <select id="select-p2-cpp-age" class="form-input-number" style="padding:0.15rem 0.4rem;font-size:0.75rem;">
+                  ${[60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70]
+                    .map((a) => `<option value="${a}" ${state.person2CppStartAge === a ? "selected" : ""}>Age ${a} ${a === 65 ? "(Standard)" : a < 65 ? "(-" + ((65 - a) * 7.2).toFixed(0) + "%)" : "(+" + ((a - 65) * 8.4).toFixed(0) + "%)"}</option>`)
+                    .join("")}
+                </select>
+              </div>
+            </div>
+
+            <!-- Person 2 OAS -->
+            <div class="pension-field-group">
+              <div class="pension-field-header">
+                <span class="pension-field-title">🍁 Person 2 OAS</span>
+                <span class="pension-field-tag" id="disp-p2-oas">${formatCurrency(state.person2OasAnnual)}/yr</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-p2-oas" min="0" max="12000" step="250" value="${state.person2OasAnnual}">
+                <input type="number" id="num-p2-oas" class="form-input-number" min="0" max="15000" step="250" value="${state.person2OasAnnual}">
+              </div>
+            </div>
+            `
+              : ""
+          }
+
+          <!-- Employer DB Pension / Lifetime Annuity -->
+          <div class="pension-field-group">
+            <div class="pension-field-header">
+              <span class="pension-field-title">🏢 Employer Defined Benefit (DB) Pension</span>
+              <span class="pension-field-tag" id="disp-db-pension">${formatCurrency(state.employerPensionAnnual)}/yr</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="slider-db-pension" min="0" max="80000" step="2500" value="${state.employerPensionAnnual}">
+              <input type="number" id="num-db-pension" class="form-input-number" min="0" max="150000" step="2500" value="${state.employerPensionAnnual}">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.2rem;font-size:0.73rem;">
+              <span style="color:var(--text-muted);">Pension Starts At:</span>
+              <select id="select-db-pension-age" class="form-input-number" style="padding:0.15rem 0.4rem;font-size:0.75rem;">
+                ${[55, 58, 60, 62, 65, 67, 70]
+                  .map((a) => `<option value="${a}" ${state.employerPensionStartAge === a ? "selected" : ""}>Age ${a}</option>`)
+                  .join("")}
+              </select>
+            </div>
+          </div>
+
+          <!-- Other Taxable Income (Rental, Business, etc.) -->
+          <div class="pension-field-group">
+            <div class="pension-field-header">
+              <span class="pension-field-title">🏠 Rental or Other Taxable Income</span>
+              <span class="pension-field-tag" id="disp-other-inc">${formatCurrency(state.otherTaxableIncome)}/yr</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="slider-other-inc" min="0" max="60000" step="2000" value="${state.otherTaxableIncome}">
+              <input type="number" id="num-other-inc" class="form-input-number" min="0" max="150000" step="2000" value="${state.otherTaxableIncome}">
+            </div>
+          </div>
+        </div>
+        `
+          : ""
+      }
+    </div>
+  `;
+}
+
+function updatePensionCoverageLive(): void {
+  let estGross = 0;
+  if (state.includeOtherIncome) {
+    if (state.retireAge >= state.person1CppStartAge) estGross += state.person1CppAnnual;
+    if (state.retireAge >= 65) estGross += state.person1OasAnnual;
+    if (state.householdMode === "couple") {
+      if (state.person2RetireAge >= state.person2CppStartAge) estGross += state.person2CppAnnual;
+      if (state.person2RetireAge >= 65) estGross += state.person2OasAnnual;
+    }
+    if (state.retireAge >= state.employerPensionStartAge) estGross += state.employerPensionAnnual;
+    estGross += state.otherTaxableIncome;
+  }
+  const estNet = Math.round(estGross * 0.85);
+  const coveragePct = Math.min(100, Math.round((estNet / Math.max(1, state.retireNetSpending)) * 100));
+  const portfolioShortfall = Math.max(0, state.retireNetSpending - estNet);
+
+  const banner = document.getElementById("pension-coverage-banner");
+  if (banner) {
+    const metricsRow = banner.querySelector(".coverage-metrics-row");
+    if (metricsRow) {
+      metricsRow.innerHTML = `
+        <span>🛡️ Covers: <strong>${formatCurrency(estNet)}/yr net</strong> (${coveragePct}%)</span>
+        <span>💼 Portfolio Bridges: <strong>${formatCurrency(portfolioShortfall)}/yr</strong></span>
+      `;
+    }
+    const segPension = banner.querySelector(".coverage-seg-pension") as HTMLElement | null;
+    const segPortfolio = banner.querySelector(".coverage-seg-portfolio") as HTMLElement | null;
+    if (segPension) segPension.style.width = `${coveragePct}%`;
+    if (segPortfolio) segPortfolio.style.width = `${100 - coveragePct}%`;
+  }
+}
+
+/**
  * Updates ONLY the results panel (#results-container) without touching the controls sidebar DOM.
  * This guarantees slider dragging maintains pointer capture smoothly.
  */
@@ -593,8 +897,8 @@ function updateResultsOnly(): void {
       isCouple
     );
 
-    attachResultListeners(currentStratResult);
-    setupSimulatorChartHover(currentStratResult);
+    attachResultListeners(currentStratResult, isCouple);
+    setupSimulatorChartHover(currentStratResult, isCouple);
   } else {
     const comparatorSim = runSimulation({
       householdMode: state.householdMode,
@@ -715,6 +1019,118 @@ function syncAllSavingInputs(): void {
 }
 
 /**
+ * Renders the interactive income breakdown bar, itemized stack, and draw cards for a given age
+ */
+function renderBlueprintDynamicDetails(
+  record: StrategyYearRecord,
+  selectedAge: number,
+  isCouple: boolean
+): string {
+  const cpp = record.cppIncome || 0;
+  const oas = record.oasIncome || 0;
+  const dbAndOther = (record.dbPensionIncome || 0) + (record.otherIncome || 0);
+  const rrsp = record.rrspGrossDraw || 0;
+  const pi = record.piGrossDraw || 0;
+  const tfsa = record.tfsaGrossDraw || 0;
+  const totalGross = cpp + oas + dbAndOther + rrsp + pi + tfsa;
+  const safeGross = Math.max(1, totalGross);
+
+  const cppPct = Math.round((cpp / safeGross) * 100);
+  const oasPct = Math.round((oas / safeGross) * 100);
+  const dbPct = Math.round((dbAndOther / safeGross) * 100);
+  const rrspPct = Math.round((rrsp / safeGross) * 100);
+  const piPct = Math.round((pi / safeGross) * 100);
+  const tfsaPct = Math.max(0, 100 - cppPct - oasPct - dbPct - rrspPct - piPct);
+
+  return `
+    <!-- Multi-Segment Visual Income Breakdown Bar -->
+    <div class="income-breakdown-bar-wrapper">
+      <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.25rem;">
+        <span>Gross Income Composition (Total: ${formatCurrency(totalGross)})</span>
+        <span style="color:#10b981;">Net Received: ${formatCurrency(record.netSpendReceived)} (Tax: ${formatCurrency(record.totalTax)})</span>
+      </div>
+      <div class="income-breakdown-bar">
+        ${cpp > 0 ? `<div class="income-bar-seg cpp" style="width:${cppPct}%;" title="CPP: ${formatCurrency(cpp)} (${cppPct}%)"></div>` : ""}
+        ${oas > 0 ? `<div class="income-bar-seg oas" style="width:${oasPct}%;" title="OAS: ${formatCurrency(oas)} (${oasPct}%)"></div>` : ""}
+        ${dbAndOther > 0 ? `<div class="income-bar-seg db" style="width:${dbPct}%;" title="DB Pension/Other: ${formatCurrency(dbAndOther)} (${dbPct}%)"></div>` : ""}
+        ${rrsp > 0 ? `<div class="income-bar-seg rrsp" style="width:${rrspPct}%;" title="RRSP/RRIF: ${formatCurrency(rrsp)} (${rrspPct}%)"></div>` : ""}
+        ${pi > 0 ? `<div class="income-bar-seg pi" style="width:${piPct}%;" title="Personal (PI): ${formatCurrency(pi)} (${piPct}%)"></div>` : ""}
+        ${tfsa > 0 ? `<div class="income-bar-seg tfsa" style="width:${tfsaPct}%;" title="TFSA: ${formatCurrency(tfsa)} (${tfsaPct}%)"></div>` : ""}
+      </div>
+      <div class="income-legend-row">
+        ${cpp > 0 ? `<div class="income-legend-item"><span class="income-legend-dot cpp"></span> CPP: ${formatCurrency(cpp)} (${cppPct}%)</div>` : ""}
+        ${oas > 0 ? `<div class="income-legend-item"><span class="income-legend-dot oas"></span> OAS: ${formatCurrency(oas)} (${oasPct}%)</div>` : ""}
+        ${dbAndOther > 0 ? `<div class="income-legend-item"><span class="income-legend-dot db"></span> DB/Other: ${formatCurrency(dbAndOther)} (${dbPct}%)</div>` : ""}
+        ${rrsp > 0 ? `<div class="income-legend-item"><span class="income-legend-dot rrsp"></span> RRSP: ${formatCurrency(rrsp)} (${rrspPct}%)</div>` : ""}
+        ${pi > 0 ? `<div class="income-legend-item"><span class="income-legend-dot pi"></span> PI: ${formatCurrency(pi)} (${piPct}%)</div>` : ""}
+        ${tfsa > 0 ? `<div class="income-legend-item"><span class="income-legend-dot tfsa"></span> TFSA: ${formatCurrency(tfsa)} (${tfsaPct}%)"></div>` : ""}
+      </div>
+    </div>
+
+    ${
+      record.guaranteedGross > 0
+        ? `
+      <div class="income-stack-container">
+        <div class="income-stack-title">
+          <span>🏛️</span> Full Retirement Income Stack at Age ${selectedAge}
+        </div>
+        <div class="income-stack-rows">
+          <div class="income-stack-row">
+            <span>1. Guaranteed Pensions & Other Sources (Gross):</span>
+            <span style="font-weight:700;color:#60a5fa;">+${formatCurrency(record.guaranteedGross)}/yr</span>
+          </div>
+          <div class="income-stack-row">
+            <span style="color:var(--text-muted);padding-left:1rem;">↳ CPP: ${formatCurrency(cpp)} · OAS: ${formatCurrency(oas)}${dbAndOther > 0 ? ` · Pension/Other: ${formatCurrency(dbAndOther)}` : ""}</span>
+            <span style="color:#93c5fd;font-weight:600;">Net: +${formatCurrency(record.guaranteedNet)}/yr</span>
+          </div>
+          <div class="income-stack-row">
+            <span>2. Investment Portfolio Net Draw Needed:</span>
+            <span style="font-weight:700;color:#34d399;">+${formatCurrency(record.portfolioNetDraw)}/yr</span>
+          </div>
+          <div class="income-stack-row total">
+            <span>Total Net Spending Cash Delivered:</span>
+            <span>${formatCurrency(record.netSpendReceived)}/yr net (Goal: ${formatCurrency(state.retireNetSpending)})</span>
+          </div>
+        </div>
+      </div>
+      `
+        : ""
+    }
+
+    <div class="blueprint-grid">
+      <div class="blueprint-col rrsp">
+        <div class="blueprint-col-title" style="color:var(--rrsp-color);">
+          <span>🟣</span> ${isCouple ? "Joint RRSP / RRIF" : "RRSP / RRIF"}
+        </div>
+        <div class="blueprint-amount">${formatCurrency(record.rrspGrossDraw)}</div>
+        <div class="blueprint-note">${record.isRRIFForced ? "Mandatory RRIF Min Active" : record.rrspGrossDraw > 0 ? "Taxable graduated bracket draw" : "$0 needed (deferred)"}</div>
+      </div>
+      <div class="blueprint-col pi">
+        <div class="blueprint-col-title" style="color:var(--nonreg-color);">
+          <span>🟠</span> Personal Account (PI)
+        </div>
+        <div class="blueprint-amount">${formatCurrency(record.piGrossDraw)}</div>
+        <div class="blueprint-note">${record.piGrossDraw > 0 ? "50% capital gains inclusion" : "$0 needed this year"}</div>
+      </div>
+      <div class="blueprint-col tfsa">
+        <div class="blueprint-col-title" style="color:var(--tfsa-color);">
+          <span>🟢</span> ${isCouple ? "Dual TFSAs" : "TFSA"}
+        </div>
+        <div class="blueprint-amount">${formatCurrency(record.tfsaGrossDraw)}</div>
+        <div class="blueprint-note">${record.tfsaGrossDraw > 0 ? "100% tax-free buffer" : "Kept compounding tax-free"}</div>
+      </div>
+      <div class="blueprint-col net">
+        <div class="blueprint-col-title" style="color:#10b981;">
+          <span>💰</span> Net Cash Received
+        </div>
+        <div class="blueprint-amount" style="color:#10b981;">${formatCurrency(record.netSpendReceived)}</div>
+        <div class="blueprint-note">${record.guaranteedGross > 0 ? `${formatCurrency(record.guaranteedNet)} pensions + ${formatCurrency(record.portfolioNetDraw)} portfolio` : `After paying ${formatCurrency(record.totalTax)} in tax`}</div>
+      </div>
+    </div>
+  `;
+}
+
+/**
  * Render Simulator Results Section
  */
 function renderSimulatorResults(
@@ -818,6 +1234,62 @@ function renderSimulatorResults(
       </div>
     </section>
 
+    <!-- Annual Withdrawal Blueprint Card -->
+    ${(() => {
+      const retireHistory = currentStrat.history.filter((d) => d.age >= state.retireAge);
+      const minAge = state.retireAge;
+      const maxAge = retireHistory.length > 0 ? retireHistory[retireHistory.length - 1].age : state.retireAge;
+
+      let selectedAge = state.blueprintSelectedAge ?? state.retireAge;
+      if (selectedAge < minAge) selectedAge = minAge;
+      if (selectedAge > maxAge) selectedAge = maxAge;
+      state.blueprintSelectedAge = selectedAge;
+
+      const record = retireHistory.find((d) => d.age === selectedAge) || retireHistory[0] || currentStrat.history[0];
+      const yearInRetire = selectedAge - state.retireAge + 1;
+
+      return `
+      <article class="withdrawal-blueprint-card">
+        <div class="blueprint-header">
+          <div class="blueprint-title">
+            <span>🎯</span> Retirement Income & Withdrawal Blueprint (${currentStrat.name})
+          </div>
+          <span class="badge-recommended">Target Spend: ${formatCurrency(state.retireNetSpending)}/yr Net</span>
+        </div>
+
+        <!-- Interactive Age Explorer -->
+        <div class="blueprint-age-explorer">
+          <div class="blueprint-age-label-row">
+            <span class="blueprint-age-title">📅 Inspect Cashflow Mix at Age:</span>
+            <span class="blueprint-age-display" id="disp-blueprint-age">
+              Age ${selectedAge} (Year ${yearInRetire} of Retirement)${isCouple && record.person2Age ? ` · Spouse Age ${record.person2Age}` : ""}
+            </span>
+          </div>
+          <div class="blueprint-age-controls">
+            <input type="range" id="slider-blueprint-age" min="${minAge}" max="${maxAge}" step="1" value="${selectedAge}">
+            <div class="blueprint-age-chips">
+              <button type="button" class="age-chip ${selectedAge === minAge ? "active" : ""}" data-age="${minAge}">
+                Age ${minAge} (Retire Start)
+              </button>
+              ${maxAge >= 71 ? `<button type="button" class="age-chip ${selectedAge === 71 ? "active" : ""}" data-age="71">Age 71 (RRIF Min Rule)</button>` : ""}
+              ${maxAge >= 75 ? `<button type="button" class="age-chip ${selectedAge === 75 ? "active" : ""}" data-age="75">Age 75 (OAS +10% Boost)</button>` : ""}
+              ${maxAge >= 85 ? `<button type="button" class="age-chip ${selectedAge === 85 ? "active" : ""}" data-age="85">Age 85 (Late Life)</button>` : ""}
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Details Container (updates during slider scrubbing) -->
+        <div id="blueprint-dynamic-details">
+          ${renderBlueprintDynamicDetails(record, selectedAge, isCouple)}
+        </div>
+
+        <div class="blueprint-explanation">
+          ${getStrategyWithdrawalExplanation(state.decumStrategy, isCouple)}
+        </div>
+      </article>
+      `;
+    })()}
+
     <!-- Strategy Scorecard Table -->
     <article class="scorecard-card">
       <h3 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:0.85rem;color:var(--text-primary);">
@@ -866,18 +1338,59 @@ function renderSimulatorResults(
     <!-- Visual Lifespan Chart -->
     <div class="chart-card">
       <div class="chart-header">
-        <h3 style="font-family:var(--font-display);font-size:1.15rem;color:var(--text-primary);">
-          Multi-Account Balance Lifespan Curve (Ages ${currentAge1} to 95+)
-        </h3>
-        <div class="chart-legend">
+        <div>
+          <h3 style="font-family:var(--font-display);font-size:1.15rem;color:var(--text-primary);margin-bottom:0.2rem;">
+            ${
+              state.chartViewMode === "incomeStreams"
+                ? `Annual Retirement Income & Cashflow Breakdown (Ages ${state.retireAge} to 95+)`
+                : `Multi-Account Balance Lifespan Curve (Ages ${currentAge1} to 95+)`
+            }
+          </h3>
+          <span style="font-size:0.75rem;color:var(--text-muted);">
+            ${
+              state.chartViewMode === "incomeStreams"
+                ? "Stacked annual cashflow received from pensions, investments, and government programs"
+                : "Projected investment balances compounding and decumulating over your lifespan"
+            }
+          </span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+          <div class="chart-view-toggle">
+            <button type="button" class="chart-view-btn ${state.chartViewMode === "balances" ? "active" : ""}" id="btn-chart-balances">
+              💰 Asset Balances
+            </button>
+            <button type="button" class="chart-view-btn ${state.chartViewMode === "incomeStreams" ? "active" : ""}" id="btn-chart-income">
+              📊 Annual Income Streams
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-legend" style="margin-top:0.5rem;padding:0 0.5rem;">
+        ${
+          state.chartViewMode === "incomeStreams"
+            ? `
+          <div class="legend-item"><span class="income-legend-dot cpp"></span> CPP</div>
+          <div class="legend-item"><span class="income-legend-dot oas"></span> OAS</div>
+          <div class="legend-item"><span class="income-legend-dot db"></span> DB/Other</div>
+          <div class="legend-item"><span class="income-legend-dot rrsp"></span> RRSP/RRIF Draw</div>
+          <div class="legend-item"><span class="income-legend-dot pi"></span> Personal (PI) Draw</div>
+          <div class="legend-item"><span class="income-legend-dot tfsa"></span> TFSA Draw</div>
+          <div class="legend-item"><span style="width:12px;height:2px;background:#10b981;display:inline-block;border-top:1px dashed #10b981;"></span> Target Net Spend</div>
+          `
+            : `
           <div class="legend-item"><span class="legend-dot total"></span> <strong>Total Wealth</strong></div>
           <div class="legend-item"><span class="legend-dot rrsp"></span> ${isCouple ? "Joint RRSP/RRIF" : "RRSP/RRIF"}</div>
           <div class="legend-item"><span class="legend-dot nonreg"></span> Personal (PI)</div>
           <div class="legend-item"><span class="legend-dot tfsa"></span> ${isCouple ? "Dual TFSAs" : "TFSA"}</div>
-        </div>
+          `
+        }
       </div>
       <div class="svg-chart-wrapper" id="chart-container">
-        ${renderSimulatorSvgChart(currentStrat)}
+        ${
+          state.chartViewMode === "incomeStreams"
+            ? renderSimulatorIncomeSvgChart(currentStrat)
+            : renderSimulatorSvgChart(currentStrat)
+        }
         <div id="chart-tooltip" class="chart-tooltip"></div>
       </div>
     </div>
@@ -1100,6 +1613,130 @@ function renderSimulatorSvgChart(strat: StrategyResult): string {
 }
 
 /**
+ * Render Svg Stacked Bar Chart for Annual Retirement Income Streams & Cashflow
+ */
+function renderSimulatorIncomeSvgChart(strat: StrategyResult): string {
+  const retireData = strat.history.filter((d) => d.age >= state.retireAge);
+  const count = retireData.length;
+  if (count === 0) {
+    return `<p style="padding:2rem;text-align:center;color:var(--text-muted);">No retirement data available for current settings.</p>`;
+  }
+
+  let maxIncome = state.retireNetSpending;
+  for (const d of retireData) {
+    const totalGross =
+      (d.cppIncome || 0) +
+      (d.oasIncome || 0) +
+      (d.dbPensionIncome || 0) +
+      (d.otherIncome || 0) +
+      d.rrspGrossDraw +
+      d.piGrossDraw +
+      d.tfsaGrossDraw;
+    if (totalGross > maxIncome) maxIncome = totalGross;
+  }
+  maxIncome = Math.max(maxIncome, 10000) * 1.15;
+
+  const width = 800;
+  const height = 300;
+  const padLeft = 70;
+  const padRight = 20;
+  const padTop = 25;
+  const padBottom = 35;
+  const plotW = width - padLeft - padRight;
+  const plotH = height - padTop - padBottom;
+
+  const getY = (val: number) => padTop + plotH - (val / maxIncome) * plotH;
+  const barWidth = Math.max(4, Math.min(22, (plotW / count) * 0.72));
+
+  let gridLines = "";
+  for (let i = 0; i <= 4; i++) {
+    const yVal = (maxIncome / 4) * i;
+    const yPos = getY(yVal);
+    gridLines += `
+      <line x1="${padLeft}" y1="${yPos.toFixed(1)}" x2="${(width - padRight).toFixed(1)}" y2="${yPos.toFixed(1)}" class="chart-grid-line" />
+      <text x="${(padLeft - 8).toFixed(1)}" y="${(yPos + 4).toFixed(1)}" text-anchor="end" class="chart-axis-label">${formatCompact(yVal)}</text>
+    `;
+  }
+
+  // Target Net Spending Reference Line
+  const targetY = getY(state.retireNetSpending);
+  const targetLine = `
+    <line x1="${padLeft}" y1="${targetY.toFixed(1)}" x2="${(width - padRight).toFixed(1)}" y2="${targetY.toFixed(1)}" stroke="#10b981" stroke-width="2" stroke-dasharray="5,4" />
+    <text x="${(width - padRight).toFixed(1)}" y="${(targetY - 6).toFixed(1)}" text-anchor="end" fill="#10b981" font-size="11" font-weight="700">Target Net: ${formatCompact(state.retireNetSpending)}</text>
+  `;
+
+  let bars = "";
+  let xLabels = "";
+  const labelStep = Math.max(1, Math.floor(count / 7));
+
+  for (let i = 0; i < count; i++) {
+    const d = retireData[i];
+    const xCenter = padLeft + (i / Math.max(1, count - 1)) * plotW;
+    const xLeft = xCenter - barWidth / 2;
+
+    if (i % labelStep === 0 || i === count - 1) {
+      xLabels += `<text x="${xCenter.toFixed(1)}" y="${height - 10}" text-anchor="middle" class="chart-axis-label">Age ${d.age}</text>`;
+    }
+
+    const cpp = d.cppIncome || 0;
+    const oas = d.oasIncome || 0;
+    const dbAndOther = (d.dbPensionIncome || 0) + (d.otherIncome || 0);
+    const rrsp = d.rrspGrossDraw || 0;
+    const pi = d.piGrossDraw || 0;
+    const tfsa = d.tfsaGrossDraw || 0;
+
+    let currentStackVal = 0;
+    const layers = [
+      { val: cpp, color: "#3b82f6" },
+      { val: oas, color: "#60a5fa" },
+      { val: dbAndOther, color: "#818cf8" },
+      { val: rrsp, color: "var(--rrsp-color)" },
+      { val: pi, color: "var(--nonreg-color)" },
+      { val: tfsa, color: "var(--tfsa-color)" },
+    ];
+
+    for (const layer of layers) {
+      if (layer.val <= 0) continue;
+      const segH = (layer.val / maxIncome) * plotH;
+      const yTop = getY(currentStackVal + layer.val);
+      bars += `<rect x="${xLeft.toFixed(1)}" y="${yTop.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${segH.toFixed(1)}" fill="${layer.color}" rx="1" opacity="0.9" />`;
+      currentStackVal += layer.val;
+    }
+  }
+
+  return `
+    <svg viewBox="0 0 ${width} ${height}" class="svg-chart" id="svg-chart-el">
+      ${gridLines}
+      ${targetLine}
+      ${bars}
+      ${xLabels}
+      <line id="hover-line" x1="0" y1="${padTop}" x2="0" y2="${padTop + plotH}" class="chart-hover-line" style="display:none;" />
+    </svg>
+  `;
+}
+
+/**
+ * Strategy Withdrawal Explanation Helper
+ */
+function getStrategyWithdrawalExplanation(strat: DecumulationStrategy, isCouple: boolean): string {
+  if (strat === "oasShield") {
+    return isCouple
+      ? `<strong>The OAS Shield Formula:</strong> Withdraw from your Joint RRSP/RRIF up to <strong>$176,000/yr combined</strong> ($88,000 per spouse via CRA Form T1032 pension income splitting). This keeps both spouses below the ~$91,000 OAS clawback line. Shortfall is bridged from your <strong>Personal Account (PI)</strong> (where only 50% of capital gains are taxed) and your <strong>TFSA</strong> (100% tax-free).`
+      : `<strong>The OAS Shield Formula:</strong> Withdraw from RRSP up to <strong>$88,000/yr</strong> to stay just below the ~$91,000 OAS clawback line. Shortfalls are bridged from your <strong>Personal Account (PI)</strong> (50% capital gains inclusion) and your <strong>TFSA</strong> (tax-free).`;
+  }
+  if (strat === "rrspMeltdown") {
+    return isCouple
+      ? `<strong>Early RRSP Meltdown Formula:</strong> Draw aggressively from RRSPs (up to <strong>$180,000/yr combined</strong>) between retirement and age 71. This shrinks your future RRIF balance to dismantle the "tax bomb" when CRA mandatory minimums take effect at age 71. If after-tax proceeds are below your ${formatCurrency(state.retireNetSpending)} target, take the remaining from PI, then TFSA.`
+      : `<strong>Early RRSP Meltdown Formula:</strong> Draw up to <strong>$105,000/yr</strong> from your RRSP before age 71 to burn down the tax-deferred balance before forced CRA minimums begin. Supplement with PI and TFSA if needed.`;
+  }
+  if (strat === "taxableFirst") {
+    return `<strong>Taxable (PI) First Formula:</strong> Withdraw <strong>100% of spending from your Personal Investment (PI)</strong> first until it reaches $0. During this time, take <strong>$0 from RRSP</strong> (until mandatory RRIF minimums start at age 71) and <strong>$0 from TFSA</strong>. This allows tax-sheltered accounts to compound untouched for as many years as possible.`;
+  }
+  // proRata
+  return `<strong>Proportional Balanced Draw Formula:</strong> Withdraw simultaneously from RRSP, Personal Account, and TFSA based on their current balance weights. Each account pays its proportional share toward your ${formatCurrency(state.retireNetSpending)} after-tax spending goal.`;
+}
+
+/**
  * Render Simulator Ledger Table
  */
 function renderSimulatorLedger(strat: StrategyResult, isCouple: boolean): string {
@@ -1120,10 +1757,25 @@ function renderSimulatorLedger(strat: StrategyResult, isCouple: boolean): string
           <td class="td-highlight-rrsp">${formatCurrency(d.rrspEnd)}</td>
           <td class="td-highlight-nonreg">${formatCurrency(d.piEnd)}</td>
           <td style="color:var(--tfsa-color);">${formatCurrency(d.tfsaEnd)}</td>
-          <td style="font-weight:700;">${formatCurrency(d.totalEnd)}</td>
-          <td>${isRetire ? formatCurrency(d.totalGrossDraw) : formatCurrency(d.rrspContrib + d.piContrib + d.tfsaContrib)}</td>
-          <td>${formatCurrency(d.totalTax)}</td>
-          <td style="color:#10b981;font-weight:700;">${isRetire ? formatCurrency(d.netSpendReceived) : "—"}</td>
+          <td style="font-weight:700;color:var(--total-color);">${formatCurrency(d.totalEnd)}</td>
+          ${
+            state.includeOtherIncome
+              ? `<td style="color:#60a5fa;font-weight:600;">${isRetire && d.guaranteedGross > 0 ? formatCurrency(d.guaranteedGross) : "—"}</td>`
+              : ""
+          }
+          <td style="color:var(--rrsp-color);font-weight:600;">
+            ${isRetire ? (d.rrspGrossDraw > 0 ? formatCurrency(d.rrspGrossDraw) : "—") : (d.rrspContrib > 0 ? `+${formatCurrency(d.rrspContrib)}` : "—")}
+          </td>
+          <td style="color:var(--nonreg-color);font-weight:600;">
+            ${isRetire ? (d.piGrossDraw > 0 ? formatCurrency(d.piGrossDraw) : "—") : (d.piContrib > 0 ? `+${formatCurrency(d.piContrib)}` : "—")}
+          </td>
+          <td style="color:var(--tfsa-color);font-weight:600;">
+            ${isRetire ? (d.tfsaGrossDraw > 0 ? formatCurrency(d.tfsaGrossDraw) : "—") : (d.tfsaContrib > 0 ? `+${formatCurrency(d.tfsaContrib)}` : "—")}
+          </td>
+          <td style="color:${d.totalTax > 0 ? '#f87171' : 'var(--text-muted)'};">${formatCurrency(d.totalTax)}</td>
+          <td style="color:#10b981;font-weight:700;">
+            ${isRetire ? formatCurrency(d.netSpendReceived) : "Accumulating"}
+          </td>
         </tr>
       `;
     })
@@ -1135,13 +1787,16 @@ function renderSimulatorLedger(strat: StrategyResult, isCouple: boolean): string
         <thead>
           <tr>
             <th class="td-left">${isCouple ? "Couple Ages & Strategy" : "Age & Status"}</th>
-            <th>RRSP End</th>
-            <th>Personal (PI) End</th>
-            <th>TFSA End</th>
-            <th>Total Portfolio</th>
-            <th>Cash In / Out</th>
+            <th>RRSP Balance</th>
+            <th>Personal (PI) Balance</th>
+            <th>TFSA Balance</th>
+            <th>Total Wealth</th>
+            ${state.includeOtherIncome ? `<th style="color:#60a5fa;">Guaranteed Inc</th>` : ""}
+            <th style="color:var(--rrsp-color);">RRSP Draw</th>
+            <th style="color:var(--nonreg-color);">PI Draw</th>
+            <th style="color:var(--tfsa-color);">TFSA Draw</th>
             <th>Tax Paid</th>
-            <th>Net Spend</th>
+            <th style="color:#10b981;">Net Spend</th>
           </tr>
         </thead>
         <tbody>
@@ -1269,6 +1924,51 @@ function attachStaticEventListeners(): void {
     if (state.viewMode === "comparator") return;
     state.viewMode = "comparator";
     renderApp();
+  });
+
+  // Scenario Chips
+  document.getElementById("chip-scenario-baseline")?.addEventListener("click", () => {
+    state.retireAge = 65;
+    state.person2RetireAge = 63;
+    state.yearsAccumulation = 15;
+    state.retireNetSpending = 80000;
+    state.decumStrategy = "oasShield";
+    renderApp();
+  });
+
+  document.getElementById("chip-scenario-early")?.addEventListener("click", () => {
+    state.retireAge = 58;
+    state.person2RetireAge = 56;
+    state.yearsAccumulation = 18;
+    state.retireNetSpending = 65000;
+    state.decumStrategy = "rrspMeltdown";
+    renderApp();
+  });
+
+  document.getElementById("chip-scenario-fat")?.addEventListener("click", () => {
+    state.retireNetSpending = 110000;
+    state.decumStrategy = "oasShield";
+    const sliderSpend = document.getElementById("slider-spend") as HTMLInputElement | null;
+    const numSpend = document.getElementById("num-spend") as HTMLInputElement | null;
+    const dispSpend = document.getElementById("disp-spend");
+    if (sliderSpend) sliderSpend.value = "110000";
+    if (numSpend) numSpend.value = "110000";
+    if (dispSpend) dispSpend.textContent = `${formatCurrency(110000)}/yr`;
+    updateResultsOnly();
+  });
+
+  document.getElementById("chip-scenario-cppoas")?.addEventListener("click", () => {
+    state.includeOtherIncome = true;
+    state.person1CppAnnual = 10000;
+    state.person1CppStartAge = 65;
+    state.person1OasAnnual = 8560;
+    if (state.householdMode === "couple") {
+      state.person2CppAnnual = 8000;
+      state.person2CppStartAge = 65;
+      state.person2OasAnnual = 8560;
+    }
+    renderControlsPanel();
+    updateResultsOnly();
   });
 }
 
@@ -1629,6 +2329,198 @@ function attachControlsEventListeners(): void {
     }
   );
 
+  // Guaranteed Pensions & Other Income Controls
+  const checkOther = document.getElementById("check-other-income") as HTMLInputElement | null;
+  checkOther?.addEventListener("change", () => {
+    state.includeOtherIncome = checkOther.checked;
+    renderControlsPanel();
+    updateResultsOnly();
+  });
+
+  const btnToggleIncome = document.getElementById("btn-toggle-income-details");
+  btnToggleIncome?.addEventListener("click", () => {
+    state.otherIncomeExpanded = !state.otherIncomeExpanded;
+    renderControlsPanel();
+  });
+
+  // Benchmark Presets
+  document.getElementById("preset-pension-standard")?.addEventListener("click", () => {
+    state.includeOtherIncome = true;
+    state.person1CppAnnual = 10000;
+    state.person1CppStartAge = 65;
+    state.person1OasAnnual = 8560;
+    if (isCouple) {
+      state.person2CppAnnual = 8000;
+      state.person2CppStartAge = 65;
+      state.person2OasAnnual = 8560;
+    }
+    state.employerPensionAnnual = 0;
+    state.otherTaxableIncome = 0;
+    renderControlsPanel();
+    updateResultsOnly();
+  });
+
+  document.getElementById("preset-pension-max")?.addEventListener("click", () => {
+    state.includeOtherIncome = true;
+    state.person1CppAnnual = 16375;
+    state.person1CppStartAge = 65;
+    state.person1OasAnnual = 8560;
+    if (isCouple) {
+      state.person2CppAnnual = 16375;
+      state.person2CppStartAge = 65;
+      state.person2OasAnnual = 8560;
+    }
+    state.employerPensionAnnual = 0;
+    state.otherTaxableIncome = 0;
+    renderControlsPanel();
+    updateResultsOnly();
+  });
+
+  document.getElementById("preset-pension-db")?.addEventListener("click", () => {
+    state.includeOtherIncome = true;
+    state.person1CppAnnual = 10000;
+    state.person1CppStartAge = 65;
+    state.person1OasAnnual = 8560;
+    if (isCouple) {
+      state.person2CppAnnual = 8000;
+      state.person2CppStartAge = 65;
+      state.person2OasAnnual = 8560;
+    }
+    state.employerPensionAnnual = 30000;
+    state.employerPensionStartAge = state.retireAge;
+    state.otherTaxableIncome = 0;
+    renderControlsPanel();
+    updateResultsOnly();
+  });
+
+  document.getElementById("preset-pension-reset")?.addEventListener("click", () => {
+    state.includeOtherIncome = false;
+    state.employerPensionAnnual = 0;
+    state.otherTaxableIncome = 0;
+    renderControlsPanel();
+    updateResultsOnly();
+  });
+
+  if (state.includeOtherIncome && state.otherIncomeExpanded) {
+    bindSliderPair(
+      "slider-p1-cpp",
+      "num-p1-cpp",
+      "disp-p1-cpp",
+      (v) => `${formatCurrency(v)}/yr`,
+      (v) => {
+        state.person1CppAnnual = v;
+        updatePensionCoverageLive();
+      }
+    );
+
+    const selP1CppAge = document.getElementById("select-p1-cpp-age") as HTMLSelectElement | null;
+    selP1CppAge?.addEventListener("change", () => {
+      state.person1CppStartAge = parseInt(selP1CppAge.value, 10);
+      updatePensionCoverageLive();
+      updateResultsOnly();
+    });
+
+    bindSliderPair(
+      "slider-p1-oas",
+      "num-p1-oas",
+      "disp-p1-oas",
+      (v) => `${formatCurrency(v)}/yr`,
+      (v) => {
+        state.person1OasAnnual = v;
+        updatePensionCoverageLive();
+      }
+    );
+
+    if (isCouple) {
+      bindSliderPair(
+        "slider-p2-cpp",
+        "num-p2-cpp",
+        "disp-p2-cpp",
+        (v) => `${formatCurrency(v)}/yr`,
+        (v) => {
+          state.person2CppAnnual = v;
+          updatePensionCoverageLive();
+        }
+      );
+
+      const selP2CppAge = document.getElementById("select-p2-cpp-age") as HTMLSelectElement | null;
+      selP2CppAge?.addEventListener("change", () => {
+        state.person2CppStartAge = parseInt(selP2CppAge.value, 10);
+        updatePensionCoverageLive();
+        updateResultsOnly();
+      });
+
+      bindSliderPair(
+        "slider-p2-oas",
+        "num-p2-oas",
+        "disp-p2-oas",
+        (v) => `${formatCurrency(v)}/yr`,
+        (v) => {
+          state.person2OasAnnual = v;
+          updatePensionCoverageLive();
+        }
+      );
+    }
+
+    bindSliderPair(
+      "slider-db-pension",
+      "num-db-pension",
+      "disp-db-pension",
+      (v) => `${formatCurrency(v)}/yr`,
+      (v) => {
+        state.employerPensionAnnual = v;
+        updatePensionCoverageLive();
+      }
+    );
+
+    const selDbAge = document.getElementById("select-db-pension-age") as HTMLSelectElement | null;
+    selDbAge?.addEventListener("change", () => {
+      state.employerPensionStartAge = parseInt(selDbAge.value, 10);
+      updatePensionCoverageLive();
+      updateResultsOnly();
+    });
+
+    bindSliderPair(
+      "slider-other-inc",
+      "num-other-inc",
+      "disp-other-inc",
+      (v) => `${formatCurrency(v)}/yr`,
+      (v) => {
+        state.otherTaxableIncome = v;
+        updatePensionCoverageLive();
+      }
+    );
+  }
+
+  // Spending Optimizer Handlers
+  const handleOptimizeSpending = () => {
+    const params = getStrategyParams();
+    const opt = findMaxSafeSpending(params, 95);
+
+    state.retireNetSpending = opt.maxSpending;
+    state.decumStrategy = opt.bestStrategy;
+
+    const sliderSpend = document.getElementById("slider-spend") as HTMLInputElement | null;
+    const numSpend = document.getElementById("num-spend") as HTMLInputElement | null;
+    const dispSpend = document.getElementById("disp-spend");
+    if (sliderSpend) sliderSpend.value = opt.maxSpending.toString();
+    if (numSpend) numSpend.value = opt.maxSpending.toString();
+    if (dispSpend) dispSpend.textContent = `${formatCurrency(opt.maxSpending)}/yr`;
+
+    const banner = document.getElementById("optimize-spend-result");
+    if (banner) {
+      banner.style.display = "block";
+      banner.innerHTML = `
+        <strong>🎉 Max Safe Spending Found:</strong> You can sustainably spend <strong>${formatCurrency(opt.maxSpending)}/yr after-tax</strong> until <strong>Age ${opt.strategyResult.depletionAge}+</strong> using the <em>"${opt.strategyResult.name}"</em> strategy!
+      `;
+    }
+
+    updateResultsOnly();
+  };
+
+  document.getElementById("btn-optimize-spending")?.addEventListener("click", handleOptimizeSpending);
+  document.getElementById("chip-scenario-optimize")?.addEventListener("click", handleOptimizeSpending);
+
   // Comparator baseline buttons
   document.getElementById("mode-pretax")?.addEventListener("click", () => {
     state.comparatorMode = "preTax";
@@ -1645,9 +2537,47 @@ function attachControlsEventListeners(): void {
 }
 
 /**
- * Event listeners inside the dynamic results panel (strategy cards, ledger toggle)
+ * Synchronizes the Blueprint Age Explorer UI to a target age
  */
-function attachResultListeners(currentStrat: StrategyResult): void {
+function setBlueprintAge(age: number, currentStrat: StrategyResult, isCouple: boolean): void {
+  const retireHistory = currentStrat.history.filter((d) => d.age >= state.retireAge);
+  if (retireHistory.length === 0) return;
+
+  const minAge = state.retireAge;
+  const maxAge = retireHistory[retireHistory.length - 1].age;
+  const validAge = Math.min(maxAge, Math.max(minAge, age));
+  state.blueprintSelectedAge = validAge;
+
+  const rec = retireHistory.find((d) => d.age === validAge) || retireHistory[0];
+  const yearInRetire = validAge - state.retireAge + 1;
+
+  const dispBlueprintAge = document.getElementById("disp-blueprint-age");
+  if (dispBlueprintAge) {
+    dispBlueprintAge.textContent = `Age ${validAge} (Year ${yearInRetire} of Retirement)${
+      isCouple && rec.person2Age ? ` · Spouse Age ${rec.person2Age}` : ""
+    }`;
+  }
+
+  const sliderBlueprintAge = document.getElementById("slider-blueprint-age") as HTMLInputElement | null;
+  if (sliderBlueprintAge && parseInt(sliderBlueprintAge.value, 10) !== validAge) {
+    sliderBlueprintAge.value = validAge.toString();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".age-chip").forEach((chip) => {
+    const chipAge = parseInt(chip.dataset.age || "", 10);
+    chip.classList.toggle("active", chipAge === validAge);
+  });
+
+  const blueprintDetails = document.getElementById("blueprint-dynamic-details");
+  if (blueprintDetails) {
+    blueprintDetails.innerHTML = renderBlueprintDynamicDetails(rec, validAge, isCouple);
+  }
+}
+
+/**
+ * Event listeners inside the dynamic results panel (strategy cards, chart view toggle, age explorer, ledger toggle)
+ */
+function attachResultListeners(currentStrat: StrategyResult, isCouple: boolean): void {
   // Strategy Selector Cards
   document.querySelectorAll<HTMLDivElement>(".strat-card").forEach((card) => {
     card.addEventListener("click", () => {
@@ -1655,6 +2585,40 @@ function attachResultListeners(currentStrat: StrategyResult): void {
       if (s && s !== state.decumStrategy) {
         state.decumStrategy = s;
         updateResultsOnly();
+      }
+    });
+  });
+
+  // Chart View Mode Toggle Buttons
+  document.getElementById("btn-chart-balances")?.addEventListener("click", () => {
+    if (state.chartViewMode !== "balances") {
+      state.chartViewMode = "balances";
+      updateResultsOnly();
+    }
+  });
+
+  document.getElementById("btn-chart-income")?.addEventListener("click", () => {
+    if (state.chartViewMode !== "incomeStreams") {
+      state.chartViewMode = "incomeStreams";
+      updateResultsOnly();
+    }
+  });
+
+  // Interactive Age Explorer Slider
+  const sliderBlueprintAge = document.getElementById("slider-blueprint-age") as HTMLInputElement | null;
+  sliderBlueprintAge?.addEventListener("input", (e) => {
+    const age = parseInt((e.target as HTMLInputElement).value, 10);
+    if (!isNaN(age)) {
+      setBlueprintAge(age, currentStrat, isCouple);
+    }
+  });
+
+  // Milestone Age Chips
+  document.querySelectorAll<HTMLButtonElement>(".age-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const age = parseInt(chip.dataset.age || "", 10);
+      if (!isNaN(age)) {
+        setBlueprintAge(age, currentStrat, isCouple);
       }
     });
   });
@@ -1669,7 +2633,7 @@ function attachResultListeners(currentStrat: StrategyResult): void {
 /**
  * Chart Tooltip & Hover Crosshair
  */
-function setupSimulatorChartHover(strat: StrategyResult): void {
+function setupSimulatorChartHover(strat: StrategyResult, isCouple: boolean): void {
   const chartWrapper = document.getElementById("chart-container");
   const svg = document.getElementById("svg-chart-el");
   const hoverLine = document.getElementById("hover-line");
@@ -1677,6 +2641,95 @@ function setupSimulatorChartHover(strat: StrategyResult): void {
 
   if (!chartWrapper || !svg || !hoverLine || !tooltip) return;
 
+  let lastHoveredAge: number | null = null;
+
+  if (state.chartViewMode === "incomeStreams") {
+    const retireData = strat.history.filter((d) => d.age >= state.retireAge);
+    const count = retireData.length;
+    if (count <= 0) return;
+
+    chartWrapper.addEventListener("mousemove", (e) => {
+      const rect = chartWrapper.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const relX = mouseX / rect.width;
+
+      const padLeftPct = 70 / 800;
+      const padRightPct = 20 / 800;
+      const plotWPct = 1 - padLeftPct - padRightPct;
+
+      if (relX < padLeftPct || relX > 1 - padRightPct) {
+        hoverLine.style.display = "none";
+        tooltip.style.display = "none";
+        lastHoveredAge = null;
+        return;
+      }
+
+      const plotProgress = (relX - padLeftPct) / plotWPct;
+      const index = Math.min(count - 1, Math.max(0, Math.round(plotProgress * (count - 1))));
+      const d = retireData[index];
+      lastHoveredAge = d.age;
+
+      const lineSvgX = 70 + (index / Math.max(1, count - 1)) * (800 - 90);
+      hoverLine.setAttribute("x1", lineSvgX.toString());
+      hoverLine.setAttribute("x2", lineSvgX.toString());
+      hoverLine.style.display = "block";
+
+      const ageHeader = d.person2Age
+        ? `P1: Age ${d.age} · P2: Age ${d.person2Age}`
+        : `Age ${d.age}`;
+
+      const cpp = d.cppIncome || 0;
+      const oas = d.oasIncome || 0;
+      const dbAndOther = (d.dbPensionIncome || 0) + (d.otherIncome || 0);
+      const totalGross =
+        cpp + oas + dbAndOther + d.rrspGrossDraw + d.piGrossDraw + d.tfsaGrossDraw;
+
+      tooltip.innerHTML = `
+        <div style="font-weight: 700; margin-bottom: 0.35rem; color: #fff;">
+          ${ageHeader} (Year ${d.age - state.retireAge + 1} of Retirement)
+        </div>
+        <div style="color: #10b981; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.9rem;">
+          Net Spending: ${formatCurrency(d.netSpendReceived)}
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.25rem;">
+          Total Gross Cash Inflows: ${formatCurrency(totalGross)}
+        </div>
+        ${cpp > 0 ? `<div style="color:#3b82f6;">🏛️ CPP: <strong>+${formatCurrency(cpp)}</strong></div>` : ""}
+        ${oas > 0 ? `<div style="color:#60a5fa;">🏛️ OAS: <strong>+${formatCurrency(oas)}</strong></div>` : ""}
+        ${dbAndOther > 0 ? `<div style="color:#818cf8;">💼 DB/Other: <strong>+${formatCurrency(dbAndOther)}</strong></div>` : ""}
+        ${d.rrspGrossDraw > 0 ? `<div style="color:var(--rrsp-color);">🟣 RRSP Draw: <strong>+${formatCurrency(d.rrspGrossDraw)}</strong></div>` : ""}
+        ${d.piGrossDraw > 0 ? `<div style="color:var(--nonreg-color);">🟠 PI Draw: <strong>+${formatCurrency(d.piGrossDraw)}</strong></div>` : ""}
+        ${d.tfsaGrossDraw > 0 ? `<div style="color:var(--tfsa-color);">🟢 TFSA Draw: <strong>+${formatCurrency(d.tfsaGrossDraw)}</strong></div>` : ""}
+        <div style="border-top:1px solid rgba(255,255,255,0.1);margin-top:0.35rem;padding-top:0.35rem;font-size:0.75rem;color:var(--text-muted);">
+          Total Tax Paid: <strong style="color:#ef4444;">${formatCurrency(d.totalTax)}</strong>
+          ${d.isOASCapped ? `<br/><span style="color:#10b981;">🛡️ Clawback Shield Active</span>` : ""}
+          ${d.isRRIFForced ? `<br/><span style="color:#f59e0b;">⚠️ Mandatory RRIF Min Active</span>` : ""}
+          <div style="margin-top:0.25rem;color:#93c5fd;font-style:italic;">💡 Click to inspect this age in Blueprint below</div>
+        </div>
+      `;
+
+      const tipLeft = Math.min(rect.width - 200, Math.max(10, mouseX - 100));
+      tooltip.style.left = `${tipLeft}px`;
+      tooltip.style.top = `30px`;
+      tooltip.style.display = "block";
+    });
+
+    chartWrapper.addEventListener("click", () => {
+      if (lastHoveredAge !== null) {
+        setBlueprintAge(lastHoveredAge, strat, isCouple);
+      }
+    });
+
+    chartWrapper.addEventListener("mouseleave", () => {
+      hoverLine.style.display = "none";
+      tooltip.style.display = "none";
+      lastHoveredAge = null;
+    });
+
+    return;
+  }
+
+  // Balances Mode
   const data = strat.history;
   const maxLen = data.length;
   if (maxLen <= 0) return;
@@ -1720,6 +2773,31 @@ function setupSimulatorChartHover(strat: StrategyResult): void {
       <div style="color: var(--rrsp-color);">RRSP: <strong>${formatCurrency(d.rrspEnd)}</strong></div>
       <div style="color: var(--nonreg-color);">PI: <strong>${formatCurrency(d.piEnd)}</strong></div>
       <div style="color: var(--tfsa-color);">TFSA: <strong>${formatCurrency(d.tfsaEnd)}</strong></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.1);margin-top:0.35rem;padding-top:0.35rem;">
+        ${
+          isRetire
+            ? `
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.2rem;">Retirement Cashflow:</div>
+          ${
+            d.guaranteedGross > 0
+              ? `
+            <div style="color:#60a5fa;">🏛️ Pensions: <strong>+${formatCurrency(d.guaranteedGross)} (${formatCurrency(d.guaranteedNet)} net)</strong></div>
+            <div style="color:var(--text-secondary);font-size:0.75rem;">Portfolio Bridge: <strong>${formatCurrency(d.portfolioNetDraw)}</strong></div>`
+              : ""
+          }
+          <div style="color:var(--rrsp-color);">RRSP Draw: <strong>${d.rrspGrossDraw > 0 ? formatCurrency(d.rrspGrossDraw) : "$0"}</strong></div>
+          <div style="color:var(--nonreg-color);">PI Draw: <strong>${d.piGrossDraw > 0 ? formatCurrency(d.piGrossDraw) : "$0"}</strong></div>
+          <div style="color:var(--tfsa-color);">TFSA Draw: <strong>${d.tfsaGrossDraw > 0 ? formatCurrency(d.tfsaGrossDraw) : "$0"}</strong></div>
+          <div style="color:#10b981;font-weight:700;margin-top:0.2rem;">Net Spending: ${formatCurrency(d.netSpendReceived)}</div>
+          `
+            : `
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.2rem;">Annual Savings Added:</div>
+          <div style="color:var(--rrsp-color);">RRSP: <strong>+${formatCurrency(d.rrspContrib)}</strong></div>
+          <div style="color:var(--nonreg-color);">PI: <strong>+${formatCurrency(d.piContrib)}</strong></div>
+          ${d.tfsaContrib > 0 ? `<div style="color:var(--tfsa-color);">TFSA: <strong>+${formatCurrency(d.tfsaContrib)}</strong></div>` : ""}
+          `
+        }
+      </div>
     `;
 
     const tipLeft = Math.min(rect.width - 180, Math.max(10, mouseX - 90));
