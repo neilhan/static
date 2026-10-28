@@ -1094,7 +1094,17 @@ function renderBlueprintDynamicDetails(
         </div>
       </div>
       `
-        : ""
+        : `
+      <div class="pension-cta-callout">
+        <div class="pension-cta-info">
+          <span style="font-size:1.15rem;">🛡️</span>
+          <span><strong>Have a Pension, CPP, or OAS?</strong> Add them to factor in guaranteed lifetime income and reduce required investment portfolio draw.</span>
+        </div>
+        <button type="button" class="btn-enable-pensions-inline" id="btn-enable-pensions-inline">
+          + Add Pensions & Income
+        </button>
+      </div>
+      `
     }
 
     <div class="blueprint-grid">
@@ -2627,6 +2637,20 @@ function attachResultListeners(currentStrat: StrategyResult, isCouple: boolean):
   document.getElementById("ledger-toggle")?.addEventListener("click", () => {
     state.ledgerOpen = !state.ledgerOpen;
     updateResultsOnly();
+  });
+
+  // Inline CTA to enable pensions & other income
+  document.getElementById("btn-enable-pensions-inline")?.addEventListener("click", () => {
+    state.includeOtherIncome = true;
+    state.otherIncomeExpanded = true;
+    renderControlsPanel();
+    updateResultsOnly();
+    const pensionCard = document.getElementById("pension-income-card");
+    if (pensionCard) {
+      pensionCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      pensionCard.classList.add("highlight-pulse");
+      setTimeout(() => pensionCard.classList.remove("highlight-pulse"), 2000);
+    }
   });
 }
 

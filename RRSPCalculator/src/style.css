@@ -2045,6 +2045,61 @@ input[type="range"]::-moz-range-thumb:hover {
 .income-legend-dot.pi { background: var(--nonreg-color); }
 .income-legend-dot.tfsa { background: var(--tfsa-color); }
 
+/* Pension CTA Callout in Blueprint */
+.pension-cta-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(99, 102, 241, 0.05));
+  border: 1px dashed rgba(96, 165, 250, 0.4);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.pension-cta-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  flex: 1;
+  min-width: 240px;
+}
+
+.btn-enable-pensions-inline {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.btn-enable-pensions-inline:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+@keyframes pulseHighlight {
+  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.75); border-color: #3b82f6; }
+  50% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); border-color: #60a5fa; }
+  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+.pension-income-card.highlight-pulse {
+  animation: pulseHighlight 1.5s ease-out;
+}
+
 
 
 
