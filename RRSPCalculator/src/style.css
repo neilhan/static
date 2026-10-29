@@ -30,6 +30,10 @@
   --tfsa-gradient: linear-gradient(135deg, #059669, #0d9488);
   --tfsa-glow: rgba(16, 185, 129, 0.25);
 
+  --corp-color: #f472b6;
+  --corp-gradient: linear-gradient(135deg, #db2777, #ec4899);
+  --corp-glow: rgba(236, 72, 153, 0.28);
+
   --total-color: #38bdf8;
   --total-gradient: linear-gradient(135deg, #0284c7, #38bdf8);
   --total-glow: rgba(56, 189, 248, 0.4);
@@ -65,6 +69,7 @@
   --rrsp-color: #4f46e5;
   --nonreg-color: #ea580c;
   --tfsa-color: #059669;
+  --corp-color: #db2777;
   --total-color: #0284c7;
   --total-glow: rgba(2, 132, 199, 0.3);
 
@@ -90,9 +95,10 @@ body {
 }
 
 .container {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 4rem 1rem;
+  padding: 1.5rem 1.25rem 4rem 1.25rem;
 }
 
 /* Header */
@@ -270,20 +276,22 @@ body {
 
 /* Main Grid Layout */
 .main-layout {
+  width: 100%;
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 380px minmax(0, 1fr);
   gap: 1.75rem;
   align-items: start;
 }
 
 @media (max-width: 1024px) {
   .main-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 /* Controls Panel */
 .panel {
+  min-width: 0;
   background: var(--bg-card);
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid var(--border-subtle);
@@ -476,6 +484,8 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Results Section */
 .results-container {
+  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -536,6 +546,13 @@ input[type="range"]::-moz-range-thumb:hover {
   border-color: rgba(16, 185, 129, 0.3);
 }
 
+.card-corp::before {
+  background: var(--corp-gradient);
+}
+.card-corp {
+  border-color: rgba(236, 72, 153, 0.35);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -563,6 +580,10 @@ input[type="range"]::-moz-range-thumb:hover {
 .card-tfsa .card-badge {
   background: rgba(16, 185, 129, 0.15);
   color: var(--tfsa-color);
+}
+.card-corp .card-badge {
+  background: rgba(236, 72, 153, 0.15);
+  color: var(--corp-color);
 }
 
 .card-title {
@@ -599,6 +620,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .card-rrsp .hero-metric-val { color: var(--rrsp-color); }
 .card-nonreg .hero-metric-val { color: var(--nonreg-color); }
 .card-tfsa .hero-metric-val { color: var(--tfsa-color); }
+.card-corp .hero-metric-val { color: var(--corp-color); }
 
 .hero-metric-sub {
   font-size: 0.8rem;
@@ -680,6 +702,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Chart Panel */
 .chart-card {
+  min-width: 0;
   background: var(--bg-card);
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid var(--border-subtle);
@@ -725,8 +748,9 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .chart-legend {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 1.25rem;
+  gap: 0.5rem 1.25rem;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -745,6 +769,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .legend-dot.total { background: var(--total-color); box-shadow: 0 0 6px var(--total-glow); }
 .legend-dot.rrsp { background: var(--rrsp-color); }
 .legend-dot.nonreg { background: var(--nonreg-color); }
+.legend-dot.corp { background: var(--corp-color); }
 .legend-dot.tfsa { background: var(--tfsa-color); }
 
 .svg-chart-wrapper {
@@ -793,6 +818,11 @@ input[type="range"]::-moz-range-thumb:hover {
   filter: drop-shadow(0 4px 8px var(--tfsa-glow));
 }
 
+.chart-line.corp {
+  stroke: var(--corp-color);
+  filter: drop-shadow(0 4px 8px var(--corp-glow));
+}
+
 .chart-line.total {
   stroke: var(--total-color);
   stroke-width: 4;
@@ -824,6 +854,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Ledger / Yearly Table */
 .ledger-card {
+  min-width: 0;
   background: var(--bg-card);
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid var(--border-subtle);
@@ -889,6 +920,11 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .td-highlight-nonreg {
   color: var(--nonreg-color) !important;
+  font-weight: 700;
+}
+
+.td-highlight-corp {
+  color: var(--corp-color) !important;
   font-weight: 700;
 }
 
@@ -1038,14 +1074,16 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* App Navigation Mode Tabs */
 .app-nav-tabs {
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   background: var(--bg-card);
   backdrop-filter: var(--backdrop-blur);
   padding: 0.4rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.85rem;
   box-shadow: var(--shadow-card);
 }
 
@@ -1101,6 +1139,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .alloc-segment.p2 { background: #8b5cf6; }
 .alloc-segment.rrsp { background: var(--rrsp-color); }
 .alloc-segment.pi { background: var(--nonreg-color); }
+.alloc-segment.corp { background: var(--corp-color); }
 .alloc-segment.tfsa { background: var(--tfsa-color); }
 
 .alloc-labels-row {
@@ -1164,6 +1203,53 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .alloc-card.pi {
   border-left: 3px solid var(--nonreg-color);
+}
+
+.alloc-card.tfsa {
+  border-left: 3px solid var(--tfsa-color);
+}
+
+.alloc-card.corp {
+  border-left: 3px solid var(--corp-color);
+}
+
+.alloc-share-badge {
+  font-size: 0.68rem;
+  padding: 0.14rem 0.45rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.alloc-share-badge.rrsp {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--rrsp-color);
+}
+
+.alloc-share-badge.p2 {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+}
+
+.alloc-share-badge.pi {
+  background: rgba(234, 88, 12, 0.15);
+  color: var(--nonreg-color);
+}
+
+.alloc-share-badge.tfsa {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--tfsa-color);
+}
+
+.alloc-share-badge.corp {
+  background: rgba(236, 72, 153, 0.15);
+  color: var(--corp-color);
+}
+
+.pi-gain-subbox {
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed var(--border-subtle);
 }
 
 .alloc-card-header {
@@ -1264,6 +1350,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Withdrawal Blueprint Card */
 .withdrawal-blueprint-card {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
@@ -1311,6 +1398,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .blueprint-col.rrsp { border-left: 3px solid var(--rrsp-color); }
 .blueprint-col.pi { border-left: 3px solid var(--nonreg-color); }
+.blueprint-col.corp { border-left: 3px solid var(--corp-color); }
 .blueprint-col.tfsa { border-left: 3px solid var(--tfsa-color); }
 .blueprint-col.net { border-left: 3px solid #10b981; }
 
@@ -1347,6 +1435,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Advisor Card */
 .advisor-card {
+  min-width: 0;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(16, 185, 129, 0.08));
   border: 1px solid rgba(99, 102, 241, 0.35);
   border-radius: var(--radius-xl);
@@ -1404,6 +1493,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Scorecard Table */
 .scorecard-card {
+  min-width: 0;
   background: var(--bg-card);
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid var(--border-subtle);
@@ -1426,28 +1516,32 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Household Toggle (Single vs Couple) */
 .household-toggle-wrapper {
-  margin-bottom: 1.5rem;
+  width: 100%;
+  margin-bottom: 0.85rem;
 }
 
 .household-pills {
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: var(--bg-input);
-  padding: 0.3rem;
-  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  backdrop-filter: var(--backdrop-blur);
+  padding: 0.4rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
-  gap: 0.3rem;
+  box-shadow: var(--shadow-card);
+  gap: 0.5rem;
 }
 
 .household-pill {
-  padding: 0.55rem 0.75rem;
+  padding: 0.65rem 1rem;
   border: none;
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-display);
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -1565,13 +1659,18 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .scenario-playbook-bar {
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  overflow-x: auto;
-  padding: 0.5rem 0;
-  margin-bottom: 0.85rem;
-  scrollbar-width: none;
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 1.5rem;
+  background: var(--bg-card);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .scenario-playbook-label {
@@ -1581,10 +1680,11 @@ input[type="range"]::-moz-range-thumb:hover {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
+  margin-right: 0.15rem;
 }
 
 .scenario-chip {
-  background: var(--bg-card);
+  background: var(--bg-input);
   border: 1px solid var(--border-subtle);
   border-radius: 999px;
   color: var(--text-secondary);
@@ -1593,8 +1693,9 @@ input[type="range"]::-moz-range-thumb:hover {
   padding: 0.35rem 0.75rem;
   cursor: pointer;
   white-space: nowrap;
+  max-width: 100%;
   transition: all 0.15s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.3rem;
 }
@@ -2015,6 +2116,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .income-bar-seg.db { background: #818cf8; }
 .income-bar-seg.rrsp { background: var(--rrsp-color); }
 .income-bar-seg.pi { background: var(--nonreg-color); }
+.income-bar-seg.corp { background: var(--corp-color); }
 .income-bar-seg.tfsa { background: var(--tfsa-color); }
 
 .income-legend-row {
@@ -2043,6 +2145,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .income-legend-dot.db { background: #818cf8; }
 .income-legend-dot.rrsp { background: var(--rrsp-color); }
 .income-legend-dot.pi { background: var(--nonreg-color); }
+.income-legend-dot.corp { background: var(--corp-color); }
 .income-legend-dot.tfsa { background: var(--tfsa-color); }
 
 /* Pension CTA Callout in Blueprint */

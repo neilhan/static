@@ -28,7 +28,7 @@ This repo is a pnpm workspace. To work on any app:
 2. Use Node 26+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
 3. Install everything from the repo root: `pnpm install`
 4. Dev servers:
-   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, `pnpm dev:language`, `pnpm dev:lookup`, or `pnpm dev:calc` (RRSP Calculator)
+   - Single app: `pnpm dev:farnsworth`, `pnpm dev:sporttimer`, `pnpm dev:life`, `pnpm dev:language`, `pnpm dev:lookup`, or `pnpm dev:rrsp` (RRSP Calculator)
    - All apps together: `pnpm dev:all`
 5. Build every app at once: `pnpm run -r build` (or `./build_all.sh`)
 

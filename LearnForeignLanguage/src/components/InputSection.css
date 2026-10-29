@@ -18,7 +18,7 @@
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
-  min-width: 200px;
+  min-width: min(200px, 100%);
 }
 
 .select-group label {
@@ -27,6 +27,8 @@
 }
 
 .select-group select {
+  width: 100%;
+  max-width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--control-border);
   border-radius: 8px;

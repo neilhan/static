@@ -162,12 +162,13 @@
 
 .timing-panels {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 1.5rem;
   margin-bottom: 2.5rem;
 }
 
 .overall-progress {
+  min-width: 0;
   padding: 1.5rem;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.04);
@@ -196,6 +197,7 @@
 }
 
 .next-up-panel {
+  min-width: 0;
   padding: 1.5rem;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.05);
@@ -281,6 +283,7 @@
 
 .timer-controls {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 1.5rem;

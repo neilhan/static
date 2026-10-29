@@ -1,4 +1,5 @@
 .program-list {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
@@ -21,6 +22,7 @@
 
 .header-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -100,11 +102,12 @@
 
 .program-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 1.5rem;
 }
 
 .program-card {
+  min-width: 0;
   background: #1a1a1a;
   border-radius: 12px;
   padding: 1.5rem;

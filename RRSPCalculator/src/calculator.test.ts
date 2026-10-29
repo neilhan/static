@@ -4,6 +4,8 @@ import {
   calculateCoupleTax,
   calcGrossRRSPWithdrawal,
   calcGrossNonRegWithdrawal,
+  calcCorpDistributionTaxInfo,
+  calcGrossCorpWithdrawal,
   getRRIFMinFactor,
   runSimulation,
   simulatePortfolioStrategy,
@@ -177,6 +179,199 @@ describe("Portfolio Strategy Simulator (Single & Couple)", () => {
     expect(coupleWithPensions.annualGuaranteedGrossAtRetirement).toBe(64120);
     expect(coupleWithPensions.annualGuaranteedNetAtRetirement).toBeGreaterThan(50000);
     expect(coupleWithPensions.longevityYears).toBeGreaterThan(25);
+  });
+
+  it("supports providing a direct starting point at retirement with asset breakdown (Single & Couple)", () => {
+    const singleAtRetire = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      startAtRetirement: true,
+      startingRetirementAssets: {
+        rrsp: 700000,
+        pi: 300000,
+        piUnrealizedGainPct: 40,
+        tfsa: 200000,
+      },
+      decumStrategy: "oasShield",
+    });
+
+    expect(singleAtRetire.terminalBalanceAtRetirement.rrsp).toBe(700000);
+    expect(singleAtRetire.terminalBalanceAtRetirement.pi).toBe(300000);
+    expect(singleAtRetire.terminalBalanceAtRetirement.piCostBasis).toBe(180000);
+    expect(singleAtRetire.terminalBalanceAtRetirement.piUnrealizedGain).toBe(120000);
+    expect(singleAtRetire.terminalBalanceAtRetirement.tfsa).toBe(200000);
+    expect(singleAtRetire.terminalBalanceAtRetirement.total).toBe(1200000);
+    expect(singleAtRetire.history[0].age).toBe(65);
+    expect(singleAtRetire.history[0].totalStart).toBe(1200000);
+    expect(singleAtRetire.totalRefundsAccumulated).toBe(0);
+
+    const coupleAtRetire = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      householdMode: "couple",
+      person2RetireAge: 63,
+      startAtRetirement: true,
+      startingRetirementAssets: {
+        rrsp: 800000,
+        person1Rrsp: 500000,
+        person2Rrsp: 300000,
+        pi: 250000,
+        piUnrealizedGainPct: 50,
+        tfsa: 150000,
+      },
+      decumStrategy: "oasShield",
+    });
+
+    expect(coupleAtRetire.terminalBalanceAtRetirement.person1Rrsp).toBe(500000);
+    expect(coupleAtRetire.terminalBalanceAtRetirement.person2Rrsp).toBe(300000);
+    expect(coupleAtRetire.terminalBalanceAtRetirement.rrsp).toBe(800000);
+    expect(coupleAtRetire.terminalBalanceAtRetirement.total).toBe(1200000);
+    expect(coupleAtRetire.longevityYears).toBeGreaterThan(singleAtRetire.longevityYears);
+  });
+
+  it("supports direct account comparison starting at retirement", () => {
+    const compEqual = runSimulation({
+      householdMode: "single",
+      annualSaving: 40000,
+      mode: "preTax",
+      reinvestRefund: false,
+      yearsAccumulation: 15,
+      retireAge: 65,
+      retireNetSpending: 80000,
+      workTaxRate: 0.43,
+      growthRatePreTax: 0.07,
+      taxDrag: 0.015,
+      retireGrowthRate: 0.05,
+      startAtRetirement: true,
+      startingRetirementAssets: {
+        rrsp: 700000,
+        pi: 300000,
+        piUnrealizedGainPct: 50,
+        tfsa: 200000,
+      },
+      comparatorUseBreakdown: false,
+    });
+
+    expect(compEqual.rrsp.terminalBalance).toBe(1200000);
+    expect(compEqual.nonReg.terminalBalance).toBe(1200000);
+    expect(compEqual.tfsa.terminalBalance).toBe(1200000);
+    expect(compEqual.rrsp.accumulationHistory.length).toBe(0);
+
+    const compBreakdown = runSimulation({
+      ...compEqual.params,
+      startingRetirementAssets: {
+        rrsp: 700000,
+        pi: 300000,
+        piUnrealizedGainPct: 50,
+        corp: 500000,
+        corpUnrealizedGainPct: 60,
+        tfsa: 200000,
+      },
+      comparatorUseBreakdown: true,
+    });
+    expect(compBreakdown.rrsp.terminalBalance).toBe(700000);
+    expect(compBreakdown.nonReg.terminalBalance).toBe(300000);
+    expect(compBreakdown.corp.terminalBalance).toBe(500000);
+    expect(compBreakdown.tfsa.terminalBalance).toBe(200000);
+  });
+
+  it("models 2-person Co-Owned Corp (CCPC / HoldCo) CDA tax-free dividends and spousal splitting", () => {
+    const distInfo = calcCorpDistributionTaxInfo(100000, 0.5);
+    // 50% unrealized gain -> $50,000 gain -> 50% CDA = $25,000 tax-free CDA + $75,000 CCPC dividend
+    expect(distInfo.cdaTaxFreeCash).toBeCloseTo(25000, 0);
+    expect(distInfo.taxableDividendCash).toBeCloseTo(75000, 0);
+    expect(distInfo.grossedUpDividend).toBeCloseTo(75000 * 1.15, 0);
+
+    const singleCorp = calcGrossCorpWithdrawal(80000, 0.5, "single", 65);
+    const coupleCorp = calcGrossCorpWithdrawal(80000, 0.5, "couple", 65, 65, true);
+
+    // Co-owning spouses splitting dividends 50/50 pay materially less personal dividend tax
+    expect(coupleCorp.tax).toBeLessThan(singleCorp.tax - 4000);
+    expect(coupleCorp.gross).toBeLessThan(singleCorp.gross - 4000);
+    expect(coupleCorp.cdaTaxFree).toBeGreaterThan(15000);
+  });
+
+  it("simulates 2-person Co-Owned Corp across both accumulation and retirement phases", () => {
+    const coupleCorpAccum = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      householdMode: "couple",
+      person2RetireAge: 63,
+      person2WorkTaxRate: 0.30,
+      annualSaving: 80000,
+      person1RrspSaving: 20000,
+      person2RrspSaving: 20000,
+      piSaving: 5000,
+      corpSaving: 35000,
+      retireNetSpending: 100000,
+      decumStrategy: "oasShield",
+    });
+
+    expect(coupleCorpAccum.corpSaving).toBe(35000);
+    expect(coupleCorpAccum.terminalBalanceAtRetirement.corp).toBeGreaterThan(700000);
+    expect(coupleCorpAccum.terminalBalanceAtRetirement.corpUnrealizedGain).toBeGreaterThan(150000);
+    expect(coupleCorpAccum.longevityYears).toBeGreaterThan(20);
+
+    // Ensure all 4 decumulation strategies properly draw down and account for Co-Owned Corp
+    const allStrats = compareAllStrategies({
+      ...baseSingleParams,
+      householdMode: "couple",
+      person2RetireAge: 63,
+      startAtRetirement: true,
+      retireNetSpending: 95000,
+      startingRetirementAssets: {
+        rrsp: 700000,
+        person1Rrsp: 350000,
+        person2Rrsp: 350000,
+        pi: 200000,
+        piUnrealizedGainPct: 50,
+        corp: 600000,
+        corpUnrealizedGainPct: 50,
+        tfsa: 200000,
+      },
+    });
+
+    const withoutCorp = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      householdMode: "couple",
+      person2RetireAge: 63,
+      startAtRetirement: true,
+      retireNetSpending: 95000,
+      startingRetirementAssets: {
+        rrsp: 700000,
+        person1Rrsp: 350000,
+        person2Rrsp: 350000,
+        pi: 200000,
+        piUnrealizedGainPct: 50,
+        corp: 0,
+        tfsa: 200000,
+      },
+      decumStrategy: "oasShield",
+    });
+
+    expect(allStrats).toHaveLength(4);
+    for (const s of allStrats) {
+      expect(s.terminalBalanceAtRetirement.corp).toBe(600000);
+      expect(s.terminalBalanceAtRetirement.total).toBe(1700000);
+      expect(s.longevityYears).toBeGreaterThan(22);
+      expect(s.longevityYears).toBeGreaterThan(withoutCorp.longevityYears + 8);
+    }
+
+    // Verify Direct Account Comparison pre-tax CCPC SBD (12.2% corporate tax vs personal MTR)
+    const compCorp = runSimulation({
+      householdMode: "couple",
+      annualSaving: 50000,
+      mode: "preTax",
+      reinvestRefund: false,
+      yearsAccumulation: 15,
+      retireAge: 65,
+      person2RetireAge: 63,
+      retireNetSpending: 80000,
+      workTaxRate: 0.45,
+      person2WorkTaxRate: 0.35,
+      growthRatePreTax: 0.07,
+      taxDrag: 0.015,
+      retireGrowthRate: 0.05,
+    });
+    // CCPC retains 87.8% (after 12.2% SBD) vs 60% personal after-tax (40% blended MTR), so Corp terminal balance > nonReg
+    expect(compCorp.corp.terminalBalance).toBeGreaterThan(compCorp.nonReg.terminalBalance);
   });
 });
 
