@@ -200,9 +200,14 @@
 }
 
 /* Border styles for color + border visual coding */
-.fret-note-badge.border-root {
+.fret-note-badge.border-root,
+.fret-note-badge.border-selected {
   border: 3px solid #ffffff;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 0 0 2px #0f172a,
+    0 0 0 5px #fbbf24,
+    0 0 14px rgba(251, 191, 36, 0.8);
+  transform: scale(1.1);
 }
 
 .fret-note-badge.border-solid {
@@ -212,12 +217,6 @@
 .fret-note-badge.border-dashed {
   border: 2px dashed rgba(248, 250, 252, 0.85);
   opacity: 0.88;
-}
-
-.fret-note-badge.border-selected {
-  border: 3px solid #fbbf24;
-  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.4), 0 2px 6px rgba(0, 0, 0, 0.5);
-  transform: scale(1.08);
 }
 
 .fret-note-badge.border-muted {

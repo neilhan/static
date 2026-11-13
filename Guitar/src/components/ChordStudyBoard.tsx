@@ -2,9 +2,15 @@ import React, { useCallback, useMemo, useState } from 'react';
 import {
   AccidentalMode,
   formatPitchClass,
+  getSeventhDegree,
+  getShellVoicings,
   getTriadDegree,
   getTriadVoicings,
   PITCH_CLASS_COLORS,
+  SEVENTH_DEFINITIONS,
+  SeventhQuality,
+  SeventhVoicing,
+  SHELL_STRING_SETS,
   THREE_STRING_SETS,
   TRIAD_DEFINITIONS,
   TriadQuality,
@@ -13,33 +19,40 @@ import {
 import { Fretboard, FretMarker, makeFretKey } from './Fretboard';
 import { MiniFretboard, MiniFretNote } from './MiniFretboard';
 import { SectionHeader } from './SectionHeader';
-import './TriadsBoard.css';
+import './ChordStudyBoard.css';
 
-interface TriadsBoardProps {
+export type ChordStudyMode = 'triad' | 'shell';
+
+interface ChordStudyBoardProps {
+  mode: ChordStudyMode;
   strings: number[];
   maxFret: number;
   accidentals: AccidentalMode;
 }
 
+type AnyQuality = TriadQuality | SeventhQuality;
+type AnyVoicing = TriadVoicing | SeventhVoicing;
+
 interface ChordSpec {
   rootPc: number;
-  quality: TriadQuality;
+  quality: AnyQuality;
 }
-
-const ALL_PITCH_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-const QUALITY_LIST: TriadQuality[] = ['major', 'minor', 'dim', 'aug'];
 
 interface ProgressionStep {
   offset: number;
-  quality: TriadQuality;
+  quality: AnyQuality;
 }
 
-const PROGRESSION_PRESETS: Array<{
+interface ProgressionPreset {
   id: string;
   mode: 'major' | 'minor';
   romanLabel: string;
   steps: ProgressionStep[];
-}> = [
+}
+
+const ALL_PITCH_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+const TRIAD_PROGRESSIONS: ProgressionPreset[] = [
   {
     id: '1-4-5',
     mode: 'major',
@@ -104,6 +117,84 @@ const PROGRESSION_PRESETS: Array<{
   },
 ];
 
+const SHELL_PROGRESSIONS: ProgressionPreset[] = [
+  {
+    id: '2-5-1',
+    mode: 'major',
+    romanLabel: 'ii–V–I',
+    steps: [
+      { offset: 2, quality: 'min7' },
+      { offset: 7, quality: 'dom7' },
+      { offset: 0, quality: 'maj7' },
+    ],
+  },
+  {
+    id: '1-4-5',
+    mode: 'major',
+    romanLabel: 'I–IV–V',
+    steps: [
+      { offset: 0, quality: 'maj7' },
+      { offset: 5, quality: 'maj7' },
+      { offset: 7, quality: 'dom7' },
+    ],
+  },
+  {
+    id: '6-2-5-1',
+    mode: 'minor',
+    romanLabel: 'vi–ii–V–I',
+    steps: [
+      { offset: 9, quality: 'min7' },
+      { offset: 2, quality: 'min7' },
+      { offset: 7, quality: 'dom7' },
+      { offset: 0, quality: 'maj7' },
+    ],
+  },
+];
+
+const STUDY_CONFIG = {
+  triad: {
+    ariaLabel: 'Triads study section',
+    title: 'Triads Study Board (3-String Chord Shapes)',
+    subtitleSuffix: 'Study one chord or stack multiple chords on the same 3 strings.',
+    activeChordsLabel: 'Active Chords & Quick Progressions',
+    qualitySectionLabel: 'Root Note & Quality',
+    stringSetSectionLabel: '3-String Set (Presets or Any 3 Strings)',
+    defaultQuality: 'major' as AnyQuality,
+    defaultStrings: [0, 1, 2],
+    showRootInBassToggle: false,
+    stringSets: THREE_STRING_SETS,
+    qualities: ['major', 'minor', 'dim', 'aug'] as AnyQuality[],
+    progressions: TRIAD_PROGRESSIONS,
+    inversionLegend: [
+      { label: 'Root Position', color: '#10b981', rootOnly: false },
+      { label: '1st Inversion', color: '#38bdf8', rootOnly: false },
+      { label: '2nd Inversion', color: '#f472b6', rootOnly: false },
+    ],
+  },
+  shell: {
+    ariaLabel: 'Shell chords study section',
+    title: 'Shell Chords Study Board (R – 3 – 7 Voicings)',
+    subtitleSuffix:
+      'Drops the 5th and keeps Root, 3rd, and 7th for clean 3-string 7th chord shapes.',
+    activeChordsLabel: 'Active Shell Chords & Jazz Progressions',
+    qualitySectionLabel: 'Root Note & Shell Quality (R – 3 – 7)',
+    stringSetSectionLabel: '3-String Shell Set (Presets or Any 3 Strings)',
+    defaultQuality: 'maj7' as AnyQuality,
+    defaultStrings: [2, 3, 5],
+    showRootInBassToggle: true,
+    stringSets: SHELL_STRING_SETS,
+    qualities: ['maj7', 'dom7', 'min7', 'm7b5', 'dim7'] as AnyQuality[],
+    progressions: SHELL_PROGRESSIONS,
+    inversionLegend: [
+      { label: 'Root Position', color: '#10b981', rootOnly: true },
+      { label: '1st Inversion (3rd in bass)', color: '#38bdf8', rootOnly: false },
+      { label: '3rd Inversion (7th in bass)', color: '#f59e0b', rootOnly: false },
+    ],
+  },
+};
+
+const makeChordKey = (c: ChordSpec): string => `${c.rootPc}-${c.quality}`;
+
 const buildProgressionChords = (
   keyRootPc: number,
   steps: ProgressionStep[]
@@ -113,20 +204,41 @@ const buildProgressionChords = (
     quality: s.quality,
   }));
 
-const makeChordKey = (c: ChordSpec): string => `${c.rootPc}-${c.quality}`;
+const getQualityInfo = (mode: ChordStudyMode, quality: AnyQuality) => {
+  if (mode === 'triad') {
+    const def = TRIAD_DEFINITIONS[quality as TriadQuality];
+    return {
+      label: def.label,
+      suffix: def.suffix,
+      degreesText: def.degreeLabels.join(' '),
+    };
+  }
+  const def = SEVENTH_DEFINITIONS[quality as SeventhQuality];
+  return {
+    label: def.label,
+    suffix: def.suffix,
+    degreesText: `${def.degreeLabels[0]} ${def.degreeLabels[1]} ${def.degreeLabels[3]}`,
+  };
+};
 
-export const TriadsBoard: React.FC<TriadsBoardProps> = ({
+export const ChordStudyBoard: React.FC<ChordStudyBoardProps> = ({
+  mode,
   strings,
   maxFret,
   accidentals,
 }) => {
+  const cfg = STUDY_CONFIG[mode];
+
   const [selectedChords, setSelectedChords] = useState<ChordSpec[]>([
-    { rootPc: 0, quality: 'major' },
+    { rootPc: 0, quality: cfg.defaultQuality },
   ]);
   const [pickerRootPc, setPickerRootPc] = useState<number>(0);
-  const [pickerQuality, setPickerQuality] = useState<TriadQuality>('major');
+  const [pickerQuality, setPickerQuality] = useState<AnyQuality>(cfg.defaultQuality);
   const [activeProgressionId, setActiveProgressionId] = useState<string | null>(null);
-  const [selectedStrings, setSelectedStrings] = useState<number[]>([0, 1, 2]);
+  const [selectedStrings, setSelectedStrings] = useState<number[]>(cfg.defaultStrings);
+  const [rootInBassOnly, setRootInBassOnly] = useState<boolean>(
+    cfg.showRootInBassToggle
+  );
   const [activeVoicingId, setActiveVoicingId] = useState<string | null>(null);
   const [showAllFretNotes, setShowAllFretNotes] = useState<boolean>(false);
 
@@ -134,8 +246,8 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
 
   const formatChordName = useCallback(
     (c: ChordSpec) =>
-      `${formatPitchClass(c.rootPc, accidentals)}${TRIAD_DEFINITIONS[c.quality].suffix}`,
-    [accidentals]
+      `${formatPitchClass(c.rootPc, accidentals)}${getQualityInfo(mode, c.quality).suffix}`,
+    [accidentals, mode]
   );
 
   const sortedStrings = useMemo(
@@ -144,17 +256,27 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
   );
 
   const voicings = useMemo(() => {
-    const all: TriadVoicing[] = [];
+    const all: AnyVoicing[] = [];
     selectedChords.forEach((chord) => {
       const label = formatChordName(chord);
-      const list = getTriadVoicings(
-        strings,
-        maxFret,
-        sortedStrings,
-        chord.rootPc,
-        chord.quality
-      );
-      list.forEach((v) => {
+      const raw =
+        mode === 'triad'
+          ? getTriadVoicings(
+              strings,
+              maxFret,
+              sortedStrings,
+              chord.rootPc,
+              chord.quality as TriadQuality
+            )
+          : getShellVoicings(
+              strings,
+              maxFret,
+              sortedStrings,
+              chord.rootPc,
+              chord.quality as SeventhQuality
+            ).filter((v) => !rootInBassOnly || v.inversion === 'Root Position');
+
+      raw.forEach((v) => {
         all.push({
           ...v,
           id: `${makeChordKey(chord)}::${v.id}`,
@@ -165,7 +287,16 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
     });
     all.sort((a, b) => a.minFret - b.minFret || a.maxFret - b.maxFret);
     return all;
-  }, [selectedChords, strings, maxFret, sortedStrings, formatChordName, isMultiChord]);
+  }, [
+    selectedChords,
+    mode,
+    strings,
+    maxFret,
+    sortedStrings,
+    formatChordName,
+    isMultiChord,
+    rootInBassOnly,
+  ]);
 
   const activeVoicing = useMemo(
     () => voicings.find((v) => v.id === activeVoicingId) ?? null,
@@ -179,35 +310,38 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
     );
   }, [activeVoicing]);
 
-  const getTriadMarker = useCallback(
+  const getChordMarker = useCallback(
     (stringIndex: number, _fret: number, pc: number): FretMarker | null => {
       if (!selectedStrings.includes(stringIndex)) return null;
 
-      let bestDeg: { degree: string; index: 0 | 1 | 2 } | null = null;
+      let bestIndex: number | null = null;
       for (const chord of selectedChords) {
-        const deg = getTriadDegree(pc, chord.rootPc, chord.quality);
-        if (deg) {
-          if (!bestDeg || deg.index < bestDeg.index) {
-            bestDeg = deg;
-          }
+        const deg =
+          mode === 'triad'
+            ? getTriadDegree(pc, chord.rootPc, chord.quality as TriadQuality)
+            : getSeventhDegree(pc, chord.rootPc, chord.quality as SeventhQuality);
+        if (!deg) continue;
+        if (mode === 'shell' && deg.index === 2) continue;
+        if (bestIndex === null || deg.index < bestIndex) {
+          bestIndex = deg.index;
         }
       }
-      if (!bestDeg) return null;
+      if (bestIndex === null) return null;
 
       return {
         label: formatPitchClass(pc, accidentals),
         color: PITCH_CLASS_COLORS[pc],
-        border: bestDeg.index === 0 ? 'root' : bestDeg.index === 1 ? 'solid' : 'dashed',
+        border: bestIndex === 0 ? 'root' : bestIndex === 1 ? 'solid' : 'dashed',
       };
     },
-    [selectedStrings, selectedChords, accidentals]
+    [selectedStrings, selectedChords, mode, accidentals]
   );
 
   const handlePickRoot = (pc: number) => {
     setPickerRootPc(pc);
     setActiveVoicingId(null);
     if (activeProgressionId) {
-      const preset = PROGRESSION_PRESETS.find((p) => p.id === activeProgressionId);
+      const preset = cfg.progressions.find((p) => p.id === activeProgressionId);
       if (preset) {
         setSelectedChords(buildProgressionChords(pc, preset.steps));
         return;
@@ -218,7 +352,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
     }
   };
 
-  const handlePickQuality = (q: TriadQuality) => {
+  const handlePickQuality = (q: AnyQuality) => {
     setPickerQuality(q);
     setActiveVoicingId(null);
     if (selectedChords.length === 1) {
@@ -261,65 +395,79 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
   const activePresetId = useMemo(() => {
     const key = sortedStrings.join('-');
     return (
-      THREE_STRING_SETS.find((preset) => preset.strings.join('-') === key)?.id ??
-      null
+      cfg.stringSets.find((preset) => preset.strings.join('-') === key)?.id ?? null
     );
-  }, [sortedStrings]);
-
-  const handleSelectVoicing = (voicing: TriadVoicing) => {
-    setActiveVoicingId((prev) => (prev === voicing.id ? null : voicing.id));
-  };
+  }, [cfg.stringSets, sortedStrings]);
 
   const pickerChordAlreadyAdded = selectedChords.some(
     (c) => c.rootPc === pickerRootPc && c.quality === pickerQuality
   );
 
+  const progressionModes = useMemo(
+    () => (['major', 'minor'] as const).filter((m) => cfg.progressions.some((p) => p.mode === m)),
+    [cfg.progressions]
+  );
+
   return (
-    <section className="panel triads-board-panel" aria-label="Triads study section">
+    <section className="panel chord-study-panel" aria-label={cfg.ariaLabel}>
       <SectionHeader
-        title="Triads Study Board (3-String Chord Shapes)"
+        title={cfg.title}
         subtitle={
           <>
             Active Chords:{' '}
             <strong>{selectedChords.map(formatChordName).join(' · ')}</strong> · Strings:{' '}
-            <strong>{sortedStrings.map((s) => `S${s + 1}`).join('–')}</strong> · Study one
-            chord or stack multiple chords on the same 3 strings.
+            <strong>{sortedStrings.map((s) => `S${s + 1}`).join('–')}</strong> ·{' '}
+            {cfg.subtitleSuffix}
           </>
         }
         actions={
-          <button
-            type="button"
-            className={`toggle-btn ${showAllFretNotes ? 'active' : ''}`}
-            onClick={() => setShowAllFretNotes((v) => !v)}
-          >
-            Background Notes: {showAllFretNotes ? 'On' : 'Off'}
-          </button>
+          <>
+            {cfg.showRootInBassToggle && (
+              <button
+                type="button"
+                className={`toggle-btn ${rootInBassOnly ? 'active' : ''}`}
+                onClick={() => {
+                  setRootInBassOnly((v) => !v);
+                  setActiveVoicingId(null);
+                }}
+              >
+                Root in Bass Only: {rootInBassOnly ? 'On' : 'Off'}
+              </button>
+            )}
+            <button
+              type="button"
+              className={`toggle-btn ${showAllFretNotes ? 'active' : ''}`}
+              onClick={() => setShowAllFretNotes((v) => !v)}
+            >
+              Background Notes: {showAllFretNotes ? 'On' : 'Off'}
+            </button>
+          </>
         }
       />
 
-      <div className="triads-controls-grid">
-        <div className="triads-control-group">
-          <span className="triads-control-label">Active Chords & Quick Progressions</span>
-          <div className="triads-strings-controls">
-            <div className="triads-pill-row">
+      <div className="chord-study-controls-grid">
+        <div className="chord-study-control-group">
+          <span className="chord-study-control-label">{cfg.activeChordsLabel}</span>
+          <div className="chord-study-strings-controls">
+            <div className="chord-study-pill-row">
               {selectedChords.map((chord) => {
                 const name = formatChordName(chord);
                 const color = PITCH_CLASS_COLORS[chord.rootPc];
                 return (
                   <span
                     key={makeChordKey(chord)}
-                    className="triad-active-chord-chip"
+                    className="chord-active-chip"
                     style={{ borderColor: color }}
                   >
                     <span
-                      className="triad-chord-dot"
+                      className="chord-active-dot"
                       style={{ backgroundColor: color }}
                     />
                     <strong>{name}</strong>
                     {selectedChords.length > 1 && (
                       <button
                         type="button"
-                        className="triad-chip-remove"
+                        className="chord-chip-remove"
                         onClick={() => handleRemoveChord(chord)}
                         aria-label={`Remove ${name}`}
                         title={`Remove ${name}`}
@@ -347,32 +495,34 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
               )}
             </div>
 
-            <div className="triads-progression-rows">
-              {(['major', 'minor'] as const).map((mode) => (
-                <div key={mode} className="triads-progression-row">
-                  <span className="triads-progression-tag">
-                    {mode === 'major' ? 'Major' : 'Rel. Minor'}
+            <div className="chord-progression-rows">
+              {progressionModes.map((progMode) => (
+                <div key={progMode} className="chord-progression-row">
+                  <span className="chord-progression-tag">
+                    {progMode === 'major' ? 'Major' : 'Rel. Minor'}
                   </span>
-                  <div className="triads-pill-row">
-                    {PROGRESSION_PRESETS.filter((p) => p.mode === mode).map((preset) => {
-                      const chords = buildProgressionChords(pickerRootPc, preset.steps);
-                      const label = `${chords.map(formatChordName).join(' · ')} (${preset.romanLabel})`;
-                      const isActive = activeProgressionId === preset.id;
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          className={`toggle-btn ${isActive ? 'active' : ''}`}
-                          onClick={() => {
-                            setActiveProgressionId(preset.id);
-                            setSelectedChords(chords);
-                            setActiveVoicingId(null);
-                          }}
-                        >
-                          {label}
-                        </button>
-                      );
-                    })}
+                  <div className="chord-study-pill-row">
+                    {cfg.progressions
+                      .filter((p) => p.mode === progMode)
+                      .map((preset) => {
+                        const chords = buildProgressionChords(pickerRootPc, preset.steps);
+                        const label = `${chords.map(formatChordName).join(' · ')} (${preset.romanLabel})`;
+                        const isActive = activeProgressionId === preset.id;
+                        return (
+                          <button
+                            key={preset.id}
+                            type="button"
+                            className={`toggle-btn ${isActive ? 'active' : ''}`}
+                            onClick={() => {
+                              setActiveProgressionId(preset.id);
+                              setSelectedChords(chords);
+                              setActiveVoicingId(null);
+                            }}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
                   </div>
                 </div>
               ))}
@@ -380,11 +530,12 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
           </div>
         </div>
 
-        <div className="triads-control-group">
-          <span className="triads-control-label">
-            Root Note & Quality {isMultiChord ? '(Pick & click "+ Add Chord")' : ''}
+        <div className="chord-study-control-group">
+          <span className="chord-study-control-label">
+            {cfg.qualitySectionLabel}{' '}
+            {isMultiChord ? '(Pick & click "+ Add Chord")' : ''}
           </span>
-          <div className="triads-pill-row">
+          <div className="chord-study-pill-row">
             {ALL_PITCH_CLASSES.map((pc) => {
               const label = formatPitchClass(pc, accidentals);
               const isActive = pickerRootPc === pc;
@@ -409,9 +560,9 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
               );
             })}
           </div>
-          <div className="triads-pill-row" style={{ marginTop: '0.25rem' }}>
-            {QUALITY_LIST.map((q) => {
-              const qDef = TRIAD_DEFINITIONS[q];
+          <div className="chord-study-pill-row" style={{ marginTop: '0.25rem' }}>
+            {cfg.qualities.map((q) => {
+              const info = getQualityInfo(mode, q);
               return (
                 <button
                   key={q}
@@ -419,7 +570,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
                   className={`toggle-btn ${pickerQuality === q ? 'active' : ''}`}
                   onClick={() => handlePickQuality(q)}
                 >
-                  {qDef.label} ({qDef.degreeLabels.join(' ')})
+                  {info.label} ({info.degreesText})
                 </button>
               );
             })}
@@ -428,18 +579,18 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
               className="toggle-btn active"
               disabled={pickerChordAlreadyAdded}
               onClick={handleAddPickerChord}
-              title="Add this chord to the Triads Study Board alongside existing chords"
+              title="Add this chord alongside existing chords"
             >
               + Add {formatChordName({ rootPc: pickerRootPc, quality: pickerQuality })}
             </button>
           </div>
         </div>
 
-        <div className="triads-control-group">
-          <span className="triads-control-label">3-String Set (Presets or Any 3 Strings)</span>
-          <div className="triads-strings-controls">
-            <div className="triads-pill-row">
-              {THREE_STRING_SETS.map((preset) => (
+        <div className="chord-study-control-group">
+          <span className="chord-study-control-label">{cfg.stringSetSectionLabel}</span>
+          <div className="chord-study-strings-controls">
+            <div className="chord-study-pill-row">
+              {cfg.stringSets.map((preset) => (
                 <button
                   key={preset.id}
                   type="button"
@@ -453,7 +604,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
                 </button>
               ))}
             </div>
-            <div className="triads-pill-row">
+            <div className="chord-study-pill-row">
               {strings.map((_, sIdx) => {
                 const isSelected = selectedStrings.includes(sIdx);
                 return (
@@ -473,33 +624,28 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
         </div>
       </div>
 
-      <div className="triads-legend-row">
-        {isMultiChord ? (
-          selectedChords.map((chord) => (
-            <span key={makeChordKey(chord)} className="triads-legend-item">
-              <span
-                className="triads-legend-swatch"
-                style={{ background: PITCH_CLASS_COLORS[chord.rootPc] }}
-              />
-              {formatChordName(chord)}
-            </span>
-          ))
-        ) : (
-          <>
-            <span className="triads-legend-item">
-              <span className="triads-legend-swatch" style={{ background: '#10b981' }} />
-              Root Position
-            </span>
-            <span className="triads-legend-item">
-              <span className="triads-legend-swatch" style={{ background: '#38bdf8' }} />
-              1st Inversion
-            </span>
-            <span className="triads-legend-item">
-              <span className="triads-legend-swatch" style={{ background: '#f472b6' }} />
-              2nd Inversion
-            </span>
-          </>
-        )}
+      <div className="chord-study-legend-row">
+        {isMultiChord
+          ? selectedChords.map((chord) => (
+              <span key={makeChordKey(chord)} className="chord-study-legend-item">
+                <span
+                  className="chord-study-legend-swatch"
+                  style={{ background: PITCH_CLASS_COLORS[chord.rootPc] }}
+                />
+                {formatChordName(chord)}
+              </span>
+            ))
+          : cfg.inversionLegend
+              .filter((item) => !rootInBassOnly || item.rootOnly)
+              .map((item) => (
+                <span key={item.label} className="chord-study-legend-item">
+                  <span
+                    className="chord-study-legend-swatch"
+                    style={{ background: item.color }}
+                  />
+                  {item.label}
+                </span>
+              ))}
         {activeVoicing && (
           <button
             type="button"
@@ -521,18 +667,20 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
         triadVoicings={voicings}
         activeTriadVoicingId={activeVoicingId}
         selectedFrets={selectedFrets}
-        getMarker={getTriadMarker}
+        getMarker={getChordMarker}
       />
 
       {selectedStrings.length !== 3 ? (
-        <p className="triads-empty-msg">Select 3 strings above to view triad shapes.</p>
+        <p className="chord-study-empty-msg">
+          Select 3 strings above to view chord shapes.
+        </p>
       ) : voicings.length === 0 ? (
-        <p className="triads-empty-msg">
-          No close-position triads found on{' '}
+        <p className="chord-study-empty-msg">
+          No close-position shapes found on{' '}
           {sortedStrings.map((s) => `S${s + 1}`).join('–')} within 0–{maxFret} frets.
         </p>
       ) : (
-        <div className="triads-voicings-grid">
+        <div className="chord-voicings-grid">
           {voicings.map((voicing) => {
             const isSelected = activeVoicingId === voicing.id;
             const windowStart = Math.max(0, voicing.minFret);
@@ -559,14 +707,18 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
               <button
                 key={voicing.id}
                 type="button"
-                className={`triad-voicing-card ${isSelected ? 'is-active' : ''}`}
-                onClick={() => handleSelectVoicing(voicing)}
+                className={`chord-voicing-card ${isSelected ? 'is-active' : ''}`}
+                onClick={() =>
+                  setActiveVoicingId((prev) =>
+                    prev === voicing.id ? null : voicing.id
+                  )
+                }
               >
-                <div className="triad-voicing-header">
-                  <span className="triad-inversion-title">
+                <div className="chord-voicing-header">
+                  <span className="chord-inversion-title">
                     {isMultiChord && voicing.chordLabel && (
                       <span
-                        className="triad-card-chord-pill"
+                        className="chord-card-pill"
                         style={{ backgroundColor: voicing.color }}
                       >
                         {voicing.chordLabel}
@@ -574,7 +726,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
                     )}
                     {voicing.inversion}
                   </span>
-                  <span className="triad-fret-badge">
+                  <span className="chord-fret-badge">
                     {voicing.minFret === 0 ? 'Open' : `F${voicing.minFret}`}–F{voicing.maxFret}
                   </span>
                 </div>
@@ -595,3 +747,4 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
     </section>
   );
 };
+

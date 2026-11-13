@@ -9,6 +9,7 @@ import {
   isNaturalPitchClass,
   PITCH_CLASS_COLORS,
   SeventhVoicing,
+  TileBlock,
   TileFilter,
   TriadVoicing,
 } from '../utils/musicTheory';
@@ -33,6 +34,7 @@ interface FretboardProps {
   connectSameNotes: boolean;
   patternFilter?: PatternFilter;
   tileFilter?: TileFilter;
+  overlayBlocks?: TileBlock[];
   triadVoicings?: Array<TriadVoicing | SeventhVoicing>;
   activeTriadVoicingId?: string | null;
   selectedFrets: Set<string>;
@@ -74,6 +76,7 @@ const INVERSION_COLORS: Record<ChordInversion, string> = {
 };
 
 const EMPTY_TRIAD_VOICINGS: Array<TriadVoicing | SeventhVoicing> = [];
+const EMPTY_OVERLAY_BLOCKS: TileBlock[] = [];
 
 export const makeFretKey = (stringIndex: number, fret: number): string =>
   `${stringIndex}:${fret}`;
@@ -87,6 +90,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
   connectSameNotes,
   patternFilter = 'all',
   tileFilter = 'none',
+  overlayBlocks = EMPTY_OVERLAY_BLOCKS,
   triadVoicings = EMPTY_TRIAD_VOICINGS,
   activeTriadVoicingId = null,
   selectedFrets,
@@ -116,7 +120,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
   useLayoutEffect(() => {
     const neck = neckRef.current;
     const shouldComputeLines = connectSameNotes && selectedPitchClasses.size > 0;
-    const shouldComputeTiles = tileFilter !== 'none';
+    const shouldComputeTiles = tileFilter !== 'none' || overlayBlocks.length > 0;
     const shouldComputeTriads = triadVoicings.length > 0;
 
     if (!neck || (!shouldComputeLines && !shouldComputeTiles && !shouldComputeTriads)) {
@@ -182,7 +186,10 @@ export const Fretboard: React.FC<FretboardProps> = ({
       }
 
       if (shouldComputeTiles) {
-        const blocks = getTileBlocksForFretboard(maxFret, tileFilter);
+        const blocks = [
+          ...getTileBlocksForFretboard(maxFret, tileFilter),
+          ...overlayBlocks,
+        ];
         const nextRects: TileBlockRect[] = [];
 
         blocks.forEach((block) => {
@@ -253,6 +260,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
     connectSameNotes,
     patternFilter,
     tileFilter,
+    overlayBlocks,
     triadVoicings,
     activeTriadVoicingId,
     selectedPitchClasses,

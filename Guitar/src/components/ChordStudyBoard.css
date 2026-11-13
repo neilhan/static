@@ -1,8 +1,8 @@
-.triads-board-panel {
+.chord-study-panel {
   gap: 1.25rem;
 }
 
-.triads-controls-grid {
+.chord-study-controls-grid {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
@@ -12,13 +12,13 @@
   background: var(--bg-panel-alt);
 }
 
-.triads-control-group {
+.chord-study-control-group {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
 }
 
-.triads-control-label {
+.chord-study-control-label {
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -26,26 +26,26 @@
   color: var(--text-muted);
 }
 
-.triads-pill-row {
+.chord-study-pill-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
 }
 
-.triads-progression-rows {
+.chord-progression-rows {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
 }
 
-.triads-progression-row {
+.chord-progression-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
 
-.triads-progression-tag {
+.chord-progression-tag {
   min-width: 72px;
   font-size: 0.72rem;
   font-weight: 700;
@@ -54,20 +54,20 @@
   color: var(--text-muted);
 }
 
-.triads-strings-controls {
+.chord-study-strings-controls {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.65rem;
 }
 
-.triads-voicings-grid {
+.chord-voicings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 0.9rem;
 }
 
-.triad-voicing-card {
+.chord-voicing-card {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -82,30 +82,30 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
 
-.triad-voicing-card:hover {
+.chord-voicing-card:hover {
   border-color: rgba(78, 205, 196, 0.55);
   transform: translateY(-1px);
 }
 
-.triad-voicing-card.is-active {
+.chord-voicing-card.is-active {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px rgba(78, 205, 196, 0.35);
 }
 
-.triad-voicing-header {
+.chord-voicing-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
 }
 
-.triad-inversion-title {
+.chord-inversion-title {
   font-size: 0.86rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.triad-fret-badge {
+.chord-fret-badge {
   font-size: 0.74rem;
   font-weight: 600;
   padding: 0.15rem 0.5rem;
@@ -114,13 +114,13 @@
   color: var(--accent);
 }
 
-.triads-empty-msg {
+.chord-study-empty-msg {
   margin: 0;
   font-size: 0.9rem;
   color: var(--text-muted);
 }
 
-.triads-legend-row {
+.chord-study-legend-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -129,20 +129,20 @@
   color: var(--text-secondary);
 }
 
-.triads-legend-item {
+.chord-study-legend-item {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   font-weight: 600;
 }
 
-.triads-legend-swatch {
+.chord-study-legend-swatch {
   width: 12px;
   height: 12px;
   border-radius: 3px;
 }
 
-.triad-active-chord-chip {
+.chord-active-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -154,13 +154,13 @@
   color: var(--text-primary);
 }
 
-.triad-chord-dot {
+.chord-active-dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
 }
 
-.triad-chip-remove {
+.chord-chip-remove {
   border: none;
   background: transparent;
   color: var(--text-muted);
@@ -170,11 +170,11 @@
   padding: 0 0.1rem;
 }
 
-.triad-chip-remove:hover {
+.chord-chip-remove:hover {
   color: var(--text-primary);
 }
 
-.triad-card-chord-pill {
+.chord-card-pill {
   display: inline-block;
   margin-right: 0.4rem;
   padding: 0.08rem 0.42rem;

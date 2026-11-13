@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest';
 import {
   formatPitchClass,
   getFretPitchClass,
+  getPentatonicBoxes,
+  getPentatonicDegree,
+  getPentatonicOctaveShiftBlocks,
   getSeventhDegree,
   getShellVoicings,
   getTileBlocksForFretboard,
@@ -118,6 +121,69 @@ describe('musicTheory', () => {
           minFret: 2,
           maxFret: 4,
         }),
+      ])
+    );
+  });
+
+  it('computes pentatonic degrees, 5 box positions, and 2-string octave shift blocks', () => {
+    const standard = TUNING_PRESETS[0];
+
+    expect(getPentatonicDegree(9, 9, 'minor')).toEqual({
+      degree: 'R',
+      index: 0,
+      isBlues: false,
+    });
+    expect(getPentatonicDegree(0, 9, 'minor')).toEqual({
+      degree: 'b3',
+      index: 1,
+      isBlues: false,
+    });
+    expect(getPentatonicDegree(3, 9, 'minor', true)).toEqual({
+      degree: 'b5',
+      index: -1,
+      isBlues: true,
+    });
+
+    // A Minor Pentatonic across 0..15 frets includes Pattern 1 at F5..F8
+    const boxes = getPentatonicBoxes(standard.strings, 15, 9, 'minor');
+    const p1 = boxes.find((b) => b.patternNumber === 1 && b.minFret === 5);
+    expect(p1).toBeDefined();
+    expect(p1?.maxFret).toBe(8);
+
+    // C Major Pentatonic 2+3 Tile (G A on lower string + C D E on upper string):
+    // S6-S5 F3..7 (and edge F15..15), S4-S3 F5..9, S2-S1 F8..12
+    const cMajorShifts23 = getPentatonicOctaveShiftBlocks(
+      standard.strings,
+      15,
+      0,
+      'major',
+      '2-3',
+      'even'
+    );
+    expect(cMajorShifts23).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ topStringIndex: 4, bottomStringIndex: 5, startFret: 3, endFret: 7 }),
+        expect.objectContaining({ topStringIndex: 4, bottomStringIndex: 5, startFret: 15, endFret: 15 }),
+        expect.objectContaining({ topStringIndex: 2, bottomStringIndex: 3, startFret: 5, endFret: 9 }),
+        expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 1, startFret: 8, endFret: 12 }),
+      ])
+    );
+
+    // C Major Pentatonic 3+2 Tile (C D E on lower string + G A on upper string):
+    // S6-S5 F8..12 -> S4-S3 F10..14 -> S2-S1 F1..5
+    const cMajorShifts32 = getPentatonicOctaveShiftBlocks(
+      standard.strings,
+      15,
+      0,
+      'major',
+      '3-2',
+      'even'
+    );
+    expect(cMajorShifts32).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ topStringIndex: 4, bottomStringIndex: 5, startFret: 8, endFret: 12 }),
+        expect.objectContaining({ topStringIndex: 2, bottomStringIndex: 3, startFret: 10, endFret: 14 }),
+        expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 1, startFret: 1, endFret: 5 }),
       ])
     );
   });

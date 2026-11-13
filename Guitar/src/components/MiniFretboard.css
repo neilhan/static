@@ -76,8 +76,11 @@
 }
 
 .mini-note-dot.is-anchor {
-  border: 2.5px solid #fbbf24;
-  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.35);
+  border: 2.5px solid #ffffff;
+  box-shadow:
+    0 0 0 2px #fbbf24,
+    0 0 8px rgba(251, 191, 36, 0.75);
+  transform: scale(1.1);
 }
 
 .mini-note-dot.is-target {

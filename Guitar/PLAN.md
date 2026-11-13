@@ -61,16 +61,22 @@ To make complex overlays effortless to read at a glance, every note marker uses 
 
 ### Phase 1: Project Scaffold & Music Theory Engine
 - [x] Scaffold `Guitar/` Vite + React + TypeScript project in the monorepo (`pnpm-workspace.yaml`, `package.json`, `PLAN.md`).
-- [ ] Create `src/utils/musicTheory.ts` (note math, enharmonic `#`/`b` formatting, tunings, scale formulas, chord formulas, interval naming, and reverse chord-matching) + `src/utils/musicTheory.test.ts` (`vitest`).
+- [x] Create `src/utils/musicTheory.ts` (note math, enharmonic `#`/`b` formatting, tunings, repeating 2-string tile blocks, triad & shell chord voicing finders) + `src/utils/musicTheory.test.ts` (`vitest`).
 
-### Phase 2: Interactive Fretboard UI (Colors & Borders)
-- [ ] Build `src/components/Fretboard.tsx` & `Fretboard.css` (responsive 6-string neck, nut, fret wires, inlay dots, nut/open-string column, horizontal scroll on narrow mobile screens).
-- [ ] Implement the **Color + Border** marker system and **Interactive Legend**.
+### Phase 2: Interactive Fretboard UI & Study Sections
+- [x] Build `src/components/Fretboard.tsx` & `Fretboard.css` (responsive 6-string neck, nut, inlay dots, SVG octave/chord overlays, color-block overlays, white+gold root/selected halo).
+- [x] Extract shared `MiniFretboard.tsx` and `SectionHeader.tsx` components.
+- [x] Build `RepeatingTilesBoard.tsx` (3 repeating 2-string natural-note tiles + edge/single-string boxes).
+- [x] Build `ChordStudyBoard.tsx` (reusable study board for **Triads** and **Shell Chords (R–3–7)** with multi-chord progressions and custom 3-string selection).
 
-### Phase 3: Lookup Modes & Controls
-- [ ] Build `src/components/LookupControls.tsx` with tabs for **Notes**, **Scales**, **Chords**, and **Identify (Tap)**, plus tuning, fret-range, `#`/`b`, `Notes`/`Intervals`, and CAGED/fret-window focus.
-- [ ] Wire **Scale + Chord Overlay** (solid border on chord tones, dashed border on scale tones).
-- [ ] *(Optional)* Add Web Audio synthesized guitar-like pluck on note tap.
+### Phase 3: Pentatonic Scales Study Board
+- [x] Add Pentatonic/Blues theory helpers to `src/utils/musicTheory.ts` (`PENTATONIC_DEFINITIONS`, `getPentatonicDegree`, `getPentatonicBoxes` for Patterns 1–5, and `getPentatonicOctaveShiftBlocks` for 2-string `+2`/`+3` fret octave shifts) + unit tests.
+- [x] Allow `Fretboard.tsx` to render custom `overlayBlocks?: TileBlock[]` (reusing `.fretboard-tile-block` for both Repeating Tiles and Pentatonic Box / 2-String Shift highlights).
+- [x] Build `src/components/PentatonicBoard.tsx` reusing `<SectionHeader>`, `<Fretboard>`, and `<MiniFretboard>`:
+  - Root (`C`–`B`), Scale Mode (`Minor` / `Major`), `+ Blues (b5)` toggle, and Relative Major/Minor pair indicator.
+  - Mode toggle: **`5 Boxes`** vs. **`2-String Octave Shifts`** (`S6–S5 → S4–S3 (+2) → S2–S1 (+3)` and `S5–S4 → S3–S2 (+3)`).
+  - Labels toggle: **`Note Names`** vs. **`Intervals`** (`R, b3, 4, 5, b7`).
+- [x] Wire `<PentatonicBoard>` into `src/App.tsx` and verify with `vitest run` and `tsc && vite build`.
 
 ---
 

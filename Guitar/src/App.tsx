@@ -4,8 +4,8 @@ import homeIcon from "@static/shared/assets/home.svg?raw";
 import { IconGraphic } from "@static/shared";
 import { Fretboard, makeFretKey, PatternFilter } from "./components/Fretboard";
 import { RepeatingTilesBoard } from "./components/RepeatingTilesBoard";
-import { TriadsBoard } from "./components/TriadsBoard";
-import { SeventhChordsBoard } from "./components/SeventhChordsBoard";
+import { ChordStudyBoard } from "./components/ChordStudyBoard";
+import { PentatonicBoard } from "./components/PentatonicBoard";
 import {
   AccidentalMode,
   formatPitchClass,
@@ -249,7 +249,8 @@ function App() {
         </div>
 
         <div style={{ marginTop: "1.5rem" }}>
-          <TriadsBoard
+          <ChordStudyBoard
+            mode="triad"
             strings={activeTuning.strings}
             maxFret={maxFret}
             accidentals={accidentals}
@@ -257,7 +258,16 @@ function App() {
         </div>
 
         <div style={{ marginTop: "1.5rem" }}>
-          <SeventhChordsBoard
+          <ChordStudyBoard
+            mode="shell"
+            strings={activeTuning.strings}
+            maxFret={maxFret}
+            accidentals={accidentals}
+          />
+        </div>
+
+        <div style={{ marginTop: "1.5rem" }}>
+          <PentatonicBoard
             strings={activeTuning.strings}
             maxFret={maxFret}
             accidentals={accidentals}
