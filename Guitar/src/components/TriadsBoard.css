@@ -32,6 +32,28 @@
   gap: 0.45rem;
 }
 
+.triads-progression-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.triads-progression-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.triads-progression-tag {
+  min-width: 72px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
 .triads-strings-controls {
   display: flex;
   flex-wrap: wrap;

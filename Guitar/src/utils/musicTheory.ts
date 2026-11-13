@@ -403,10 +403,10 @@ export const SHELL_STRING_SETS: Array<{
   label: string;
   strings: [number, number, number];
 }> = [
-  { id: '6-4-3', label: 'S6–4–3 (E-string root)', strings: [2, 3, 5] },
-  { id: '5-4-3', label: 'S5–4–3 (A-string root)', strings: [2, 3, 4] },
-  { id: '5-3-2', label: 'S5–3–2 (A-string skip)', strings: [1, 2, 4] },
-  { id: '4-3-2', label: 'S4–3–2 (D-string root)', strings: [1, 2, 3] },
+  { id: '2-3-4', label: 'S2–3–4 (D-string root)', strings: [1, 2, 3] },
+  { id: '2-3-5', label: 'S2–3–5 (A-string skip)', strings: [1, 2, 4] },
+  { id: '3-4-5', label: 'S3–4–5 (A-string root)', strings: [2, 3, 4] },
+  { id: '3-4-6', label: 'S3–4–6 (E-string root)', strings: [2, 3, 5] },
 ];
 
 export type ChordInversion =

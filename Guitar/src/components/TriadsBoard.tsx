@@ -29,40 +29,89 @@ interface ChordSpec {
 const ALL_PITCH_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const QUALITY_LIST: TriadQuality[] = ['major', 'minor', 'dim', 'aug'];
 
+interface ProgressionStep {
+  offset: number;
+  quality: TriadQuality;
+}
+
 const PROGRESSION_PRESETS: Array<{
   id: string;
-  label: string;
-  chords: ChordSpec[];
+  mode: 'major' | 'minor';
+  romanLabel: string;
+  steps: ProgressionStep[];
 }> = [
   {
     id: '1-4-5',
-    label: 'C · F · G (I–IV–V)',
-    chords: [
-      { rootPc: 0, quality: 'major' },
-      { rootPc: 5, quality: 'major' },
-      { rootPc: 7, quality: 'major' },
+    mode: 'major',
+    romanLabel: 'I–IV–V',
+    steps: [
+      { offset: 0, quality: 'major' },
+      { offset: 5, quality: 'major' },
+      { offset: 7, quality: 'major' },
     ],
   },
   {
     id: '1-5-6-4',
-    label: 'C · G · Am · F',
-    chords: [
-      { rootPc: 0, quality: 'major' },
-      { rootPc: 7, quality: 'major' },
-      { rootPc: 9, quality: 'minor' },
-      { rootPc: 5, quality: 'major' },
+    mode: 'major',
+    romanLabel: 'I–V–vi–IV',
+    steps: [
+      { offset: 0, quality: 'major' },
+      { offset: 7, quality: 'major' },
+      { offset: 9, quality: 'minor' },
+      { offset: 5, quality: 'major' },
     ],
   },
   {
     id: '2-5-1',
-    label: 'Dm · G · C (ii–V–I)',
-    chords: [
-      { rootPc: 2, quality: 'minor' },
-      { rootPc: 7, quality: 'major' },
-      { rootPc: 0, quality: 'major' },
+    mode: 'major',
+    romanLabel: 'ii–V–I',
+    steps: [
+      { offset: 2, quality: 'minor' },
+      { offset: 7, quality: 'major' },
+      { offset: 0, quality: 'major' },
+    ],
+  },
+  {
+    id: 'm-1-4-5',
+    mode: 'minor',
+    romanLabel: 'vi–ii–iii',
+    steps: [
+      { offset: 9, quality: 'minor' },
+      { offset: 2, quality: 'minor' },
+      { offset: 4, quality: 'minor' },
+    ],
+  },
+  {
+    id: 'm-1-6-3-7',
+    mode: 'minor',
+    romanLabel: 'vi–IV–I–V',
+    steps: [
+      { offset: 9, quality: 'minor' },
+      { offset: 5, quality: 'major' },
+      { offset: 0, quality: 'major' },
+      { offset: 7, quality: 'major' },
+    ],
+  },
+  {
+    id: 'm-1-6-7',
+    mode: 'minor',
+    romanLabel: 'vi–IV–V',
+    steps: [
+      { offset: 9, quality: 'minor' },
+      { offset: 5, quality: 'major' },
+      { offset: 7, quality: 'major' },
     ],
   },
 ];
+
+const buildProgressionChords = (
+  keyRootPc: number,
+  steps: ProgressionStep[]
+): ChordSpec[] =>
+  steps.map((s) => ({
+    rootPc: (keyRootPc + s.offset) % 12,
+    quality: s.quality,
+  }));
 
 const makeChordKey = (c: ChordSpec): string => `${c.rootPc}-${c.quality}`;
 
@@ -76,6 +125,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
   ]);
   const [pickerRootPc, setPickerRootPc] = useState<number>(0);
   const [pickerQuality, setPickerQuality] = useState<TriadQuality>('major');
+  const [activeProgressionId, setActiveProgressionId] = useState<string | null>(null);
   const [selectedStrings, setSelectedStrings] = useState<number[]>([0, 1, 2]);
   const [activeVoicingId, setActiveVoicingId] = useState<string | null>(null);
   const [showAllFretNotes, setShowAllFretNotes] = useState<boolean>(false);
@@ -156,6 +206,13 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
   const handlePickRoot = (pc: number) => {
     setPickerRootPc(pc);
     setActiveVoicingId(null);
+    if (activeProgressionId) {
+      const preset = PROGRESSION_PRESETS.find((p) => p.id === activeProgressionId);
+      if (preset) {
+        setSelectedChords(buildProgressionChords(pc, preset.steps));
+        return;
+      }
+    }
     if (selectedChords.length === 1) {
       setSelectedChords([{ rootPc: pc, quality: pickerQuality }]);
     }
@@ -172,6 +229,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
   const handleAddPickerChord = () => {
     const candidate: ChordSpec = { rootPc: pickerRootPc, quality: pickerQuality };
     const key = makeChordKey(candidate);
+    setActiveProgressionId(null);
     setActiveVoicingId(null);
     setSelectedChords((prev) =>
       prev.some((c) => makeChordKey(c) === key) ? prev : [...prev, candidate]
@@ -181,6 +239,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
   const handleRemoveChord = (chord: ChordSpec) => {
     if (selectedChords.length <= 1) return;
     const key = makeChordKey(chord);
+    setActiveProgressionId(null);
     setActiveVoicingId(null);
     setSelectedChords((prev) => prev.filter((c) => makeChordKey(c) !== key));
   };
@@ -276,6 +335,7 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
                   type="button"
                   className="toggle-btn"
                   onClick={() => {
+                    setActiveProgressionId(null);
                     setSelectedChords([
                       { rootPc: pickerRootPc, quality: pickerQuality },
                     ]);
@@ -287,19 +347,34 @@ export const TriadsBoard: React.FC<TriadsBoardProps> = ({
               )}
             </div>
 
-            <div className="triads-pill-row">
-              {PROGRESSION_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  className="toggle-btn"
-                  onClick={() => {
-                    setSelectedChords(preset.chords);
-                    setActiveVoicingId(null);
-                  }}
-                >
-                  {preset.label}
-                </button>
+            <div className="triads-progression-rows">
+              {(['major', 'minor'] as const).map((mode) => (
+                <div key={mode} className="triads-progression-row">
+                  <span className="triads-progression-tag">
+                    {mode === 'major' ? 'Major' : 'Rel. Minor'}
+                  </span>
+                  <div className="triads-pill-row">
+                    {PROGRESSION_PRESETS.filter((p) => p.mode === mode).map((preset) => {
+                      const chords = buildProgressionChords(pickerRootPc, preset.steps);
+                      const label = `${chords.map(formatChordName).join(' · ')} (${preset.romanLabel})`;
+                      const isActive = activeProgressionId === preset.id;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          className={`toggle-btn ${isActive ? 'active' : ''}`}
+                          onClick={() => {
+                            setActiveProgressionId(preset.id);
+                            setSelectedChords(chords);
+                            setActiveVoicingId(null);
+                          }}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
