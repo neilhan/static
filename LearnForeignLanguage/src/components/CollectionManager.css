@@ -118,6 +118,50 @@
   color: var(--text-primary);
 }
 
+.source-card {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+}
+
+.source-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.source-due-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(78, 205, 196, 0.18);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.source-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.source-progress-track {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border-color);
+  overflow: hidden;
+}
+
+.source-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
 .icon-btn.danger:hover {
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
@@ -139,3 +183,98 @@
 
 /* Button Helpers */
 /* .btn-sm and .btn-outline moved to App.css */
+
+.daily-progress-card {
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.daily-progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.daily-progress-title {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.daily-goal-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.daily-goal-select {
+  background: var(--control-field);
+  color: var(--text-primary);
+  border: 1px solid var(--control-field-border);
+  border-radius: 6px;
+  padding: 0.15rem 0.35rem;
+  font-size: 0.78rem;
+}
+
+.daily-progress-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.daily-progress-stats strong {
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
+.daily-sub-stat {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.source-card--static {
+  cursor: default;
+}
+
+.mastery-track {
+  display: flex;
+}
+
+.mastery-fill-mastered {
+  height: 100%;
+  background: #10b981;
+  transition: width 0.25s ease;
+}
+
+.mastery-fill-learning {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.mastery-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.65rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.mastery-chip.mastered {
+  color: #6ee7b7;
+}
+
+.mastery-chip.learning {
+  color: var(--accent);
+}

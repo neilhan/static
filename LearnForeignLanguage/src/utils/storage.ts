@@ -1,102 +1,214 @@
-import { AppState, ConversationCollection } from "../types";
+import {
+  AppState,
+  CollectionProgress,
+  DailyProgress,
+  SourceId,
+  StoredProgressState,
+} from "../types";
+import { buildSourceCollection, DEFAULT_PROGRESS } from "./curriculum";
 
-const STORAGE_KEY = "learn-foreign-language-v2";
+export const STORAGE_KEY = "learn-foreign-language-v3";
 
-const DEFAULT_COLLECTION: ConversationCollection = {
-  id: "default",
-  name: "My First Collection",
-  rawInput: "",
-  conversations: [],
-  targetVoiceURI: "",
-  targetLang: "en-US",
-  nativeVoiceURI: "",
-  nativeLang: "zh-CN",
+const SOURCE_IDS: SourceId[] = ["phrases", "vocab"];
+
+export const getLocalDateKey = (date: Date = new Date()): string => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
+const getYesterdayKey = (dateKey: string): string => {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() - 1);
+  return getLocalDateKey(dt);
+};
+
+export const DEFAULT_NEW_CAPS: Record<SourceId, number> = {
+  phrases: 4,
+  vocab: 10,
+};
+
+export const createDefaultDailyProgress = (
+  dateKey: string = getLocalDateKey()
+): DailyProgress => ({
+  date: dateKey,
+  reviewed: 0,
+  newLearned: 0,
+  newLearnedBySource: { phrases: 0, vocab: 0 },
+  newCapBySource: { ...DEFAULT_NEW_CAPS },
+  dailyGoal: 20,
+  streak: 0,
+  history: {},
+});
+
+const sanitizeNewCap = (val: unknown, fallback: number): number =>
+  typeof val === "number" && val >= 0 ? val : fallback;
+
+export const normalizeDailyProgressForToday = (
+  raw?: Partial<DailyProgress>,
+  todayKey: string = getLocalDateKey()
+): DailyProgress => {
+  if (!raw) return createDefaultDailyProgress(todayKey);
+
+  const history = raw.history && typeof raw.history === "object" ? raw.history : {};
+  const dailyGoal = typeof raw.dailyGoal === "number" && raw.dailyGoal > 0 ? raw.dailyGoal : 20;
+  const newCapBySource: Record<SourceId, number> = {
+    phrases: sanitizeNewCap(raw.newCapBySource?.phrases, DEFAULT_NEW_CAPS.phrases),
+    vocab: sanitizeNewCap(raw.newCapBySource?.vocab, DEFAULT_NEW_CAPS.vocab),
+  };
+
+  if (raw.date === todayKey) {
+    return {
+      date: todayKey,
+      reviewed: raw.reviewed ?? 0,
+      newLearned: raw.newLearned ?? 0,
+      newLearnedBySource: {
+        phrases: raw.newLearnedBySource?.phrases ?? 0,
+        vocab: raw.newLearnedBySource?.vocab ?? 0,
+      },
+      newCapBySource,
+      dailyGoal,
+      streak: raw.streak ?? 0,
+      history,
+    };
+  }
+
+  // Rolled over to a new day: keep streak only if yesterday had reviews
+  const yesterdayKey = getYesterdayKey(todayKey);
+  const hadYesterday =
+    (raw.date === yesterdayKey && (raw.reviewed ?? 0) > 0) ||
+    (history[yesterdayKey]?.reviewed ?? 0) > 0;
+
+  return {
+    date: todayKey,
+    reviewed: 0,
+    newLearned: 0,
+    newLearnedBySource: { phrases: 0, vocab: 0 },
+    newCapBySource,
+    dailyGoal,
+    streak: hadYesterday ? raw.streak ?? 0 : 0,
+    history,
+  };
+};
+
+export const recordDailyReview = (
+  current: DailyProgress,
+  isNewItem: boolean,
+  todayKey: string = getLocalDateKey(),
+  sourceId: SourceId = "phrases",
+  countTowardNewCap: boolean = true
+): DailyProgress => {
+  const normalized = normalizeDailyProgressForToday(current, todayKey);
+  const reviewed = normalized.reviewed + 1;
+  const countAsNew = isNewItem && countTowardNewCap;
+  const newLearned = normalized.newLearned + (countAsNew ? 1 : 0);
+  const streak = normalized.reviewed === 0 ? normalized.streak + 1 : normalized.streak;
+  const newLearnedBySource = {
+    ...normalized.newLearnedBySource,
+    [sourceId]:
+      (normalized.newLearnedBySource[sourceId] ?? 0) + (countAsNew ? 1 : 0),
+  };
+
+  return {
+    ...normalized,
+    reviewed,
+    newLearned,
+    newLearnedBySource,
+    streak,
+    history: {
+      ...normalized.history,
+      [todayKey]: { reviewed, newLearned },
+    },
+  };
+};
+
+const sanitizeProgress = (raw?: Partial<CollectionProgress>): CollectionProgress => ({
+  targetVoiceURI: raw?.targetVoiceURI ?? DEFAULT_PROGRESS.targetVoiceURI,
+  targetLang: raw?.targetLang ?? DEFAULT_PROGRESS.targetLang,
+  nativeVoiceURI: raw?.nativeVoiceURI ?? DEFAULT_PROGRESS.nativeVoiceURI,
+  nativeLang: raw?.nativeLang ?? DEFAULT_PROGRESS.nativeLang,
   playbackSettings: {
-    playNative: false,
-    includePause: true, // Default to true as requested
+    playNative:
+      raw?.playbackSettings?.playNative ??
+      DEFAULT_PROGRESS.playbackSettings.playNative,
+    includePause:
+      raw?.playbackSettings?.includePause ??
+      DEFAULT_PROGRESS.playbackSettings.includePause,
   },
-  srsData: {},
-};
+  srsData: raw?.srsData && typeof raw.srsData === "object" ? raw.srsData : {},
+});
 
-export const DEFAULT_STATE: AppState = {
-  collections: [DEFAULT_COLLECTION],
-  activeCollectionId: "default",
-};
+export const createDefaultState = (): AppState => ({
+  collections: [
+    buildSourceCollection("phrases"),
+    buildSourceCollection("vocab"),
+  ],
+  activeCollectionId: "phrases",
+  dailyProgress: createDefaultDailyProgress(),
+});
+
+export const DEFAULT_STATE: AppState = createDefaultState();
 
 export const loadState = (): AppState => {
   try {
     const serialized = localStorage.getItem(STORAGE_KEY);
     if (!serialized) {
-      // Try to migrate from v1 if it exists
-      const oldV1 = localStorage.getItem("learn-foreign-language-v1");
-      if (oldV1) {
-        try {
-          const v1State = JSON.parse(oldV1);
-          // Convert v1 state to a collection
-          const migratedCollection: ConversationCollection = {
-            ...DEFAULT_COLLECTION,
-            rawInput: v1State.rawInput || "",
-            conversations: v1State.conversations || [],
-            targetVoiceURI:
-              v1State.targetVoiceURI || v1State.targetLanguage || "",
-            targetLang: v1State.targetLang || "en-US",
-            nativeVoiceURI:
-              v1State.nativeVoiceURI || v1State.nativeLanguage || "",
-            nativeLang: v1State.nativeLang || "zh-CN",
-            playbackSettings: {
-              playNative: false,
-              includePause: true,
-            },
-            srsData: {},
-          };
-
-          return {
-            collections: [migratedCollection],
-            activeCollectionId: "default",
-          };
-        } catch (e) {
-          // ignore migration error
-        }
-      }
-      return DEFAULT_STATE;
+      return createDefaultState();
     }
 
-    const parsed = JSON.parse(serialized);
+    const parsed = JSON.parse(serialized) as Partial<StoredProgressState>;
+    const activeSourceId: SourceId =
+      parsed.activeSourceId === "vocab" ? "vocab" : "phrases";
 
-    // Basic validation
-    if (!Array.isArray(parsed.collections) || parsed.collections.length === 0) {
-      return DEFAULT_STATE;
-    }
-
-    // Ensure new fields exist on loaded collections (forward compatibility)
-    const collections = parsed.collections.map((c: any) => ({
-      ...DEFAULT_COLLECTION,
-      ...c,
-      // Migrate old format to new playbackSettings structure
-      playbackSettings: c.playbackSettings ?? {
-        playNative: c.playNative ?? false,
-        includePause: c.includePause ?? true,
-      },
-      // Remove old fields if they exist (cleanup)
-      playNative: undefined,
-      includePause: undefined,
-      srsData: c.srsData || {},
-    }));
+    const collections = SOURCE_IDS.map((sourceId) =>
+      buildSourceCollection(
+        sourceId,
+        sanitizeProgress(parsed.progress?.[sourceId])
+      )
+    );
 
     return {
       collections,
-      activeCollectionId: parsed.activeCollectionId || collections[0].id,
+      activeCollectionId: activeSourceId,
+      dailyProgress: normalizeDailyProgressForToday(parsed.dailyProgress),
     };
   } catch (error) {
     console.warn("Failed to load state, falling back to default:", error);
-    return DEFAULT_STATE;
+    return createDefaultState();
   }
 };
 
 export const saveState = (state: AppState): void => {
   try {
-    const serialized = JSON.stringify(state);
-    localStorage.setItem(STORAGE_KEY, serialized);
+    const activeSourceId: SourceId =
+      state.activeCollectionId === "vocab" ? "vocab" : "phrases";
+
+    const progress = {} as Record<SourceId, CollectionProgress>;
+    for (const sourceId of SOURCE_IDS) {
+      const col = state.collections.find((c) => c.id === sourceId);
+      progress[sourceId] = sanitizeProgress(
+        col
+          ? {
+              targetVoiceURI: col.targetVoiceURI,
+              targetLang: col.targetLang,
+              nativeVoiceURI: col.nativeVoiceURI,
+              nativeLang: col.nativeLang,
+              playbackSettings: col.playbackSettings,
+              srsData: col.srsData,
+            }
+          : undefined
+      );
+    }
+
+    const payload: StoredProgressState = {
+      activeSourceId,
+      progress,
+      dailyProgress: state.dailyProgress,
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (error) {
     console.error("Failed to save state:", error);
   }

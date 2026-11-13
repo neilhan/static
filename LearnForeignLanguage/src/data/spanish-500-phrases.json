@@ -1,0 +1,5002 @@
+[
+  {
+    "id": "es-p-001",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Buenos días",
+    "native": "Good morning",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Used until around noon / lunch"
+  },
+  {
+    "id": "es-p-002",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Buenas tardes",
+    "native": "Good afternoon",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Used from afternoon until dusk"
+  },
+  {
+    "id": "es-p-003",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Buenas noches",
+    "native": "Good evening / Good night",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Used for both greeting at night and saying goodbye"
+  },
+  {
+    "id": "es-p-004",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Qué tal?",
+    "native": "How's it going?",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Very common casual greeting"
+  },
+  {
+    "id": "es-p-005",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cómo estás?",
+    "native": "How are you?",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Informal singular (tú)"
+  },
+  {
+    "id": "es-p-006",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cómo está usted?",
+    "native": "How are you? (formal)",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Polite / formal singular"
+  },
+  {
+    "id": "es-p-007",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Muy bien, gracias, ¿y tú?",
+    "native": "Very well, thank you, and you?",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Standard polite reply"
+  },
+  {
+    "id": "es-p-008",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Más o menos",
+    "native": "More or less / So-so",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Literal: more or less"
+  },
+  {
+    "id": "es-p-009",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Mucho gusto",
+    "native": "Nice to meet you",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Literal: much pleasure"
+  },
+  {
+    "id": "es-p-010",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Encantado / Encantada",
+    "native": "Pleased to meet you",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Use -o if male, -a if female"
+  },
+  {
+    "id": "es-p-011",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Por favor",
+    "native": "Please",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Essential polite marker"
+  },
+  {
+    "id": "es-p-012",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Muchas gracias",
+    "native": "Thank you very much",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Stronger than just 'gracias'"
+  },
+  {
+    "id": "es-p-013",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "De nada",
+    "native": "You're welcome",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Literal: of nothing"
+  },
+  {
+    "id": "es-p-014",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "No hay de qué",
+    "native": "Don't mention it / You're welcome",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Polite alternative to 'de nada'"
+  },
+  {
+    "id": "es-p-015",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Con permiso",
+    "native": "Excuse me (passing by / leaving)",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Used when squeezing past someone or leaving a table"
+  },
+  {
+    "id": "es-p-016",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Disculpe / Perdón",
+    "native": "Excuse me / Sorry",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Used to get attention or apologize lightly"
+  },
+  {
+    "id": "es-p-017",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Lo siento mucho",
+    "native": "I'm very sorry",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Used for genuine apologies"
+  },
+  {
+    "id": "es-p-018",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "No pasa nada",
+    "native": "No problem / It's okay",
+    "pos": "phrase",
+    "category": "Politeness",
+    "note": "Very common reassuring reply"
+  },
+  {
+    "id": "es-p-019",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Hasta luego",
+    "native": "See you later",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Standard goodbye"
+  },
+  {
+    "id": "es-p-020",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Nos vemos mañana",
+    "native": "See you tomorrow",
+    "pos": "phrase",
+    "category": "Greetings",
+    "note": "Literal: we see each other tomorrow"
+  },
+  {
+    "id": "es-p-021",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "No entiendo",
+    "native": "I don't understand",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Essential survival phrase"
+  },
+  {
+    "id": "es-p-022",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "No sé",
+    "native": "I don't know",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Short and direct"
+  },
+  {
+    "id": "es-p-023",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Puede repetir, por favor?",
+    "native": "Can you repeat that, please?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Polite formal request"
+  },
+  {
+    "id": "es-p-024",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Más despacio, por favor",
+    "native": "More slowly, please",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Ask someone to slow down"
+  },
+  {
+    "id": "es-p-025",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cómo se dice... en español?",
+    "native": "How do you say... in Spanish?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Plug in any English word"
+  },
+  {
+    "id": "es-p-026",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Qué significa eso?",
+    "native": "What does that mean?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Point or refer to a word/phrase"
+  },
+  {
+    "id": "es-p-027",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cómo se escribe?",
+    "native": "How do you spell it?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Literal: how is it written?"
+  },
+  {
+    "id": "es-p-028",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Hablo un poco de español",
+    "native": "I speak a little Spanish",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Sets expectations"
+  },
+  {
+    "id": "es-p-029",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Estoy aprendiendo español",
+    "native": "I am learning Spanish",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Great conversation opener"
+  },
+  {
+    "id": "es-p-030",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Habla inglés?",
+    "native": "Do you speak English?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Formal; use '¿Hablas inglés?' informally"
+  },
+  {
+    "id": "es-p-031",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Me puedes ayudar?",
+    "native": "Can you help me?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Informal; '¿Me puede ayudar?' for formal"
+  },
+  {
+    "id": "es-p-032",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Un momento, por favor",
+    "native": "One moment, please",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Useful at counters or on calls"
+  },
+  {
+    "id": "es-p-033",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Qué dijiste?",
+    "native": "What did you say?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Informal past tense of decir"
+  },
+  {
+    "id": "es-p-034",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "No te escucho bien",
+    "native": "I can't hear you well",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Useful in noisy places or calls"
+  },
+  {
+    "id": "es-p-035",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Puedes hablar más alto?",
+    "native": "Can you speak louder?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Alto = loud/tall"
+  },
+  {
+    "id": "es-p-036",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿A qué te refieres?",
+    "native": "What do you mean?",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Literal: what do you refer to?"
+  },
+  {
+    "id": "es-p-037",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Tiene sentido",
+    "native": "That makes sense",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Literal: it has sense"
+  },
+  {
+    "id": "es-p-038",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Claro que sí",
+    "native": "Of course / Yes, definitely",
+    "pos": "phrase",
+    "category": "Clarification",
+    "note": "Stronger, warmer 'yes'"
+  },
+  {
+    "id": "es-p-039",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Una mesa para dos, por favor",
+    "native": "A table for two, please",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Swap 'dos' for any number"
+  },
+  {
+    "id": "es-p-040",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Me trae la carta, por favor?",
+    "native": "Could you bring me the menu, please?",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Carta / menú both work"
+  },
+  {
+    "id": "es-p-041",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Quisiera pedir...",
+    "native": "I would like to order...",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Polite way to order"
+  },
+  {
+    "id": "es-p-042",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Qué me recomienda?",
+    "native": "What do you recommend?",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Great at restaurants"
+  },
+  {
+    "id": "es-p-043",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Para mí, un café con leche",
+    "native": "For me, a coffee with milk",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "'Para mí...' is natural for ordering"
+  },
+  {
+    "id": "es-p-044",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Un vaso de agua, por favor",
+    "native": "A glass of water, please",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Add 'sin gas' (still) or 'con gas' (sparkling)"
+  },
+  {
+    "id": "es-p-045",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Sin azúcar, por favor",
+    "native": "Without sugar, please",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Swap 'azúcar' for any ingredient"
+  },
+  {
+    "id": "es-p-046",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Soy vegetariano / vegetariana",
+    "native": "I'm vegetarian",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Match -o / -a to speaker"
+  },
+  {
+    "id": "es-p-047",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Soy alérgico a...",
+    "native": "I'm allergic to...",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Important safety phrase"
+  },
+  {
+    "id": "es-p-048",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¡Buen provecho!",
+    "native": "Enjoy your meal!",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Said to people eating"
+  },
+  {
+    "id": "es-p-049",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Está delicioso",
+    "native": "It's delicious",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Uses 'estar' for tasting food right now"
+  },
+  {
+    "id": "es-p-050",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "La cuenta, por favor",
+    "native": "The bill, please",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Standard way to ask for the check"
+  },
+  {
+    "id": "es-p-051",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Puedo pagar con tarjeta?",
+    "native": "Can I pay by card?",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Or 'en efectivo' (in cash)"
+  },
+  {
+    "id": "es-p-052",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Para llevar, por favor",
+    "native": "To go / takeaway, please",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Contrast with 'para comer aquí'"
+  },
+  {
+    "id": "es-p-053",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Está incluido el servicio?",
+    "native": "Is service/tip included?",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Useful when checking the bill"
+  },
+  {
+    "id": "es-p-054",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Nos falta una cuchara",
+    "native": "We're missing a spoon",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Swap: tenedor (fork), cuchillo (knife), servilleta (napkin)"
+  },
+  {
+    "id": "es-p-055",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Tienen opciones sin gluten?",
+    "native": "Do you have gluten-free options?",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Sin = without"
+  },
+  {
+    "id": "es-p-056",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Todo estuvo muy rico",
+    "native": "Everything was very tasty",
+    "pos": "phrase",
+    "category": "Food",
+    "note": "Warm compliment after eating"
+  },
+  {
+    "id": "es-p-057",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Dónde está el baño?",
+    "native": "Where is the bathroom?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Uses 'estar' for location"
+  },
+  {
+    "id": "es-p-058",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Dónde está la estación?",
+    "native": "Where is the station?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Metro / tren / autobús"
+  },
+  {
+    "id": "es-p-059",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cómo llego a...?",
+    "native": "How do I get to...?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Llegar = to arrive/get to"
+  },
+  {
+    "id": "es-p-060",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Está lejos de aquí",
+    "native": "It's far from here",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Opposite: 'Está cerca de aquí'"
+  },
+  {
+    "id": "es-p-061",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Está a la vuelta de la esquina",
+    "native": "It's around the corner",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Very common direction idiom"
+  },
+  {
+    "id": "es-p-062",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Siga todo recto",
+    "native": "Go straight ahead",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Formal command of seguir"
+  },
+  {
+    "id": "es-p-063",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Gire a la derecha",
+    "native": "Turn right",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Opposite: 'Gire a la izquierda'"
+  },
+  {
+    "id": "es-p-064",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿A qué hora sale el autobús?",
+    "native": "What time does the bus leave?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Salir = to leave/depart"
+  },
+  {
+    "id": "es-p-065",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cuánto cuesta el billete?",
+    "native": "How much is the ticket?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Boleto in Latin America, billete in Spain"
+  },
+  {
+    "id": "es-p-066",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Un boleto de ida y vuelta",
+    "native": "A round-trip ticket",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Ida = going, vuelta = return"
+  },
+  {
+    "id": "es-p-067",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Estoy perdido / perdida",
+    "native": "I'm lost",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Uses 'estar'"
+  },
+  {
+    "id": "es-p-068",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Me puede mostrar en el mapa?",
+    "native": "Can you show me on the map?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Mostrar = to show"
+  },
+  {
+    "id": "es-p-069",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Quisiera bajar en la próxima parada",
+    "native": "I'd like to get off at the next stop",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Bajar = to get off / go down"
+  },
+  {
+    "id": "es-p-070",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cuánto tiempo se tarda?",
+    "native": "How long does it take?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Tardar = to take time"
+  },
+  {
+    "id": "es-p-071",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Tengo una reserva a nombre de...",
+    "native": "I have a reservation under the name...",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Hotels and restaurants"
+  },
+  {
+    "id": "es-p-072",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿A qué hora es el check-in?",
+    "native": "What time is check-in?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Or 'la entrada'"
+  },
+  {
+    "id": "es-p-073",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Tiene wifi gratis?",
+    "native": "Do you have free Wi-Fi?",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Gratis = free of charge"
+  },
+  {
+    "id": "es-p-074",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Necesito un taxi",
+    "native": "I need a taxi",
+    "pos": "phrase",
+    "category": "Travel",
+    "note": "Simple and direct"
+  },
+  {
+    "id": "es-p-075",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cuánto cuesta esto?",
+    "native": "How much does this cost?",
+    "pos": "phrase",
+    "category": "Shopping",
+    "note": "Point at the item"
+  },
+  {
+    "id": "es-p-076",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Cuánto es en total?",
+    "native": "How much is it in total?",
+    "pos": "phrase",
+    "category": "Shopping",
+    "note": "At checkout"
+  },
+  {
+    "id": "es-p-077",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Es demasiado caro",
+    "native": "It's too expensive",
+    "pos": "phrase",
+    "category": "Shopping",
+    "note": "Demasiado = too much"
+  },
+  {
+    "id": "es-p-078",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Solo estoy mirando, gracias",
+    "native": "I'm just looking, thank you",
+    "pos": "phrase",
+    "category": "Shopping",
+    "note": "Polite reply to shop staff"
+  },
+  {
+    "id": "es-p-079",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Tiene otra talla?",
+    "native": "Do you have another size?",
+    "pos": "phrase",
+    "category": "Shopping",
+    "note": "Talla for clothes; número for shoes"
+  },
+  {
+    "id": "es-p-080",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Me lo puedo probar?",
+    "native": "Can I try it on?",
+    "pos": "phrase",
+    "category": "Shopping",
+    "note": "Probarse = to try on"
+  },
+  {
+    "id": "es-p-081",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Me lo llevo",
+    "native": "I'll take it",
+    "pos": "phrase",
+    "category": "Shopping",
+    "note": "Llevarse = to take with you"
+  },
+  {
+    "id": "es-p-082",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿Qué hora es?",
+    "native": "What time is it?",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Singular 'es' even for plural hours when asking"
+  },
+  {
+    "id": "es-p-083",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Son las tres y media",
+    "native": "It's three thirty",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Use 'Es la una' only for 1:00"
+  },
+  {
+    "id": "es-p-084",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¿A qué hora abren?",
+    "native": "What time do you open?",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Opposite: '¿A qué hora cierran?'"
+  },
+  {
+    "id": "es-p-085",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Hoy es lunes",
+    "native": "Today is Monday",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Days of the week aren't capitalized in Spanish"
+  },
+  {
+    "id": "es-p-086",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Ahora mismo",
+    "native": "Right now",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Immediate"
+  },
+  {
+    "id": "es-p-087",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Más tarde",
+    "native": "Later",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Common time marker"
+  },
+  {
+    "id": "es-p-088",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Todos los días",
+    "native": "Every day",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Literal: all the days"
+  },
+  {
+    "id": "es-p-089",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Necesito ayuda, por favor",
+    "native": "I need help, please",
+    "pos": "phrase",
+    "category": "Basics",
+    "note": "Urgent or general help"
+  },
+  {
+    "id": "es-p-090",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Llame a la policía",
+    "native": "Call the police",
+    "pos": "phrase",
+    "category": "Emergency",
+    "note": "Formal command"
+  },
+  {
+    "id": "es-p-091",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Necesito un médico",
+    "native": "I need a doctor",
+    "pos": "phrase",
+    "category": "Emergency",
+    "note": "Medical emergency"
+  },
+  {
+    "id": "es-p-092",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "No me siento bien",
+    "native": "I don't feel well",
+    "pos": "phrase",
+    "category": "Health",
+    "note": "Sentirse = to feel"
+  },
+  {
+    "id": "es-p-093",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Me duele la cabeza",
+    "native": "My head hurts",
+    "pos": "phrase",
+    "category": "Health",
+    "note": "Works like gustar: 'Me duele(n)...'"
+  },
+  {
+    "id": "es-p-094",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Tengo hambre",
+    "native": "I'm hungry",
+    "pos": "phrase",
+    "category": "Needs",
+    "note": "Spanish uses 'tener' (to have) for hunger/thirst/cold"
+  },
+  {
+    "id": "es-p-095",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Tengo sed",
+    "native": "I'm thirsty",
+    "pos": "phrase",
+    "category": "Needs",
+    "note": "Literal: I have thirst"
+  },
+  {
+    "id": "es-p-096",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Tengo frío",
+    "native": "I'm cold",
+    "pos": "phrase",
+    "category": "Needs",
+    "note": "Opposite: 'Tengo calor'"
+  },
+  {
+    "id": "es-p-097",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Tengo sueño",
+    "native": "I'm sleepy",
+    "pos": "phrase",
+    "category": "Needs",
+    "note": "Literal: I have sleep"
+  },
+  {
+    "id": "es-p-098",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "Tengo prisa",
+    "native": "I'm in a hurry",
+    "pos": "phrase",
+    "category": "Needs",
+    "note": "Literal: I have haste"
+  },
+  {
+    "id": "es-p-099",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¡Cuidado!",
+    "native": "Watch out! / Be careful!",
+    "pos": "phrase",
+    "category": "Emergency",
+    "note": "Short warning"
+  },
+  {
+    "id": "es-p-100",
+    "pack": 1,
+    "packName": "A1 Core Survival",
+    "target": "¡Salud!",
+    "native": "Bless you! / Cheers!",
+    "pos": "phrase",
+    "category": "Basics",
+    "note": "Used both for sneezing and toasting"
+  },
+  {
+    "id": "es-p-101",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tengo que irme",
+    "native": "I have to go",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Tener que + infinitive = have to"
+  },
+  {
+    "id": "es-p-102",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Hay que tener paciencia",
+    "native": "One must have patience",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Hay que + infinitive = general obligation"
+  },
+  {
+    "id": "es-p-103",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Necesito comprar...",
+    "native": "I need to buy...",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Necesitar + infinitive"
+  },
+  {
+    "id": "es-p-104",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Quiero aprender más",
+    "native": "I want to learn more",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Querer + infinitive"
+  },
+  {
+    "id": "es-p-105",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me gustaría viajar a España",
+    "native": "I would like to travel to Spain",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Polite desire"
+  },
+  {
+    "id": "es-p-106",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Puedo hacerlo mañana",
+    "native": "I can do it tomorrow",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Poder + infinitive"
+  },
+  {
+    "id": "es-p-107",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "No puedo ir hoy",
+    "native": "I can't go today",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Common polite refusal"
+  },
+  {
+    "id": "es-p-108",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Debo estudiar esta noche",
+    "native": "I should study tonight",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Deber + infinitive = should/must"
+  },
+  {
+    "id": "es-p-109",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Prefiero quedarme en casa",
+    "native": "I prefer to stay at home",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Quedarse = to stay"
+  },
+  {
+    "id": "es-p-110",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tengo ganas de salir",
+    "native": "I feel like going out",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Tener ganas de + infinitive = feel like doing"
+  },
+  {
+    "id": "es-p-111",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy pensando en cambiar de trabajo",
+    "native": "I'm thinking about changing jobs",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Pensar en = think about"
+  },
+  {
+    "id": "es-p-112",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy tratando de dormir",
+    "native": "I'm trying to sleep",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Tratar de + infinitive = try to"
+  },
+  {
+    "id": "es-p-113",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Se me olvidó traer el cargador",
+    "native": "I forgot to bring the charger",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Accidental 'se me olvidó' sounds very natural"
+  },
+  {
+    "id": "es-p-114",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Se me ocurre una idea",
+    "native": "An idea occurs to me",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Ocurrírsele algo a alguien"
+  },
+  {
+    "id": "es-p-115",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "No me importa esperar",
+    "native": "I don't mind waiting",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "No importar + infinitive"
+  },
+  {
+    "id": "es-p-116",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Te importa si abro la ventana?",
+    "native": "Do you mind if I open the window?",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Polite permission frame"
+  },
+  {
+    "id": "es-p-117",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Vale la pena intentarlo",
+    "native": "It's worth trying",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Valer la pena = to be worth it"
+  },
+  {
+    "id": "es-p-118",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "No hace falta que vengas",
+    "native": "You don't need to come",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "No hacer falta = not necessary"
+  },
+  {
+    "id": "es-p-119",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy listo para empezar",
+    "native": "I'm ready to start",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Listo + para"
+  },
+  {
+    "id": "es-p-120",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy acostumbrado a madrugar",
+    "native": "I'm used to waking up early",
+    "pos": "phrase",
+    "category": "Frames",
+    "note": "Acostumbrado a = used to"
+  },
+  {
+    "id": "es-p-121",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Acabo de llegar",
+    "native": "I just arrived",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Acabar de + infinitive = just did"
+  },
+  {
+    "id": "es-p-122",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy trabajando en eso",
+    "native": "I'm working on that",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Estar + gerund (-ando/-iendo)"
+  },
+  {
+    "id": "es-p-123",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Sigo estudiando español",
+    "native": "I'm still studying Spanish",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Seguir + gerund = keep doing"
+  },
+  {
+    "id": "es-p-124",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Llevo dos años viviendo aquí",
+    "native": "I've been living here for two years",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Llevar + time + gerund"
+  },
+  {
+    "id": "es-p-125",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Voy a hacer café",
+    "native": "I'm going to make coffee",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Ir a + infinitive = near future"
+  },
+  {
+    "id": "es-p-126",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Vengo de trabajar",
+    "native": "I'm coming from work",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Venir de = coming from"
+  },
+  {
+    "id": "es-p-127",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy a punto de salir",
+    "native": "I'm about to leave",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Estar a punto de = about to"
+  },
+  {
+    "id": "es-p-128",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Dejé de fumar hace un año",
+    "native": "I quit smoking a year ago",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Dejar de + infinitive = stop doing"
+  },
+  {
+    "id": "es-p-129",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Volví a cometer el mismo error",
+    "native": "I made the same mistake again",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Volver a + infinitive = do again"
+  },
+  {
+    "id": "es-p-130",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Empecé a correr este mes",
+    "native": "I started running this month",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Empezar a + infinitive"
+  },
+  {
+    "id": "es-p-131",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Terminé de leer el libro",
+    "native": "I finished reading the book",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Terminar de + infinitive"
+  },
+  {
+    "id": "es-p-132",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy buscando mis llaves",
+    "native": "I'm looking for my keys",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Buscar already means 'look for' (no 'para')"
+  },
+  {
+    "id": "es-p-133",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy esperando a un amigo",
+    "native": "I'm waiting for a friend",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Esperar + a (person)"
+  },
+  {
+    "id": "es-p-134",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me estoy preparando para salir",
+    "native": "I'm getting ready to go out",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Prepararse = to get ready"
+  },
+  {
+    "id": "es-p-135",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Todavía no he comido",
+    "native": "I haven't eaten yet",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Todavía no = not yet"
+  },
+  {
+    "id": "es-p-136",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Ya casi termino",
+    "native": "I'm almost done",
+    "pos": "phrase",
+    "category": "Actions",
+    "note": "Ya casi = almost"
+  },
+  {
+    "id": "es-p-137",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Qué vas a hacer este fin de semana?",
+    "native": "What are you going to do this weekend?",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Casual future question"
+  },
+  {
+    "id": "es-p-138",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Tienes planes para hoy?",
+    "native": "Do you have plans for today?",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Simple invitation opener"
+  },
+  {
+    "id": "es-p-139",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Te gustaría tomar un café?",
+    "native": "Would you like to grab a coffee?",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Polite invitation"
+  },
+  {
+    "id": "es-p-140",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Qué te parece si vamos al cine?",
+    "native": "How about we go to the movies?",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Suggesting an activity"
+  },
+  {
+    "id": "es-p-141",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿A qué hora quedamos?",
+    "native": "What time shall we meet?",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Quedar = to arrange to meet"
+  },
+  {
+    "id": "es-p-142",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Nos vemos a las seis",
+    "native": "See you at six",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Confirming a time"
+  },
+  {
+    "id": "es-p-143",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Avísame cuando llegues",
+    "native": "Let me know when you arrive",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Avisar = to notify/let know"
+  },
+  {
+    "id": "es-p-144",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Te mando un mensaje luego",
+    "native": "I'll send you a message later",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Mandar = to send"
+  },
+  {
+    "id": "es-p-145",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Lo siento, no puedo hoy",
+    "native": "Sorry, I can't today",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Polite decline"
+  },
+  {
+    "id": "es-p-146",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Lo dejamos para otro día?",
+    "native": "Shall we leave it for another day?",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Rescheduling politely"
+  },
+  {
+    "id": "es-p-147",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy libre el viernes",
+    "native": "I'm free on Friday",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Use 'el' before days for 'on [day]'"
+  },
+  {
+    "id": "es-p-148",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tengo mucho que hacer hoy",
+    "native": "I have a lot to do today",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Mucho que + infinitive"
+  },
+  {
+    "id": "es-p-149",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Depende del clima",
+    "native": "It depends on the weather",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Depender de = depend on"
+  },
+  {
+    "id": "es-p-150",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Cuenta conmigo",
+    "native": "Count on me",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Contar con = count on"
+  },
+  {
+    "id": "es-p-151",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¡Qué buena idea!",
+    "native": "What a good idea!",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Enthusiastic agreement"
+  },
+  {
+    "id": "es-p-152",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Por mí está bien",
+    "native": "It's fine by me",
+    "pos": "phrase",
+    "category": "Plans",
+    "note": "Agreeing to a plan"
+  },
+  {
+    "id": "es-p-153",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me levanto a las siete",
+    "native": "I get up at seven",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Levantarse = to get up"
+  },
+  {
+    "id": "es-p-154",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me ducho antes de desayunar",
+    "native": "I shower before having breakfast",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Antes de + infinitive"
+  },
+  {
+    "id": "es-p-155",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Voy al trabajo en metro",
+    "native": "I go to work by subway",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Transport uses 'en'"
+  },
+  {
+    "id": "es-p-156",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Vuelvo a casa por la tarde",
+    "native": "I come back home in the afternoon",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Por la tarde = in the afternoon"
+  },
+  {
+    "id": "es-p-157",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tengo que hacer la compra",
+    "native": "I have to do the grocery shopping",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Hacer la compra = grocery shopping"
+  },
+  {
+    "id": "es-p-158",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Voy a cocinar algo rápido",
+    "native": "I'm going to cook something quick",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Algo + adjective"
+  },
+  {
+    "id": "es-p-159",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Hay que limpiar la cocina",
+    "native": "The kitchen needs to be cleaned",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Impersonal 'hay que'"
+  },
+  {
+    "id": "es-p-160",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Se fue la luz",
+    "native": "The power went out",
+    "pos": "phrase",
+    "category": "Home",
+    "note": "Common household expression"
+  },
+  {
+    "id": "es-p-161",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "No funciona el aire acondicionado",
+    "native": "The air conditioning isn't working",
+    "pos": "phrase",
+    "category": "Home",
+    "note": "Funcionar = to work (for machines)"
+  },
+  {
+    "id": "es-p-162",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Se acabó la leche",
+    "native": "We ran out of milk",
+    "pos": "phrase",
+    "category": "Home",
+    "note": "Acabarse = to run out"
+  },
+  {
+    "id": "es-p-163",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Voy a sacar la basura",
+    "native": "I'm going to take out the trash",
+    "pos": "phrase",
+    "category": "Home",
+    "note": "Sacar = to take out"
+  },
+  {
+    "id": "es-p-164",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Deja los zapatos en la entrada",
+    "native": "Leave your shoes at the entrance",
+    "pos": "phrase",
+    "category": "Home",
+    "note": "Dejar = to leave behind"
+  },
+  {
+    "id": "es-p-165",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Cierra la puerta con llave",
+    "native": "Lock the door",
+    "pos": "phrase",
+    "category": "Home",
+    "note": "Literal: close the door with key"
+  },
+  {
+    "id": "es-p-166",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Voy a echarme una siesta",
+    "native": "I'm going to take a nap",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Echarse una siesta = take a nap"
+  },
+  {
+    "id": "es-p-167",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me voy a acostar temprano",
+    "native": "I'm going to go to bed early",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Acostarse = to go to bed"
+  },
+  {
+    "id": "es-p-168",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Que descanses",
+    "native": "Get some rest / Sleep well",
+    "pos": "phrase",
+    "category": "Routine",
+    "note": "Warm goodnight wish"
+  },
+  {
+    "id": "es-p-169",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Trabajo desde casa",
+    "native": "I work from home",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Desde = from"
+  },
+  {
+    "id": "es-p-170",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tengo una reunión a las diez",
+    "native": "I have a meeting at ten",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Reunión = meeting"
+  },
+  {
+    "id": "es-p-171",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy muy ocupado esta semana",
+    "native": "I'm very busy this week",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Ocupado/a"
+  },
+  {
+    "id": "es-p-172",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Te envío el archivo por correo",
+    "native": "I'll send you the file by email",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Correo (electrónico) = email"
+  },
+  {
+    "id": "es-p-173",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Me pasas el enlace?",
+    "native": "Can you pass me the link?",
+    "pos": "phrase",
+    "category": "Tech",
+    "note": "Casual way to ask for something"
+  },
+  {
+    "id": "es-p-174",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Se me cayó el internet",
+    "native": "My internet went down",
+    "pos": "phrase",
+    "category": "Tech",
+    "note": "Caerse = to drop/go down"
+  },
+  {
+    "id": "es-p-175",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tengo que cargar el teléfono",
+    "native": "I need to charge my phone",
+    "pos": "phrase",
+    "category": "Tech",
+    "note": "Cargar = to charge"
+  },
+  {
+    "id": "es-p-176",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿Cuál es la contraseña del wifi?",
+    "native": "What is the Wi-Fi password?",
+    "pos": "phrase",
+    "category": "Tech",
+    "note": "Contraseña = password"
+  },
+  {
+    "id": "es-p-177",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "No me llega la señal",
+    "native": "I'm not getting a signal",
+    "pos": "phrase",
+    "category": "Tech",
+    "note": "Señal = signal"
+  },
+  {
+    "id": "es-p-178",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Voy a tomar un descanso",
+    "native": "I'm going to take a break",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Descanso = break/rest"
+  },
+  {
+    "id": "es-p-179",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tengo que entregar este proyecto",
+    "native": "I have to turn in this project",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Entregar = to hand in / deliver"
+  },
+  {
+    "id": "es-p-180",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy aprendiendo mucho aquí",
+    "native": "I'm learning a lot here",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Aprender = to learn"
+  },
+  {
+    "id": "es-p-181",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¿En qué trabajas?",
+    "native": "What do you do for work?",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Common small-talk question"
+  },
+  {
+    "id": "es-p-182",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Trabajo en tecnología",
+    "native": "I work in tech",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Swap field as needed"
+  },
+  {
+    "id": "es-p-183",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy buscando trabajo",
+    "native": "I'm looking for a job",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Trabajo = work/job"
+  },
+  {
+    "id": "es-p-184",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¡Buen trabajo!",
+    "native": "Good job!",
+    "pos": "phrase",
+    "category": "Work",
+    "note": "Simple praise"
+  },
+  {
+    "id": "es-p-185",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy muy contento hoy",
+    "native": "I'm very happy today",
+    "pos": "phrase",
+    "category": "Feelings",
+    "note": "Contento/a uses estar"
+  },
+  {
+    "id": "es-p-186",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy un poco cansado",
+    "native": "I'm a little tired",
+    "pos": "phrase",
+    "category": "Feelings",
+    "note": "Cansado/a"
+  },
+  {
+    "id": "es-p-187",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Estoy preocupado por el examen",
+    "native": "I'm worried about the exam",
+    "pos": "phrase",
+    "category": "Feelings",
+    "note": "Preocupado por = worried about"
+  },
+  {
+    "id": "es-p-188",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me da igual",
+    "native": "I don't care / Either way is fine",
+    "pos": "phrase",
+    "category": "Feelings",
+    "note": "Casual, very common"
+  },
+  {
+    "id": "es-p-189",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me da miedo volar",
+    "native": "I'm afraid of flying",
+    "pos": "phrase",
+    "category": "Feelings",
+    "note": "Dar miedo = to scare"
+  },
+  {
+    "id": "es-p-190",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me da vergüenza hablar",
+    "native": "I feel embarrassed to speak",
+    "pos": "phrase",
+    "category": "Feelings",
+    "note": "Dar vergüenza = to embarrass"
+  },
+  {
+    "id": "es-p-191",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Qué alegría verte",
+    "native": "How great to see you",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Warm greeting to a friend"
+  },
+  {
+    "id": "es-p-192",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Te echo de menos",
+    "native": "I miss you",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Also 'Te extraño' in Latin America"
+  },
+  {
+    "id": "es-p-193",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¡Felicidades!",
+    "native": "Congratulations!",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Birthdays, achievements"
+  },
+  {
+    "id": "es-p-194",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¡Mucha suerte!",
+    "native": "Good luck!",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Before an exam/event"
+  },
+  {
+    "id": "es-p-195",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¡Que te mejores!",
+    "native": "Get well soon!",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "To someone sick"
+  },
+  {
+    "id": "es-p-196",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "No te preocupes",
+    "native": "Don't worry",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Reassuring"
+  },
+  {
+    "id": "es-p-197",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Tranquilo, todo va a salir bien",
+    "native": "Relax, everything will turn out fine",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Salir bien = turn out well"
+  },
+  {
+    "id": "es-p-198",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Me cae muy bien",
+    "native": "I really like him/her (as a person)",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Caer bien = like someone's personality"
+  },
+  {
+    "id": "es-p-199",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "Nos llevamos muy bien",
+    "native": "We get along very well",
+    "pos": "phrase",
+    "category": "Social",
+    "note": "Llevarse bien = get along"
+  },
+  {
+    "id": "es-p-200",
+    "pack": 2,
+    "packName": "A2 Everyday Frames",
+    "target": "¡Qué divertido!",
+    "native": "How fun!",
+    "pos": "phrase",
+    "category": "Feelings",
+    "note": "Reacting to an activity"
+  },
+  {
+    "id": "es-p-201",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "El otro día fui al mercado",
+    "native": "The other day I went to the market",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Fui = went (ir) or was (ser)"
+  },
+  {
+    "id": "es-p-202",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Ayer por la noche vi una película",
+    "native": "Last night I watched a movie",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Ayer por la noche = last night"
+  },
+  {
+    "id": "es-p-203",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "La semana pasada estuve enfermo",
+    "native": "Last week I was sick",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Estuve = preterite of estar"
+  },
+  {
+    "id": "es-p-204",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Hace dos meses empecé a estudiar",
+    "native": "Two months ago I started studying",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Hace + time = ... ago"
+  },
+  {
+    "id": "es-p-205",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Cuando era niño vivía en el campo",
+    "native": "When I was a child I lived in the countryside",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Imperfect (-ía/-aba) for ongoing past states"
+  },
+  {
+    "id": "es-p-206",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Antes solía dormir hasta tarde",
+    "native": "Before, I used to sleep late",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Soler (imperfect) = used to"
+  },
+  {
+    "id": "es-p-207",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "De repente empezó a llover",
+    "native": "Suddenly it started to rain",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "De repente = suddenly"
+  },
+  {
+    "id": "es-p-208",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Al principio no entendía nada",
+    "native": "At first I didn't understand anything",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Al principio = at first"
+  },
+  {
+    "id": "es-p-209",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Poco a poco fui mejorando",
+    "native": "Little by little I kept improving",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Poco a poco = gradually"
+  },
+  {
+    "id": "es-p-210",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Al final todo salió bien",
+    "native": "In the end everything turned out fine",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Al final = in the end"
+  },
+  {
+    "id": "es-p-211",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Mientras tanto, yo preparaba la cena",
+    "native": "Meanwhile, I was making dinner",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Mientras tanto = meanwhile"
+  },
+  {
+    "id": "es-p-212",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Justo cuando salí, me llamó",
+    "native": "Just when I left, he/she called me",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Justo cuando = right when"
+  },
+  {
+    "id": "es-p-213",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "En ese momento me di cuenta",
+    "native": "At that moment I realized",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Darse cuenta = to realize"
+  },
+  {
+    "id": "es-p-214",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Después de eso nos fuimos a casa",
+    "native": "After that we went home",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Irse = to leave"
+  },
+  {
+    "id": "es-p-215",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Nunca había visto algo así",
+    "native": "I had never seen anything like that",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Pluperfect: había + participle"
+  },
+  {
+    "id": "es-p-216",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Ya te lo había dicho",
+    "native": "I had already told you",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Common conversational callback"
+  },
+  {
+    "id": "es-p-217",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Por suerte encontré mi cartera",
+    "native": "Luckily I found my wallet",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Por suerte = luckily"
+  },
+  {
+    "id": "es-p-218",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Por desgracia perdí el tren",
+    "native": "Unfortunately I missed the train",
+    "pos": "phrase",
+    "category": "Transitions",
+    "note": "Perder = to lose/miss"
+  },
+  {
+    "id": "es-p-219",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Estuve a punto de caerme",
+    "native": "I almost fell",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Estar a punto de = almost / about to"
+  },
+  {
+    "id": "es-p-220",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Pasé todo el día estudiando",
+    "native": "I spent the whole day studying",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Pasar + time + gerund"
+  },
+  {
+    "id": "es-p-221",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me quedé sin batería",
+    "native": "My battery died / I ran out of battery",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Quedarse sin = run out of"
+  },
+  {
+    "id": "es-p-222",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Tuve que esperar una hora",
+    "native": "I had to wait an hour",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Tuve = preterite of tener"
+  },
+  {
+    "id": "es-p-223",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "No pude dormir anoche",
+    "native": "I couldn't sleep last night",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Pude = preterite of poder"
+  },
+  {
+    "id": "es-p-224",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Hice todo lo posible",
+    "native": "I did everything possible",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Hice = preterite of hacer"
+  },
+  {
+    "id": "es-p-225",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Valió totalmente la pena",
+    "native": "It was totally worth it",
+    "pos": "phrase",
+    "category": "Past",
+    "note": "Valió = preterite of valer"
+  },
+  {
+    "id": "es-p-226",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "De vez en cuando salimos a cenar",
+    "native": "Once in a while we go out to dinner",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "De vez en cuando = occasionally"
+  },
+  {
+    "id": "es-p-227",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "A menudo camino por el parque",
+    "native": "I often walk through the park",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "A menudo = often"
+  },
+  {
+    "id": "es-p-228",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Casi nunca tomo refrescos",
+    "native": "I almost never drink soda",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "Casi nunca = almost never"
+  },
+  {
+    "id": "es-p-229",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Cada vez entiendo más",
+    "native": "I understand more and more each time",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "Cada vez más = more and more"
+  },
+  {
+    "id": "es-p-230",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Cuanto más practico, mejor hablo",
+    "native": "The more I practice, the better I speak",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "Cuanto más..., más/mejor..."
+  },
+  {
+    "id": "es-p-231",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Por lo general me levanto temprano",
+    "native": "In general I wake up early",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "Por lo general = usually"
+  },
+  {
+    "id": "es-p-232",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Hoy en día todo es más rápido",
+    "native": "Nowadays everything is faster",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Hoy en día = nowadays"
+  },
+  {
+    "id": "es-p-233",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Últimamente he estado muy ocupado",
+    "native": "Lately I've been very busy",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Últimamente + present perfect"
+  },
+  {
+    "id": "es-p-234",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Desde hace tiempo quiero ir",
+    "native": "I've wanted to go for a long time",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Desde hace + time = for (duration)"
+  },
+  {
+    "id": "es-p-235",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Hasta ahora todo va bien",
+    "native": "So far everything is going well",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Hasta ahora = so far"
+  },
+  {
+    "id": "es-p-236",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "A partir de mañana empiezo",
+    "native": "Starting tomorrow I'm beginning",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "A partir de = starting from"
+  },
+  {
+    "id": "es-p-237",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Dentro de poco voy a viajar",
+    "native": "In a little while I'm going to travel",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Dentro de + time = in (future)"
+  },
+  {
+    "id": "es-p-238",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Tarde o temprano lo lograrás",
+    "native": "Sooner or later you'll achieve it",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Tarde o temprano = sooner or later"
+  },
+  {
+    "id": "es-p-239",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "De ahora en adelante tendré cuidado",
+    "native": "From now on I'll be careful",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "De ahora en adelante = from now on"
+  },
+  {
+    "id": "es-p-240",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Al mismo tiempo es difícil",
+    "native": "At the same time it's difficult",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Al mismo tiempo = at the same time"
+  },
+  {
+    "id": "es-p-241",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Durante mucho tiempo pensé eso",
+    "native": "For a long time I thought that",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Durante = during / for"
+  },
+  {
+    "id": "es-p-242",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Cada dos días voy al gimnasio",
+    "native": "Every two days I go to the gym",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "Cada + number + días"
+  },
+  {
+    "id": "es-p-243",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "A veces se me olvida",
+    "native": "Sometimes I forget",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "A veces = sometimes"
+  },
+  {
+    "id": "es-p-244",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Siempre que puedo, leo un poco",
+    "native": "Whenever I can, I read a little",
+    "pos": "phrase",
+    "category": "Frequency",
+    "note": "Siempre que = whenever"
+  },
+  {
+    "id": "es-p-245",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "En cuanto llegue, te aviso",
+    "native": "As soon as I arrive, I'll let you know",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "En cuanto + subjunctive (future)"
+  },
+  {
+    "id": "es-p-246",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Antes de que sea tarde",
+    "native": "Before it's too late",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Antes de que + subjunctive"
+  },
+  {
+    "id": "es-p-247",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Tan pronto como puedas",
+    "native": "As soon as you can",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Tan pronto como = as soon as"
+  },
+  {
+    "id": "es-p-248",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "No tardaré mucho",
+    "native": "I won't take long",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Future of tardar"
+  },
+  {
+    "id": "es-p-249",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Todavía queda tiempo",
+    "native": "There's still time left",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Quedar = to remain/be left"
+  },
+  {
+    "id": "es-p-250",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Se me pasó el tiempo volando",
+    "native": "Time flew by for me",
+    "pos": "phrase",
+    "category": "Time",
+    "note": "Pasarse volando = fly by"
+  },
+  {
+    "id": "es-p-251",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "El año que viene viajaré a México",
+    "native": "Next year I will travel to Mexico",
+    "pos": "phrase",
+    "category": "Future",
+    "note": "El año que viene = next year"
+  },
+  {
+    "id": "es-p-252",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Espero que te vaya bien",
+    "native": "I hope it goes well for you",
+    "pos": "phrase",
+    "category": "Future",
+    "note": "Esperar que + subjunctive"
+  },
+  {
+    "id": "es-p-253",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Ojalá haga buen tiempo mañana",
+    "native": "Hopefully the weather is nice tomorrow",
+    "pos": "phrase",
+    "category": "Future",
+    "note": "Ojalá + subjunctive"
+  },
+  {
+    "id": "es-p-254",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Pienso ahorrar más dinero",
+    "native": "I plan to save more money",
+    "pos": "phrase",
+    "category": "Future",
+    "note": "Pensar + infinitive = plan to"
+  },
+  {
+    "id": "es-p-255",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Tengo la intención de mudarme",
+    "native": "I intend to move",
+    "pos": "phrase",
+    "category": "Future",
+    "note": "Tener la intención de"
+  },
+  {
+    "id": "es-p-256",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Lo haré en cuanto tenga tiempo",
+    "native": "I'll do it as soon as I have time",
+    "pos": "phrase",
+    "category": "Future",
+    "note": "Future + en cuanto + subjunctive"
+  },
+  {
+    "id": "es-p-257",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Primero hay que terminar esto",
+    "native": "First we have to finish this",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "Primero = first"
+  },
+  {
+    "id": "es-p-258",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Luego veremos qué hacemos",
+    "native": "Then we'll see what we do",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "Luego = then/later"
+  },
+  {
+    "id": "es-p-259",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Por último, revisa los detalles",
+    "native": "Finally, check the details",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "Por último = lastly"
+  },
+  {
+    "id": "es-p-260",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Mientras yo cocino, tú descansa",
+    "native": "While I cook, you rest",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "Mientras = while"
+  },
+  {
+    "id": "es-p-261",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Sin darnos cuenta llegó la noche",
+    "native": "Without us noticing, night arrived",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "Sin + infinitive = without doing"
+  },
+  {
+    "id": "es-p-262",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "En lugar de quejarte, actúa",
+    "native": "Instead of complaining, take action",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "En lugar de = instead of"
+  },
+  {
+    "id": "es-p-263",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "En vez de ir en coche, caminemos",
+    "native": "Instead of going by car, let's walk",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "En vez de = instead of"
+  },
+  {
+    "id": "es-p-264",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "A pesar de la lluvia, salimos",
+    "native": "Despite the rain, we went out",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "A pesar de = despite"
+  },
+  {
+    "id": "es-p-265",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Aunque estaba cansado, fui",
+    "native": "Even though I was tired, I went",
+    "pos": "phrase",
+    "category": "Sequence",
+    "note": "Aunque = although/even though"
+  },
+  {
+    "id": "es-p-266",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Gracias a tu ayuda pude terminar",
+    "native": "Thanks to your help I was able to finish",
+    "pos": "phrase",
+    "category": "Cause",
+    "note": "Gracias a = thanks to"
+  },
+  {
+    "id": "es-p-267",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Por culpa del tráfico llegué tarde",
+    "native": "Because of traffic I arrived late",
+    "pos": "phrase",
+    "category": "Cause",
+    "note": "Por culpa de = because of (negative)"
+  },
+  {
+    "id": "es-p-268",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Debido a la lluvia se canceló",
+    "native": "Due to the rain it was canceled",
+    "pos": "phrase",
+    "category": "Cause",
+    "note": "Debido a = due to"
+  },
+  {
+    "id": "es-p-269",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Como no tenía dinero, no compré nada",
+    "native": "Since I had no money, I bought nothing",
+    "pos": "phrase",
+    "category": "Cause",
+    "note": "Como at start of sentence = since/as"
+  },
+  {
+    "id": "es-p-270",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Por eso decidí cambiar",
+    "native": "That's why I decided to change",
+    "pos": "phrase",
+    "category": "Cause",
+    "note": "Por eso = therefore / that's why"
+  },
+  {
+    "id": "es-p-271",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Así que nos quedamos en casa",
+    "native": "So we stayed at home",
+    "pos": "phrase",
+    "category": "Cause",
+    "note": "Así que = so / therefore"
+  },
+  {
+    "id": "es-p-272",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "De modo que tuvimos que volver",
+    "native": "So we had to go back",
+    "pos": "phrase",
+    "category": "Cause",
+    "note": "De modo que = so that / therefore"
+  },
+  {
+    "id": "es-p-273",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Para que lo tengas en cuenta",
+    "native": "So that you keep it in mind",
+    "pos": "phrase",
+    "category": "Purpose",
+    "note": "Para que + subjunctive"
+  },
+  {
+    "id": "es-p-274",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Con tal de que estés feliz",
+    "native": "As long as you're happy",
+    "pos": "phrase",
+    "category": "Condition",
+    "note": "Con tal de que + subjunctive"
+  },
+  {
+    "id": "es-p-275",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "A menos que pase algo raro",
+    "native": "Unless something weird happens",
+    "pos": "phrase",
+    "category": "Condition",
+    "note": "A menos que + subjunctive"
+  },
+  {
+    "id": "es-p-276",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me sorprendió mucho la noticia",
+    "native": "The news surprised me a lot",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Sorprender works like gustar"
+  },
+  {
+    "id": "es-p-277",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me llamó la atención ese detalle",
+    "native": "That detail caught my attention",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Llamar la atención = catch attention"
+  },
+  {
+    "id": "es-p-278",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me costó trabajo entenderlo",
+    "native": "It was hard for me to understand it",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Costar trabajo = be hard to do"
+  },
+  {
+    "id": "es-p-279",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Se me hizo muy fácil",
+    "native": "It seemed very easy to me",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Hacérsele fácil/difícil a alguien"
+  },
+  {
+    "id": "es-p-280",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me dio mucha risa",
+    "native": "It made me laugh a lot",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Dar risa = make laugh"
+  },
+  {
+    "id": "es-p-281",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me puse muy nervioso",
+    "native": "I got very nervous",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Ponerse + adjective = become (emotion)"
+  },
+  {
+    "id": "es-p-282",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me quedé sorprendido",
+    "native": "I was left surprised",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Quedarse + participle = end up feeling"
+  },
+  {
+    "id": "es-p-283",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me enteré ayer por la tarde",
+    "native": "I found out yesterday afternoon",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Enterarse = to find out"
+  },
+  {
+    "id": "es-p-284",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "No me di cuenta de nada",
+    "native": "I didn't notice anything",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Darse cuenta de = notice/realize"
+  },
+  {
+    "id": "es-p-285",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me acordé de ti esta mañana",
+    "native": "I remembered you this morning",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Acordarse de = remember"
+  },
+  {
+    "id": "es-p-286",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Se parece mucho a su hermano",
+    "native": "He/she looks a lot like his/her brother",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Parecerse a = resemble"
+  },
+  {
+    "id": "es-p-287",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Tiene mucho que ver con eso",
+    "native": "It has a lot to do with that",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Tener que ver con = have to do with"
+  },
+  {
+    "id": "es-p-288",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "No tiene nada que ver",
+    "native": "It has nothing to do with it",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Common clarifying phrase"
+  },
+  {
+    "id": "es-p-289",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Fue una experiencia inolvidable",
+    "native": "It was an unforgettable experience",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Inolvidable = unforgettable"
+  },
+  {
+    "id": "es-p-290",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Lo pasamos genial en la fiesta",
+    "native": "We had a great time at the party",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Pasarlo bien/genial = have a good time"
+  },
+  {
+    "id": "es-p-291",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me sentí como en casa",
+    "native": "I felt right at home",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Sentirse como en casa"
+  },
+  {
+    "id": "es-p-292",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Todo salió mejor de lo esperado",
+    "native": "Everything turned out better than expected",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Mejor de lo esperado"
+  },
+  {
+    "id": "es-p-293",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Estuvo bastante interesante",
+    "native": "It was pretty interesting",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Bastante = quite/pretty"
+  },
+  {
+    "id": "es-p-294",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "No estuvo tan mal",
+    "native": "It wasn't so bad",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Mild positive review"
+  },
+  {
+    "id": "es-p-295",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Me quedé con ganas de más",
+    "native": "I was left wanting more",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Quedarse con ganas de"
+  },
+  {
+    "id": "es-p-296",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Aprendí la lección",
+    "native": "I learned my lesson",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Same metaphor as English"
+  },
+  {
+    "id": "es-p-297",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Fue un malentendido",
+    "native": "It was a misunderstanding",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Malentendido = misunderstanding"
+  },
+  {
+    "id": "es-p-298",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "No fue mi intención",
+    "native": "It wasn't my intention",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Apologizing/clarifying"
+  },
+  {
+    "id": "es-p-299",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Se me escapó el autobús",
+    "native": "I missed the bus",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Escapársele = miss/slip away"
+  },
+  {
+    "id": "es-p-300",
+    "pack": 3,
+    "packName": "A2-B1 Storytelling & Time",
+    "target": "Menos mal que llegaste a tiempo",
+    "native": "Thank goodness you arrived on time",
+    "pos": "phrase",
+    "category": "Experiences",
+    "note": "Menos mal que = thank goodness"
+  },
+  {
+    "id": "es-p-301",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En mi opinión, es mejor esperar",
+    "native": "In my opinion, it's better to wait",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Classic opinion opener"
+  },
+  {
+    "id": "es-p-302",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "A mí me parece que tiene razón",
+    "native": "It seems to me that he/she is right",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Tener razón = to be right"
+  },
+  {
+    "id": "es-p-303",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Creo que es una buena oportunidad",
+    "native": "I think it's a good opportunity",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Creer que + indicative"
+  },
+  {
+    "id": "es-p-304",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No creo que sea necesario",
+    "native": "I don't think it's necessary",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Negative 'no creo que' triggers subjunctive (sea)"
+  },
+  {
+    "id": "es-p-305",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Pienso que deberíamos hablar",
+    "native": "I think we should talk",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Deberíamos = we should"
+  },
+  {
+    "id": "es-p-306",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Desde mi punto de vista",
+    "native": "From my point of view",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Great for B1 discussions"
+  },
+  {
+    "id": "es-p-307",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Personalmente, prefiero la otra opción",
+    "native": "Personally, I prefer the other option",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Personalmente = personally"
+  },
+  {
+    "id": "es-p-308",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Me da la impresión de que...",
+    "native": "I get the impression that...",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Dar la impresión de que"
+  },
+  {
+    "id": "es-p-309",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Estoy convencido de que funcionará",
+    "native": "I'm convinced that it will work",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Estar convencido de"
+  },
+  {
+    "id": "es-p-310",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No estoy seguro de si es verdad",
+    "native": "I'm not sure if it's true",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Seguro de si"
+  },
+  {
+    "id": "es-p-311",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Dudo que venga hoy",
+    "native": "I doubt he/she will come today",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Dudar que + subjunctive"
+  },
+  {
+    "id": "es-p-312",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es probable que llueva esta tarde",
+    "native": "It's likely to rain this afternoon",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Es probable que + subjunctive"
+  },
+  {
+    "id": "es-p-313",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es posible que haya tráfico",
+    "native": "It's possible there's traffic",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Haya = subjunctive of haber"
+  },
+  {
+    "id": "es-p-314",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Lo más importante es la salud",
+    "native": "The most important thing is health",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Lo + adjective = the [adj] thing"
+  },
+  {
+    "id": "es-p-315",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Lo bueno es que tenemos tiempo",
+    "native": "The good thing is that we have time",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Lo bueno es que..."
+  },
+  {
+    "id": "es-p-316",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Lo malo es que cuesta mucho",
+    "native": "The bad thing is that it costs a lot",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Lo malo es que..."
+  },
+  {
+    "id": "es-p-317",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Lo peor de todo fue el ruido",
+    "native": "The worst part of all was the noise",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Lo peor de todo"
+  },
+  {
+    "id": "es-p-318",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Lo mejor sería empezar ahora",
+    "native": "The best thing would be to start now",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Lo mejor sería..."
+  },
+  {
+    "id": "es-p-319",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Para mí, eso no es justo",
+    "native": "For me, that isn't fair",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Justo = fair"
+  },
+  {
+    "id": "es-p-320",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Tiene sus ventajas y desventajas",
+    "native": "It has its advantages and disadvantages",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Balanced argument phrase"
+  },
+  {
+    "id": "es-p-321",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No le veo sentido a esto",
+    "native": "I don't see the point in this",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Verle sentido a"
+  },
+  {
+    "id": "es-p-322",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Me parece increíble",
+    "native": "It seems incredible to me",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Strong reaction"
+  },
+  {
+    "id": "es-p-323",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Eso depende de cada persona",
+    "native": "That depends on each person",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Neutral diplomatic response"
+  },
+  {
+    "id": "es-p-324",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Cada uno tiene su opinión",
+    "native": "Everyone has their own opinion",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "Polite wrap-up"
+  },
+  {
+    "id": "es-p-325",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En realidad, no es tan complicado",
+    "native": "Actually, it's not that complicated",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "En realidad = actually (not 'actualmente')"
+  },
+  {
+    "id": "es-p-326",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Estoy totalmente de acuerdo contigo",
+    "native": "I completely agree with you",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "Estar de acuerdo con"
+  },
+  {
+    "id": "es-p-327",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Tienes toda la razón",
+    "native": "You're completely right",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "Strong agreement"
+  },
+  {
+    "id": "es-p-328",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Exacto, eso es lo que quería decir",
+    "native": "Exactly, that's what I meant",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "Querer decir = to mean"
+  },
+  {
+    "id": "es-p-329",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Yo pienso lo mismo",
+    "native": "I think the same thing",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "Lo mismo = the same"
+  },
+  {
+    "id": "es-p-330",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "A mí también me parece bien",
+    "native": "It seems good to me too",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "También = too"
+  },
+  {
+    "id": "es-p-331",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "A mí tampoco me gusta",
+    "native": "I don't like it either",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "Tampoco = neither / not either"
+  },
+  {
+    "id": "es-p-332",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es verdad, no lo había pensado",
+    "native": "That's true, I hadn't thought of it",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "Conceding a good point"
+  },
+  {
+    "id": "es-p-333",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Tienes razón en parte",
+    "native": "You're partly right",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "En parte = partly"
+  },
+  {
+    "id": "es-p-334",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Entiendo tu punto, pero...",
+    "native": "I understand your point, but...",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Polite disagreement"
+  },
+  {
+    "id": "es-p-335",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No estoy del todo de acuerdo",
+    "native": "I don't completely agree",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Del todo = completely"
+  },
+  {
+    "id": "es-p-336",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No lo veo de la misma manera",
+    "native": "I don't see it the same way",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Diplomatic disagreement"
+  },
+  {
+    "id": "es-p-337",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Eso no es del todo cierto",
+    "native": "That's not entirely true",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Cierto = true"
+  },
+  {
+    "id": "es-p-338",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No necesariamente es así",
+    "native": "It's not necessarily like that",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Nuanced counter-point"
+  },
+  {
+    "id": "es-p-339",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Por un lado sí, pero por otro no",
+    "native": "On one hand yes, on the other no",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Por un lado... por otro..."
+  },
+  {
+    "id": "es-p-340",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Sin embargo, hay un problema",
+    "native": "However, there is a problem",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Sin embargo = however"
+  },
+  {
+    "id": "es-p-341",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No obstante, vale la pena",
+    "native": "Nevertheless, it's worth it",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "No obstante = nevertheless"
+  },
+  {
+    "id": "es-p-342",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En cambio, esta opción es más barata",
+    "native": "On the other hand, this option is cheaper",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "En cambio = in contrast"
+  },
+  {
+    "id": "es-p-343",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Mientras que antes era distinto",
+    "native": "Whereas before it was different",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Mientras que = whereas"
+  },
+  {
+    "id": "es-p-344",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Al contrario, me encantó",
+    "native": "On the contrary, I loved it",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Al contrario = on the contrary"
+  },
+  {
+    "id": "es-p-345",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "De ninguna manera",
+    "native": "No way / Not at all",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Strong refusal/disagreement"
+  },
+  {
+    "id": "es-p-346",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Ni hablar",
+    "native": "No way / Out of the question",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Colloquial strong refusal"
+  },
+  {
+    "id": "es-p-347",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "¿Estás seguro de eso?",
+    "native": "Are you sure about that?",
+    "pos": "phrase",
+    "category": "Disagreement",
+    "note": "Gentle challenge"
+  },
+  {
+    "id": "es-p-348",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Depende de cómo lo mires",
+    "native": "It depends on how you look at it",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Perspective phrase"
+  },
+  {
+    "id": "es-p-349",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Eso es relativo",
+    "native": "That's relative",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Neutral observation"
+  },
+  {
+    "id": "es-p-350",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Podemos llegar a un acuerdo",
+    "native": "We can reach an agreement",
+    "pos": "phrase",
+    "category": "Agreement",
+    "note": "Llegar a un acuerdo"
+  },
+  {
+    "id": "es-p-351",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es mucho mejor que antes",
+    "native": "It's much better than before",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Mucho mejor que"
+  },
+  {
+    "id": "es-p-352",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es tan bueno como el otro",
+    "native": "It's as good as the other one",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Tan + adj + como = as... as"
+  },
+  {
+    "id": "es-p-353",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Tiene más experiencia que yo",
+    "native": "He/she has more experience than me",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Más... que"
+  },
+  {
+    "id": "es-p-354",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Cada día está más caro",
+    "native": "Every day it's getting more expensive",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Estar más caro"
+  },
+  {
+    "id": "es-p-355",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Si tuviera tiempo, aprendería guitarra",
+    "native": "If I had time, I would learn guitar",
+    "pos": "phrase",
+    "category": "Hypotheticals",
+    "note": "Si + imperfect subjunctive, conditional"
+  },
+  {
+    "id": "es-p-356",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Si pudiera, viajaría por el mundo",
+    "native": "If I could, I would travel the world",
+    "pos": "phrase",
+    "category": "Hypotheticals",
+    "note": "Si pudiera = if I could"
+  },
+  {
+    "id": "es-p-357",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En tu lugar, hablaría con él",
+    "native": "In your place, I would talk to him",
+    "pos": "phrase",
+    "category": "Advice",
+    "note": "Giving advice with conditional"
+  },
+  {
+    "id": "es-p-358",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Yo que tú, lo aceptaría",
+    "native": "If I were you, I would accept it",
+    "pos": "phrase",
+    "category": "Advice",
+    "note": "Yo que tú = if I were you"
+  },
+  {
+    "id": "es-p-359",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Te aconsejo que descanses más",
+    "native": "I advise you to rest more",
+    "pos": "phrase",
+    "category": "Advice",
+    "note": "Aconsejar que + subjunctive"
+  },
+  {
+    "id": "es-p-360",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Te recomiendo que veas esa serie",
+    "native": "I recommend you watch that series",
+    "pos": "phrase",
+    "category": "Advice",
+    "note": "Recomendar que + subjunctive"
+  },
+  {
+    "id": "es-p-361",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Sería mejor salir temprano",
+    "native": "It would be better to leave early",
+    "pos": "phrase",
+    "category": "Advice",
+    "note": "Sería mejor = it would be better"
+  },
+  {
+    "id": "es-p-362",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Deberías pensarlo dos veces",
+    "native": "You should think twice about it",
+    "pos": "phrase",
+    "category": "Advice",
+    "note": "Pensarlo dos veces"
+  },
+  {
+    "id": "es-p-363",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No te conviene gastar tanto",
+    "native": "It's not in your interest to spend so much",
+    "pos": "phrase",
+    "category": "Advice",
+    "note": "Convenir = to be advisable/suit"
+  },
+  {
+    "id": "es-p-364",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Hace falta más información",
+    "native": "More information is needed",
+    "pos": "phrase",
+    "category": "Conditions",
+    "note": "Hacer falta = be needed"
+  },
+  {
+    "id": "es-p-365",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Siempre y cuando cumplas con eso",
+    "native": "Provided that you meet that",
+    "pos": "phrase",
+    "category": "Conditions",
+    "note": "Siempre y cuando + subjunctive"
+  },
+  {
+    "id": "es-p-366",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En caso de que necesites algo",
+    "native": "In case you need something",
+    "pos": "phrase",
+    "category": "Conditions",
+    "note": "En caso de que + subjunctive"
+  },
+  {
+    "id": "es-p-367",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Por si acaso llueve, lleva paraguas",
+    "native": "Just in case it rains, take an umbrella",
+    "pos": "phrase",
+    "category": "Conditions",
+    "note": "Por si acaso = just in case"
+  },
+  {
+    "id": "es-p-368",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Cuanto antes mejor",
+    "native": "The sooner the better",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Very handy idiom"
+  },
+  {
+    "id": "es-p-369",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Más vale tarde que nunca",
+    "native": "Better late than never",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Classic proverb"
+  },
+  {
+    "id": "es-p-370",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No hay mal que por bien no venga",
+    "native": "Every cloud has a silver lining",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Common Spanish proverb"
+  },
+  {
+    "id": "es-p-371",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es cuestión de tiempo",
+    "native": "It's a matter of time",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Cuestión de = matter of"
+  },
+  {
+    "id": "es-p-372",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es cuestión de práctica",
+    "native": "It's a matter of practice",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Encouraging phrase"
+  },
+  {
+    "id": "es-p-373",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Vale más calidad que cantidad",
+    "native": "Quality is worth more than quantity",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Valer más... que..."
+  },
+  {
+    "id": "es-p-374",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Entre una cosa y otra se fue el día",
+    "native": "Between one thing and another, the day went by",
+    "pos": "phrase",
+    "category": "Comparisons",
+    "note": "Everyday storytelling"
+  },
+  {
+    "id": "es-p-375",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "A fin de cuentas es tu decisión",
+    "native": "At the end of the day it's your decision",
+    "pos": "phrase",
+    "category": "Opinions",
+    "note": "A fin de cuentas = after all"
+  },
+  {
+    "id": "es-p-376",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "La razón principal es el tiempo",
+    "native": "The main reason is time",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Razón principal"
+  },
+  {
+    "id": "es-p-377",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "El problema es que no hay espacio",
+    "native": "The problem is that there's no space",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Clear problem statement"
+  },
+  {
+    "id": "es-p-378",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Lo que pasa es que estoy cansado",
+    "native": "The thing is that I'm tired",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Lo que pasa es que = the thing is"
+  },
+  {
+    "id": "es-p-379",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es que no tuve tiempo",
+    "native": "It's just that I didn't have time",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "'Es que...' softens excuses"
+  },
+  {
+    "id": "es-p-380",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "A causa de esto, cambiamos el plan",
+    "native": "Because of this, we changed the plan",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "A causa de = because of"
+  },
+  {
+    "id": "es-p-381",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Esto tiene como resultado...",
+    "native": "This results in...",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Tener como resultado"
+  },
+  {
+    "id": "es-p-382",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En resumen, fue un éxito",
+    "native": "In summary, it was a success",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "En resumen = in short"
+  },
+  {
+    "id": "es-p-383",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En otras palabras, hay que empezar de nuevo",
+    "native": "In other words, we have to start over",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "En otras palabras = in other words"
+  },
+  {
+    "id": "es-p-384",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Por ejemplo, podemos ir en tren",
+    "native": "For example, we can go by train",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Por ejemplo = for example"
+  },
+  {
+    "id": "es-p-385",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Sobre todo cuando hace calor",
+    "native": "Especially when it's hot",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Sobre todo = especially"
+  },
+  {
+    "id": "es-p-386",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En concreto, ¿qué necesitas?",
+    "native": "Specifically, what do you need?",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "En concreto = specifically"
+  },
+  {
+    "id": "es-p-387",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En general estoy satisfecho",
+    "native": "In general I'm satisfied",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "En general = generally"
+  },
+  {
+    "id": "es-p-388",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "De hecho, ya lo sabía",
+    "native": "In fact, I already knew",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "De hecho = in fact"
+  },
+  {
+    "id": "es-p-389",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "A decir verdad, no me gustó mucho",
+    "native": "To tell the truth, I didn't like it much",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "A decir verdad = truth be told"
+  },
+  {
+    "id": "es-p-390",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Para ser honesto, estoy confundido",
+    "native": "To be honest, I'm confused",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Para ser honesto"
+  },
+  {
+    "id": "es-p-391",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Tiene mucho que ver con la cultura",
+    "native": "It has a lot to do with culture",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Tener que ver con"
+  },
+  {
+    "id": "es-p-392",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Eso explica por qué pasó",
+    "native": "That explains why it happened",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Explicar por qué"
+  },
+  {
+    "id": "es-p-393",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "No tiene ninguna lógica",
+    "native": "It makes no sense at all",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Ninguna lógica"
+  },
+  {
+    "id": "es-p-394",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es fácil de entender",
+    "native": "It's easy to understand",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Fácil de + infinitive"
+  },
+  {
+    "id": "es-p-395",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Es difícil de explicar",
+    "native": "It's hard to explain",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Difícil de + infinitive"
+  },
+  {
+    "id": "es-p-396",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Se trata de un tema importante",
+    "native": "It's about an important topic",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Tratarse de = to be about"
+  },
+  {
+    "id": "es-p-397",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Consiste en practicar todos los días",
+    "native": "It consists of practicing every day",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Consistir en"
+  },
+  {
+    "id": "es-p-398",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Sirve para mejorar la memoria",
+    "native": "It's used for improving memory",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Servir para = be useful for"
+  },
+  {
+    "id": "es-p-399",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "Hace referencia a lo que dijiste",
+    "native": "It refers to what you said",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "Hacer referencia a"
+  },
+  {
+    "id": "es-p-400",
+    "pack": 4,
+    "packName": "B1 Opinions & Comparisons",
+    "target": "En conclusión, necesitamos más tiempo",
+    "native": "In conclusion, we need more time",
+    "pos": "phrase",
+    "category": "Reasoning",
+    "note": "En conclusión"
+  },
+  {
+    "id": "es-p-401",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "O sea, ¿que no vienes?",
+    "native": "I mean, so you're not coming?",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "O sea = I mean / in other words (super common)"
+  },
+  {
+    "id": "es-p-402",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Pues, la verdad es que no sé",
+    "native": "Well, the truth is I don't know",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Pues = well..."
+  },
+  {
+    "id": "es-p-403",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Bueno, vamos a ver qué pasa",
+    "native": "Well, let's see what happens",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Bueno = well / okay"
+  },
+  {
+    "id": "es-p-404",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "A ver si entendí bien",
+    "native": "Let's see if I understood correctly",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "A ver = let's see"
+  },
+  {
+    "id": "es-p-405",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Mira, te explico cómo funciona",
+    "native": "Look, I'll explain how it works",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Mira = look (attention getter)"
+  },
+  {
+    "id": "es-p-406",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Oye, ¿tienes un minuto?",
+    "native": "Hey, do you have a minute?",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Oye = hey/listen (informal)"
+  },
+  {
+    "id": "es-p-407",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Dime una cosa",
+    "native": "Tell me one thing",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Conversational opener"
+  },
+  {
+    "id": "es-p-408",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Es decir, tenemos que esperar",
+    "native": "That is to say, we have to wait",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Es decir = that is"
+  },
+  {
+    "id": "es-p-409",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Por cierto, ¿cómo está tu familia?",
+    "native": "By the way, how is your family?",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Por cierto = by the way"
+  },
+  {
+    "id": "es-p-410",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "A propósito, me acordé de algo",
+    "native": "By the way / Speaking of which, I remembered something",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "A propósito = by the way"
+  },
+  {
+    "id": "es-p-411",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Como te decía antes",
+    "native": "As I was telling you before",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Returning to a topic"
+  },
+  {
+    "id": "es-p-412",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Volviendo al tema",
+    "native": "Getting back to the topic",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Volver al tema"
+  },
+  {
+    "id": "es-p-413",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Ya que lo mencionas",
+    "native": "Since you mention it",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Ya que = since"
+  },
+  {
+    "id": "es-p-414",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Ahora que lo pienso",
+    "native": "Now that I think about it",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Ahora que lo pienso"
+  },
+  {
+    "id": "es-p-415",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Más bien diría que es útil",
+    "native": "Rather, I would say it's useful",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Más bien = rather"
+  },
+  {
+    "id": "es-p-416",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Digamos que fue complicado",
+    "native": "Let's say it was complicated",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Digamos que = let's say"
+  },
+  {
+    "id": "es-p-417",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Por así decirlo",
+    "native": "So to speak",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Softening a metaphor"
+  },
+  {
+    "id": "es-p-418",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "En fin, sigamos adelante",
+    "native": "Anyway, let's move forward",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "En fin = anyway"
+  },
+  {
+    "id": "es-p-419",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Total, que no pudimos entrar",
+    "native": "Long story short, we couldn't get in",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Total, que... = anyway / so..."
+  },
+  {
+    "id": "es-p-420",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¿Sabes qué?",
+    "native": "You know what?",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Introducing an idea"
+  },
+  {
+    "id": "es-p-421",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "La verdad es que me encanta",
+    "native": "The truth is that I love it",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "La verdad es que..."
+  },
+  {
+    "id": "es-p-422",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Si te soy sincero",
+    "native": "If I'm honest with you",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Sincero = honest"
+  },
+  {
+    "id": "es-p-423",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Entre tú y yo",
+    "native": "Between you and me",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Sharing a secret/opinion"
+  },
+  {
+    "id": "es-p-424",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "No te lo vas a creer",
+    "native": "You're not going to believe it",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Story hook"
+  },
+  {
+    "id": "es-p-425",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¿Me explico?",
+    "native": "Am I making myself clear?",
+    "pos": "phrase",
+    "category": "Fillers",
+    "note": "Checking if the listener follows"
+  },
+  {
+    "id": "es-p-426",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡No me digas!",
+    "native": "No way! / You don't say!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Surprise reaction"
+  },
+  {
+    "id": "es-p-427",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡En serio?",
+    "native": "Seriously? / Really?",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Very common"
+  },
+  {
+    "id": "es-p-428",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué pena!",
+    "native": "What a shame! / Too bad!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Sympathy reaction"
+  },
+  {
+    "id": "es-p-429",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué lástima!",
+    "native": "What a pity!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Synonym of ¡Qué pena!"
+  },
+  {
+    "id": "es-p-430",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué suerte tienes!",
+    "native": "How lucky you are!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Friendly envy"
+  },
+  {
+    "id": "es-p-431",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué sorpresa!",
+    "native": "What a surprise!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Seeing someone unexpectedly"
+  },
+  {
+    "id": "es-p-432",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué maravilla!",
+    "native": "How wonderful!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Strong positive reaction"
+  },
+  {
+    "id": "es-p-433",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué bien!",
+    "native": "How great! / Awesome!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Simple positive reaction"
+  },
+  {
+    "id": "es-p-434",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué horror!",
+    "native": "How awful!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Dramatic negative reaction"
+  },
+  {
+    "id": "es-p-435",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué vergüenza!",
+    "native": "How embarrassing!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Cringe/embarrassment"
+  },
+  {
+    "id": "es-p-436",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué raro!",
+    "native": "How weird!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Raro = strange/weird"
+  },
+  {
+    "id": "es-p-437",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué locura!",
+    "native": "How crazy!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Locura = madness"
+  },
+  {
+    "id": "es-p-438",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡No puede ser!",
+    "native": "It can't be! / No way!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Disbelief"
+  },
+  {
+    "id": "es-p-439",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Menos mal!",
+    "native": "Thank goodness!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Relief"
+  },
+  {
+    "id": "es-p-440",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Por fin!",
+    "native": "Finally! / At last!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Relief after waiting"
+  },
+  {
+    "id": "es-p-441",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Ni idea!",
+    "native": "No idea!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Short for 'No tengo ni idea'"
+  },
+  {
+    "id": "es-p-442",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Qué va!",
+    "native": "No way! / Not at all!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Casual denial (especially in Spain)"
+  },
+  {
+    "id": "es-p-443",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Claro!",
+    "native": "Of course! / Sure!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Quick agreement"
+  },
+  {
+    "id": "es-p-444",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Cómo no!",
+    "native": "Of course! / Why not!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Warm, polite 'yes' (very common in LatAm)"
+  },
+  {
+    "id": "es-p-445",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Dale! / ¡Vale!",
+    "native": "Okay! / Go ahead! / Sounds good!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Vale in Spain, Dale in LatAm"
+  },
+  {
+    "id": "es-p-446",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Ánimo!",
+    "native": "Cheer up! / Keep going!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Encouragement"
+  },
+  {
+    "id": "es-p-447",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Tranquilo!",
+    "native": "Take it easy! / Don't worry!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Calming someone"
+  },
+  {
+    "id": "es-p-448",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Ten cuidado!",
+    "native": "Be careful!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Informal command of tener"
+  },
+  {
+    "id": "es-p-449",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡No te creo!",
+    "native": "I don't believe you!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Playful disbelief"
+  },
+  {
+    "id": "es-p-450",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "¡Eso espero!",
+    "native": "I hope so!",
+    "pos": "phrase",
+    "category": "Reactions",
+    "note": "Short response"
+  },
+  {
+    "id": "es-p-451",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "A lo mejor vamos mañana",
+    "native": "Maybe we'll go tomorrow",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "A lo mejor + indicative = maybe"
+  },
+  {
+    "id": "es-p-452",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Tal vez tengas razón",
+    "native": "Maybe you're right",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Tal vez + subjunctive (usually)"
+  },
+  {
+    "id": "es-p-453",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Quizás sea mejor esperar",
+    "native": "Perhaps it's better to wait",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Quizás + subjunctive"
+  },
+  {
+    "id": "es-p-454",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Puede que llegue un poco tarde",
+    "native": "I might arrive a little late",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Puede que + subjunctive = might"
+  },
+  {
+    "id": "es-p-455",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Por si acaso, llévate una chaqueta",
+    "native": "Just in case, take a jacket",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Por si acaso = just in case"
+  },
+  {
+    "id": "es-p-456",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Más o menos a las cinco",
+    "native": "Around five o'clock",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Approximate time"
+  },
+  {
+    "id": "es-p-457",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Alrededor de veinte minutos",
+    "native": "Around twenty minutes",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Alrededor de = around"
+  },
+  {
+    "id": "es-p-458",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Algo así",
+    "native": "Something like that",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Vague agreement"
+  },
+  {
+    "id": "es-p-459",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Más bien tranquilo",
+    "native": "Rather quiet / pretty chill",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Softening an adjective"
+  },
+  {
+    "id": "es-p-460",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Un poco complicado",
+    "native": "A bit complicated",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Softening criticism"
+  },
+  {
+    "id": "es-p-461",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "No sabría decirte",
+    "native": "I wouldn't know what to tell you",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Polite way to say 'I don't know'"
+  },
+  {
+    "id": "es-p-462",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Que yo sepa, no",
+    "native": "As far as I know, no",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Que yo sepa = as far as I know"
+  },
+  {
+    "id": "es-p-463",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Si mal no recuerdo",
+    "native": "If I remember correctly",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Hedging a memory"
+  },
+  {
+    "id": "es-p-464",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Parece que va a llover",
+    "native": "It looks like it's going to rain",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Parece que = it seems"
+  },
+  {
+    "id": "es-p-465",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Se supone que empieza a las ocho",
+    "native": "It's supposed to start at eight",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Se supone que = supposed to"
+  },
+  {
+    "id": "es-p-466",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "No estoy cien por ciento seguro",
+    "native": "I'm not 100% sure",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Clarifying certainty"
+  },
+  {
+    "id": "es-p-467",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Por lo visto, ya cerraron",
+    "native": "Apparently, they already closed",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Por lo visto = apparently"
+  },
+  {
+    "id": "es-p-468",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Al parecer hubo un problema",
+    "native": "Apparently there was a problem",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Al parecer = apparently"
+  },
+  {
+    "id": "es-p-469",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "En teoría debería funcionar",
+    "native": "In theory it should work",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "En teoría = in theory"
+  },
+  {
+    "id": "es-p-470",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Depende de la situación",
+    "native": "It depends on the situation",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Depende de"
+  },
+  {
+    "id": "es-p-471",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Tampoco es para tanto",
+    "native": "It's not that big of a deal either",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Calming exaggeration"
+  },
+  {
+    "id": "es-p-472",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "No es nada del otro mundo",
+    "native": "It's nothing special",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Literal: nothing from another world"
+  },
+  {
+    "id": "es-p-473",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Ni más ni menos",
+    "native": "Neither more nor less / Exactly",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Precision idiom"
+  },
+  {
+    "id": "es-p-474",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Por poco pierdo el vuelo",
+    "native": "I almost missed the flight",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Por poco = almost (narrowly)"
+  },
+  {
+    "id": "es-p-475",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Casi se me olvida",
+    "native": "I almost forgot",
+    "pos": "phrase",
+    "category": "Hedging",
+    "note": "Casi + se me olvida"
+  },
+  {
+    "id": "es-p-476",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Dar en el clavo",
+    "native": "To hit the nail on the head",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Same image as English"
+  },
+  {
+    "id": "es-p-477",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Estar en las nubes",
+    "native": "To have one's head in the clouds",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Daydreaming"
+  },
+  {
+    "id": "es-p-478",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Costar un ojo de la cara",
+    "native": "To cost an arm and a leg",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Literal: cost an eye from the face"
+  },
+  {
+    "id": "es-p-479",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Tomar el pelo",
+    "native": "To pull someone's leg / joke around",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Literal: take the hair"
+  },
+  {
+    "id": "es-p-480",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Echar una mano",
+    "native": "To lend a hand",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "¿Me echas una mano? = Can you help me?"
+  },
+  {
+    "id": "es-p-481",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Ponerse las pilas",
+    "native": "To get one's act together / focus",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Literal: put in one's batteries"
+  },
+  {
+    "id": "es-p-482",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Hacer la vista gorda",
+    "native": "To turn a blind eye",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Ignore something deliberately"
+  },
+  {
+    "id": "es-p-483",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Ir al grano",
+    "native": "To get straight to the point",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Literal: go to the grain"
+  },
+  {
+    "id": "es-p-484",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Meter la pata",
+    "native": "To put one's foot in it / mess up",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Making an awkward mistake"
+  },
+  {
+    "id": "es-p-485",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Quedarse de piedra",
+    "native": "To be stunned / speechless",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Literal: turn to stone"
+  },
+  {
+    "id": "es-p-486",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "No pegar ojo",
+    "native": "Not to sleep a wink",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Literal: not stick an eye"
+  },
+  {
+    "id": "es-p-487",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Estar sin blanca",
+    "native": "To be broke (no money)",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Common in Spain"
+  },
+  {
+    "id": "es-p-488",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Andar corto de dinero",
+    "native": "To be short on cash",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Corto de = short on"
+  },
+  {
+    "id": "es-p-489",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Tirar la toalla",
+    "native": "To throw in the towel / give up",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Same boxing metaphor"
+  },
+  {
+    "id": "es-p-490",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Salirse con la suya",
+    "native": "To get one's own way",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Persistence/stubbornness"
+  },
+  {
+    "id": "es-p-491",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Dar la lata",
+    "native": "To be annoying / bother",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "No me des la lata = don't bug me"
+  },
+  {
+    "id": "es-p-492",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Pasar de largo",
+    "native": "To pass right by without stopping",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Pasar de largo"
+  },
+  {
+    "id": "es-p-493",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Llevarse una sorpresa",
+    "native": "To get a surprise",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Llevarse = to take away/experience"
+  },
+  {
+    "id": "es-p-494",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Hacer caso",
+    "native": "To pay attention / listen to advice",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Hazme caso = listen to me"
+  },
+  {
+    "id": "es-p-495",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "No hacer ni caso",
+    "native": "To completely ignore",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Opposite of hacer caso"
+  },
+  {
+    "id": "es-p-496",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Tener en cuenta",
+    "native": "To keep in mind / take into account",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Very useful in work/daily life"
+  },
+  {
+    "id": "es-p-497",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Dar por hecho",
+    "native": "To take for granted / assume",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "No lo des por hecho"
+  },
+  {
+    "id": "es-p-498",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Estar al tanto",
+    "native": "To be up to date / aware",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Mantenerse al tanto = stay updated"
+  },
+  {
+    "id": "es-p-499",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "Valer oro",
+    "native": "To be worth one's weight in gold",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "High praise"
+  },
+  {
+    "id": "es-p-500",
+    "pack": 5,
+    "packName": "B1 Spoken Glue & Idioms",
+    "target": "De pies a cabeza",
+    "native": "From head to toe",
+    "pos": "phrase",
+    "category": "Idioms",
+    "note": "Literal: from feet to head"
+  }
+]

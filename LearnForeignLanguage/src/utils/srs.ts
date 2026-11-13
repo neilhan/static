@@ -86,3 +86,14 @@ export const getReviewStatus = (nextReview: number): 'new' | 'due' | 'future' =>
   if (Date.now() >= nextReview) return 'due';
   return 'future';
 };
+
+export const markAsWellKnown = (now: number = Date.now()): SRSData => {
+  const interval = 21;
+  return {
+    lastReviewed: now,
+    nextReview: now + interval * 24 * 60 * 60 * 1000,
+    interval,
+    repetition: 3,
+    easeFactor: 2.5,
+  };
+};

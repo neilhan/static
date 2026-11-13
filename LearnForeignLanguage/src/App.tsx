@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import "./components/CollectionManager.css";
-import { loadState, saveState } from "./utils/storage";
-import { parseInput } from "./utils/parser";
-import { calculateNextReview } from "./utils/srs";
+import { loadState, saveState, recordDailyReview } from "./utils/storage";
+import { calculateNextReview, markAsWellKnown } from "./utils/srs";
+import {
+  getSourceItems,
+} from "./utils/curriculum";
+import { shouldUpdateSrsOnGrade } from "./utils/recall";
 import { InputSection, InputSectionRef } from "./components/InputSection";
 import { CollectionManager } from "./components/CollectionManager";
-import { AppState, ConversationCollection, Conversation } from "./types";
+import { AppState, ConversationCollection, Conversation, SourceId } from "./types";
+import { ActiveRecallCard } from "./components/ActiveRecallCard";
 import { useAudioPlayer } from "./hooks/useAudioPlayer";
 import playIcon from "@static/shared/assets/icons/play.svg?raw";
 import pauseIcon from "@static/shared/assets/icons/pause.svg?raw";
@@ -66,6 +70,7 @@ function App() {
   const [isQueuePlaying, setIsQueuePlaying] = useState(false);
   const [isRandomOrder, setIsRandomOrder] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
+  const [studyMode, setStudyMode] = useState<"recall" | "listen">("recall");
 
   const inputSectionRef = useRef<InputSectionRef>(null);
 
@@ -80,87 +85,6 @@ function App() {
     state.collections[0];
 
   // -------------------------------------------------------------------------
-  // Collection Handlers
-  // -------------------------------------------------------------------------
-
-  const handleSelectCollection = (id: string) => {
-    stopPlayback();
-    setState((prev) => ({ ...prev, activeCollectionId: id }));
-  };
-
-  const handleCreateCollection = (name: string) => {
-    const newCollection: ConversationCollection = {
-      id: `col-${Date.now()}`,
-      name,
-      rawInput: "",
-      conversations: [],
-      targetVoiceURI: "",
-      targetLang: "en-US",
-      nativeVoiceURI: "",
-      nativeLang: "zh-CN",
-      playbackSettings: {
-        playNative: false,
-        includePause: true,
-      },
-      srsData: {},
-    };
-
-    setState((prev) => ({
-      ...prev,
-      collections: [...prev.collections, newCollection],
-      activeCollectionId: newCollection.id,
-    }));
-  };
-
-  const handleDeleteCollection = (id: string) => {
-    setState((prev) => {
-      const newCollections = prev.collections.filter((c) => c.id !== id);
-      let newActiveId = prev.activeCollectionId;
-      if (id === prev.activeCollectionId) {
-        newActiveId = newCollections.length > 0 ? newCollections[0].id : null;
-      }
-
-      if (newCollections.length === 0) {
-        return {
-          collections: [
-            {
-              id: "default",
-              name: "My First Collection",
-              rawInput: "",
-              conversations: [],
-              targetVoiceURI: "",
-              targetLang: "en-US",
-              nativeVoiceURI: "",
-              nativeLang: "zh-CN",
-              playbackSettings: {
-                playNative: false,
-                includePause: true,
-              },
-              srsData: {},
-            },
-          ],
-          activeCollectionId: "default",
-        };
-      }
-
-      return {
-        ...prev,
-        collections: newCollections,
-        activeCollectionId: newActiveId,
-      };
-    });
-  };
-
-  const handleRenameCollection = (id: string, newName: string) => {
-    setState((prev) => ({
-      ...prev,
-      collections: prev.collections.map((c) =>
-        c.id === id ? { ...c, name: newName } : c
-      ),
-    }));
-  };
-
-  // -------------------------------------------------------------------------
   // Editor Handlers
   // -------------------------------------------------------------------------
 
@@ -173,11 +97,6 @@ function App() {
         c.id === activeCollection.id ? { ...c, ...updates } : c
       ),
     }));
-  };
-
-  const handleInputChange = (rawInput: string) => {
-    const conversations = parseInput(rawInput);
-    updateActiveCollection({ rawInput, conversations });
   };
 
   const handleTargetChange = (voiceURI: string, lang: string) => {
@@ -204,6 +123,80 @@ function App() {
     });
     // Update playing audio settings in real-time
     updateSettings(activeCollection.playbackSettings.playNative, includePause);
+  };
+
+  const phrasesCollection =
+    state.collections.find((c) => c.id === "phrases") || state.collections[0];
+  const vocabCollection =
+    state.collections.find((c) => c.id === "vocab") || state.collections[1];
+
+  const getSourceForItem = (itemId: string): SourceId =>
+    itemId.startsWith("es-p-") ? "phrases" : "vocab";
+
+  const handleGradeItem = (itemId: string, grade: number) => {
+    const sourceId = getSourceForItem(itemId);
+    const targetCol = state.collections.find((c) => c.id === sourceId);
+    if (!targetCol) return;
+
+    const current = targetCol.srsData[itemId];
+    // Protect SRS intervals: extra same-day practice on future-scheduled items
+    // does not inflate or reset their scheduled review interval.
+    if (!shouldUpdateSrsOnGrade(current)) {
+      return;
+    }
+
+    const isNewItem = !current || current.repetition === 0;
+    const next = calculateNextReview(current, grade);
+
+    setState((prev) => ({
+      ...prev,
+      collections: prev.collections.map((c) =>
+        c.id === sourceId
+          ? { ...c, srsData: { ...c.srsData, [itemId]: next } }
+          : c
+      ),
+      dailyProgress: recordDailyReview(
+        prev.dailyProgress,
+        isNewItem,
+        undefined,
+        sourceId,
+        true
+      ),
+    }));
+  };
+
+  const handleMarkWellKnown = (itemId: string) => {
+    const sourceId = getSourceForItem(itemId);
+    const next = markAsWellKnown();
+
+    setState((prev) => ({
+      ...prev,
+      collections: prev.collections.map((c) =>
+        c.id === sourceId
+          ? { ...c, srsData: { ...c.srsData, [itemId]: next } }
+          : c
+      ),
+      dailyProgress: recordDailyReview(
+        prev.dailyProgress,
+        false,
+        undefined,
+        sourceId,
+        false
+      ),
+    }));
+  };
+
+  const handleChangeNewCap = (sourceId: SourceId, cap: number) => {
+    setState((prev) => ({
+      ...prev,
+      dailyProgress: {
+        ...prev.dailyProgress,
+        newCapBySource: {
+          ...prev.dailyProgress.newCapBySource,
+          [sourceId]: Math.max(0, cap),
+        },
+      },
+    }));
   };
 
   // -------------------------------------------------------------------------
@@ -450,19 +443,6 @@ function App() {
 
   if (!activeCollection) return <div>Loading...</div>;
 
-  // Calculate offset for current sentence index in the WHOLE text area
-  let globalSentenceIndex = -1;
-  if (playingId && currentIndex >= 0) {
-    let offset = 0;
-    for (const conv of activeCollection.conversations) {
-      if (conv.id === playingId) {
-        globalSentenceIndex = offset + currentIndex;
-        break;
-      }
-      offset += conv.sentences.length;
-    }
-  }
-
   const currentConversation: Conversation | null = playingId
     ? activeCollection.conversations.find((c) => c.id === playingId) ?? null
     : null;
@@ -511,20 +491,43 @@ function App() {
         <main className="app-layout two-column">
           {/* Left Sidebar: Collections */}
           <aside className="panel collection-panel">
-            <CollectionManager
-              collections={state.collections}
-              activeCollectionId={state.activeCollectionId}
-              onSelectCollection={handleSelectCollection}
-              onCreateCollection={handleCreateCollection}
-              onDeleteCollection={handleDeleteCollection}
-              onRenameCollection={handleRenameCollection}
-            />
+            <CollectionManager collections={state.collections} />
           </aside>
 
           {/* Middle: Editor */}
           <section className="panel editor-panel">
             <div className="editor-header">
-              <h2>{activeCollection.name}</h2>
+              <div className="editor-title-row">
+                <h2>
+                  {studyMode === "recall"
+                    ? "Spanish B1 — Mixed Session"
+                    : activeCollection.name}
+                </h2>
+                <div className="study-mode-switch" role="tablist" aria-label="Study mode">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={studyMode === "recall"}
+                    className={`study-mode-btn ${studyMode === "recall" ? "active" : ""}`}
+                    onClick={() => {
+                      stopPlayback();
+                      setStudyMode("recall");
+                    }}
+                  >
+                    Active Recall
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={studyMode === "listen"}
+                    className={`study-mode-btn ${studyMode === "listen" ? "active" : ""}`}
+                    onClick={() => setStudyMode("listen")}
+                  >
+                    Listen & Repeat
+                  </button>
+                </div>
+              </div>
+              {studyMode === "listen" && (
               <div className="player-controls-group">
                 <div className="player-main-actions">
                   <button
@@ -596,28 +599,45 @@ function App() {
                   </label>
                 </div>
               </div>
+              )}
             </div>
 
-            <CurrentConversationPanel
-              conversation={currentConversation}
-              currentSentenceIndex={currentConversation ? currentIndex : -1}
-              conversationPosition={currentConversationPosition}
-              totalConversations={activeCollection.conversations.length}
-              queuePreview={queuePreview}
-              isRandomOrder={isRandomOrder}
-              isPlaying={isQueuePlaying}
-            />
+            {studyMode === "recall" ? (
+              <ActiveRecallCard
+                phraseItems={getSourceItems("phrases")}
+                phraseSrs={phrasesCollection?.srsData ?? {}}
+                vocabItems={getSourceItems("vocab")}
+                vocabSrs={vocabCollection?.srsData ?? {}}
+                phraseNewCap={state.dailyProgress.newCapBySource.phrases ?? 4}
+                phraseNewToday={state.dailyProgress.newLearnedBySource.phrases ?? 0}
+                vocabNewCap={state.dailyProgress.newCapBySource.vocab ?? 10}
+                vocabNewToday={state.dailyProgress.newLearnedBySource.vocab ?? 0}
+                targetLang={activeCollection.targetLang}
+                targetVoiceURI={activeCollection.targetVoiceURI}
+                nativeLang={activeCollection.nativeLang}
+                nativeVoiceURI={activeCollection.nativeVoiceURI}
+                onGradeItem={handleGradeItem}
+                onMarkWellKnown={handleMarkWellKnown}
+                onChangeNewCap={handleChangeNewCap}
+              />
+            ) : (
+              <CurrentConversationPanel
+                conversation={currentConversation}
+                currentSentenceIndex={currentConversation ? currentIndex : -1}
+                conversationPosition={currentConversationPosition}
+                totalConversations={activeCollection.conversations.length}
+                queuePreview={queuePreview}
+                isRandomOrder={isRandomOrder}
+                isPlaying={isQueuePlaying}
+              />
+            )}
 
             <InputSection
               ref={inputSectionRef}
-              rawInput={activeCollection.rawInput}
-              onInputChange={handleInputChange}
               targetVoiceURI={activeCollection.targetVoiceURI}
               onTargetChange={handleTargetChange}
               nativeVoiceURI={activeCollection.nativeVoiceURI}
               onNativeChange={handleNativeChange}
-              isPlaying={isQueuePlaying}
-              currentSentenceIndex={globalSentenceIndex}
             />
           </section>
         </main>

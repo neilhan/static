@@ -1,0 +1,384 @@
+.recall-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.recall-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recall-toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.recall-pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.recall-pill.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(78, 205, 196, 0.12);
+  font-weight: 600;
+}
+
+.recall-card {
+  background-color: var(--bg-panel-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.recall-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.recall-status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.recall-status-badge.status-new {
+  background: rgba(100, 108, 255, 0.2);
+  color: #a5b4fc;
+}
+
+.recall-status-badge.status-due {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.recall-status-badge.status-future {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.recall-meta-tag {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.1rem 0.45rem;
+}
+
+.recall-queue-count {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.recall-prompt-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.recall-prompt-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.recall-prompt-text {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.recall-hint-row {
+  display: flex;
+  align-items: center;
+}
+
+.recall-note-text {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--accent);
+  padding: 0.45rem 0.75rem;
+  border-radius: 4px;
+}
+
+.recall-type-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.recall-type-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--control-field-border);
+  background-color: var(--control-field);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.recall-match-feedback {
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+}
+
+.recall-match-feedback.match-exact {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+
+.recall-match-feedback.match-accent-diff {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+}
+
+.recall-match-feedback.match-mismatch {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+}
+
+.recall-answer-block {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.recall-hidden-answer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px dashed var(--border-color);
+  cursor: pointer;
+}
+
+.recall-blur-preview {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  filter: blur(8px);
+  user-select: none;
+}
+
+.recall-revealed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.recall-answer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.recall-answer-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.recall-forms-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.recall-forms-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.recall-forms-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.recall-form-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.recall-form-chip:hover {
+  border-color: var(--accent);
+  background: rgba(78, 205, 196, 0.1);
+}
+
+.recall-form-key {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.recall-form-val {
+  font-weight: 600;
+}
+
+.recall-grade-bar {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.9rem;
+}
+
+.recall-grade-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.4rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.2s;
+}
+
+.recall-grade-btn:hover {
+  transform: translateY(-1px);
+}
+
+.recall-grade-btn.grade-again {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.recall-grade-btn.grade-hard {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+.recall-grade-btn.grade-good {
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.recall-grade-btn.grade-easy {
+  border-color: rgba(78, 205, 196, 0.6);
+}
+
+.grade-label {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.grade-interval {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.recall-empty {
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.recall-empty h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--accent);
+}
+
+.recall-empty p {
+  margin: 0;
+}
+
+
+.grade-kbd {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  margin-left: 0.2rem;
+  font-family: inherit;
+}
+
+.recall-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color-alt);
+}
+
+.recall-cap-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+}
+
+.recall-cap-select {
+  background: transparent;
+  color: var(--accent);
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recall-known-btn {
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recall-known-btn:hover {
+  background: rgba(16, 185, 129, 0.24);
+}
+
+.recall-empty-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
