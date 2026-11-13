@@ -1,0 +1,55 @@
+{
+  "name": "My Tools",
+  "short_name": "My Tools",
+  "description": "Personal collection of standalone static web tools.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Timer & Tracker",
+      "short_name": "SportTimer",
+      "url": "./SportTimer/dist/index.html",
+      "icons": [{ "src": "./SportTimer/dist/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Guitar Fretboard",
+      "short_name": "Guitar",
+      "url": "./Guitar/dist/index.html",
+      "icons": [{ "src": "./Guitar/dist/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Life in Weeks",
+      "short_name": "Life",
+      "url": "./Life/dist/index.html",
+      "icons": [{ "src": "./Life/dist/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "RRSP Calculator",
+      "short_name": "RRSP Calc",
+      "url": "./RRSPCalculator/dist/index.html",
+      "icons": [{ "src": "./RRSPCalculator/dist/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

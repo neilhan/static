@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./calculator.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RRSP Calc" />
+    <meta name="theme-color" content="#0f172a" />
     <title>RRSP vs Personal Investment Calculator | Retirement Comparison</title>
     <meta name="description" content="Compare RRSP, Taxable Personal Accounts, and TFSA. Calculate compound growth, tax drag, decumulation, and retirement longevity for any annual savings amount." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,5 +20,12 @@
   </head>
   <body>
     <div id="app"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

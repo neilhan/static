@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>My Tools</title>
+    <meta name="description" content="Personal collection of standalone static web tools." />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="My Tools" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0f172a;
+        --card: #1e293b;
+        --card-hover: #273549;
+        --border: #334155;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --accent: #4ecdc4;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: max(20px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
+      }
+
+      .container {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand img {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      #install-btn {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        background: var(--accent);
+        color: #0f172a;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+
+      #install-btn.visible {
+        display: inline-flex;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: inherit;
+        text-decoration: none;
+        transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+      }
+
+      .card:hover {
+        background: var(--card-hover);
+        border-color: var(--accent);
+        transform: translateY(-1px);
+      }
+
+      .card img {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 8px;
+      }
+
+      .card-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin: 0 0 4px;
+      }
+
+      .card-desc {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+
+      footer {
+        margin-top: 28px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <div class="brand">
+          <img src="./icon.svg" alt="My Tools" />
+          <div>
+            <h1>My Tools</h1>
+            <p class="subtitle">Install this launcher as a master app, or open any tool to install it standalone.</p>
+          </div>
+        </div>
+        <button id="install-btn" type="button">Install Master App</button>
+      </header>
+
+      <section class="grid" aria-label="Tools">
+        <a class="card" href="./SportTimer/dist/index.html">
+          <img src="./SportTimer/dist/icon-192.png" alt="" />
+          <div>
+            <h2 class="card-title">Timer &amp; Tracker</h2>
+            <p class="card-desc">Interval timer, workout programs, and activity tracker.</p>
+          </div>
+        </a>
+
+        <a class="card" href="./FarnsworthCWTrainer/dist/index.html">
+          <img src="./FarnsworthCWTrainer/dist/icon-192.png" alt="" />
+          <div>
+            <h2 class="card-title">Farnsworth CW Trainer</h2>
+            <p class="card-desc">Morse code practice with Farnsworth timing.</p>
+          </div>
+        </a>
+
+        <a class="card" href="./Life/dist/index.html">
+          <img src="./Life/dist/icon-192.png" alt="" />
+          <div>
+            <h2 class="card-title">Life in Weeks</h2>
+            <p class="card-desc">Visualize your life in weeks and experiences.</p>
+          </div>
+        </a>
+
+        <a class="card" href="./LearnForeignLanguage/dist/index.html">
+          <img src="./LearnForeignLanguage/dist/icon-192.png" alt="" />
+          <div>
+            <h2 class="card-title">Learn Foreign Language</h2>
+            <p class="card-desc">Interactive foreign language practice workspace.</p>
+          </div>
+        </a>
+
+        <a class="card" href="./LuckyNumberLookup/dist/index.html">
+          <img src="./LuckyNumberLookup/dist/icon-192.png" alt="" />
+          <div>
+            <h2 class="card-title">Lucky Number Lookup</h2>
+            <p class="card-desc">Reduce any number modulo 81 (1–81) and look up its fortune.</p>
+          </div>
+        </a>
+
+        <a class="card" href="./RRSPCalculator/dist/index.html">
+          <img src="./RRSPCalculator/dist/icon-192.png" alt="" />
+          <div>
+            <h2 class="card-title">RRSP vs. Personal Calculator</h2>
+            <p class="card-desc">Compare RRSP, Taxable Personal Accounts, and TFSA longevity.</p>
+          </div>
+        </a>
+
+        <a class="card" href="./Guitar/dist/index.html">
+          <img src="./Guitar/dist/icon-192.png" alt="" />
+          <div>
+            <h2 class="card-title">Guitar Fretboard Lookup</h2>
+            <p class="card-desc">Interactive fretboard with tunings, chords, and pentatonic scales.</p>
+          </div>
+        </a>
+      </section>
+
+      <footer>
+        Tip: On iOS Safari, tap Share &rarr; Add to Home Screen. On desktop Chrome/Edge, use the install icon in the address bar.
+      </footer>
+    </main>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
+        });
+      }
+
+      let deferredPrompt = null;
+      const installBtn = document.getElementById("install-btn");
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+        installBtn.classList.add("visible");
+      });
+
+      installBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.classList.remove("visible");
+      });
+
+      window.addEventListener("appinstalled", () => {
+        deferredPrompt = null;
+        installBtn.classList.remove("visible");
+      });
+    </script>
+  </body>
+</html>
