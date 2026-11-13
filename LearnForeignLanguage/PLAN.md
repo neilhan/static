@@ -78,17 +78,11 @@ Make daily review effortless and show progress toward the 3,000-word + 500-phras
 - [x] **Visual Due Indicators:** Show `New`, `Due`, or `In Xd` status badges on collections and items (completing the planned item in `README.md`).
 - [x] **Mastery Dashboard:** Progress bars for **Phrases (X / 500)** and **Words (X / 3,000)** broken down by `New`, `Learning`, and `Mastered` (e.g., `interval >= 21` days).
 
-### Phase 4: Audio, Shadowing & Memory Hooks
-Build on `src/hooks/useAudioPlayer.ts`:
-- [ ] **Playback Speed Control:** Add `0.75x`, `1.0x`, and `1.25x` rate controls for `SpeechSynthesisUtterance` to support slow shadowing and natural-speed listening.
-- [ ] **Single-Item Loop:** Repeat a difficult word/phrase + pause hands-free.
-- [ ] **Mnemonics & Trouble List:** Allow adding/editing a personal memory note per item and starring tricky items into a **Trouble Phrases** review filter.
+### Phase 4: Audio Speed & Memory Hooks *(Not Needed)*
+- Dropped per user preference — no playback speed controls, single-item loop, or trouble list planned.
 
-### Phase 5: Daily Habit, Micro-Output & Mobile Offline Support
-- [ ] **Daily Goal & Streak:** Track daily reviews completed in `src/utils/storage.ts` (e.g., `15 / 20 today`).
-- [ ] **End-of-Session Sentence Builder:** Pick 2–3 newly learned/due items at the end of a session and provide a quick scratchpad to write 3 personal Spanish sentences.
-- [ ] **Export / Import Progress (JSON):** One-click backup & restore of `localStorage` SRS progress and notes for safe keeping or moving between phone and desktop browsers.
-- [ ] **Mobile & Offline Polish:** Graceful `es-*` TTS voice fallback in `src/hooks/useSpeechLanguages.ts`, plus optional PWA manifest/service worker for offline phone use and iOS storage persistence.
+### Phase 5: Daily Habit, Micro-Output & Mobile Offline Support *(Not Needed)*
+- Dropped per user preference — no daily streak UI, sentence scratchpad, JSON export/import, or offline PWA work planned.
 
 ---
 

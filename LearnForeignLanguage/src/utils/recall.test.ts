@@ -94,15 +94,15 @@ describe('recall helpers', () => {
 
     expect(shouldUpdateSrsOnGrade(undefined)).toBe(true);
     expect(shouldUpdateSrsOnGrade(phraseSrs['es-p-001'])).toBe(true); // due
-    expect(
-      shouldUpdateSrsOnGrade({
-        lastReviewed: now,
-        nextReview: now + 86400_000,
-        interval: 1,
-        repetition: 1,
-        easeFactor: 2.5,
-      })
-    ).toBe(false); // future-scheduled: protected from same-day interval inflation
+    const futureItem = {
+      lastReviewed: now,
+      nextReview: now + 86400_000,
+      interval: 1,
+      repetition: 1,
+      easeFactor: 2.5,
+    };
+    expect(shouldUpdateSrsOnGrade(futureItem, 4)).toBe(false); // Show it less: protected from same-day interval inflation
+    expect(shouldUpdateSrsOnGrade(futureItem, 1)).toBe(true);  // Show it more: brings troubled items back sooner
   });
 
   it('selects smart review batches with tiered priority and cycle de-duplication', () => {
@@ -128,13 +128,16 @@ describe('recall helpers', () => {
     expect(round1.resetCycle).toBe(false);
     expect(round1.items).toHaveLength(25);
 
-    // Second round excludes all 25 items from round 1 and picks the remaining 15
+    // Second round takes the remaining 15 unreviewed items AND tops up to 25 from the reset cycle
     const exclude1 = new Set(round1.items.map((i) => i.id));
     const round2 = selectSmartReviewBatch(items, (id) => srsMap[id], exclude1, 25);
-    expect(round2.resetCycle).toBe(false);
-    expect(round2.items).toHaveLength(15);
-    for (const item of round2.items) {
-      expect(exclude1.has(item.id)).toBe(false);
+    expect(round2.resetCycle).toBe(true);
+    expect(round2.items).toHaveLength(25);
+    const round2Ids = new Set(round2.items.map((i) => i.id));
+    for (const item of items) {
+      if (!exclude1.has(item.id)) {
+        expect(round2Ids.has(item.id)).toBe(true);
+      }
     }
 
     // Once all 40 are excluded, it resets the cycle and returns a fresh 25-item batch

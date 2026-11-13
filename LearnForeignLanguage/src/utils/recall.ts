@@ -5,8 +5,9 @@ export type RecallFilter = 'due-and-new' | 'review' | 'all';
 export type RecallMatchResult = 'exact' | 'accent-diff' | 'mismatch';
 export const SESSION_SIZE = 25;
 
-export function shouldUpdateSrsOnGrade(current?: SRSData): boolean {
+export function shouldUpdateSrsOnGrade(current?: SRSData, grade?: number): boolean {
   if (!current) return true;
+  if (typeof grade === 'number' && grade < 3) return true;
   return getReviewStatus(current.nextReview) !== 'future';
 }
 
@@ -123,13 +124,13 @@ export function buildMixedRecallQueue(
     const learned: Array<{ item: VocabItem; nextReview: number }> = [];
     for (const item of phraseItems) {
       const entry = phraseSrs[item.id];
-      if (entry && entry.repetition > 0) {
+      if (entry && (entry.repetition > 0 || entry.lastReviewed > 0)) {
         learned.push({ item, nextReview: entry.nextReview });
       }
     }
     for (const item of vocabItems) {
       const entry = vocabSrs[item.id];
-      if (entry && entry.repetition > 0) {
+      if (entry && (entry.repetition > 0 || entry.lastReviewed > 0)) {
         learned.push({ item, nextReview: entry.nextReview });
       }
     }
@@ -164,43 +165,27 @@ export interface SmartReviewBatch {
   resetCycle: boolean;
 }
 
-/**
- * Selects an open-review batch using a weighted tiered mix:
- * - ~50% weakest & newest (lowest interval / easeFactor)
- * - ~30% due soonest (earliest nextReview)
- * - ~20% random long-term refresh
- * Excludes already-reviewed IDs in the current cycle until exhausted.
- */
-export function selectSmartReviewBatch(
-  learnedItems: VocabItem[],
+function pickTieredItems(
+  pool: VocabItem[],
   getSrs: (id: string) => SRSData | undefined,
-  excludeIds: Set<string> = new Set(),
-  sessionSize: number = SESSION_SIZE
-): SmartReviewBatch {
-  if (learnedItems.length === 0) {
-    return { items: [], resetCycle: false };
-  }
-
-  const remaining = learnedItems.filter((item) => !excludeIds.has(item.id));
-  const resetCycle = remaining.length === 0;
-  const pool = resetCycle ? learnedItems : remaining;
-
-  const targetCount = Math.min(sessionSize, pool.length);
-  if (pool.length <= targetCount) {
-    return { items: shuffleItems(pool), resetCycle };
+  targetCount: number,
+  alreadyPicked: Set<string> = new Set()
+): VocabItem[] {
+  const available = pool.filter((item) => !alreadyPicked.has(item.id));
+  if (available.length <= targetCount) {
+    return shuffleItems(available);
   }
 
   const weakTarget = Math.round(targetCount * 0.5);
   const soonTarget = Math.round(targetCount * 0.3);
   const refreshTarget = Math.max(0, targetCount - weakTarget - soonTarget);
 
-  const picked = new Set<string>();
+  const picked = new Set<string>(alreadyPicked);
   const selected: VocabItem[] = [];
 
   const takeFromSorted = (sorted: VocabItem[], count: number) => {
     if (count <= 0) return;
     const unpicked = sorted.filter((i) => !picked.has(i.id));
-    // Shuffle within a 2x candidate window so ties and near-ties vary each round
     const window = shuffleItems(unpicked.slice(0, Math.min(unpicked.length, count * 2)));
     for (const item of window.slice(0, count)) {
       picked.add(item.id);
@@ -209,7 +194,7 @@ export function selectSmartReviewBatch(
   };
 
   // Tier 1: Weakest & newest (lowest interval, then lowest easeFactor, then lowest repetition)
-  const byWeakness = [...pool].sort((a, b) => {
+  const byWeakness = [...available].sort((a, b) => {
     const sa = getSrs(a.id);
     const sb = getSrs(b.id);
     const intervalDiff = (sa?.interval ?? 0) - (sb?.interval ?? 0);
@@ -221,28 +206,64 @@ export function selectSmartReviewBatch(
   takeFromSorted(byWeakness, weakTarget);
 
   // Tier 2: Due soonest (earliest nextReview)
-  const bySoonestDue = [...pool].sort(
+  const bySoonestDue = [...available].sort(
     (a, b) => (getSrs(a.id)?.nextReview ?? 0) - (getSrs(b.id)?.nextReview ?? 0)
   );
   takeFromSorted(bySoonestDue, soonTarget);
 
   // Tier 3: Random long-term refresh
-  const leftovers = shuffleItems(pool.filter((i) => !picked.has(i.id)));
+  const leftovers = shuffleItems(available.filter((i) => !picked.has(i.id)));
   for (const item of leftovers.slice(0, refreshTarget)) {
     picked.add(item.id);
     selected.push(item);
   }
 
-  // Top up if any tier had fewer items than its target
   if (selected.length < targetCount) {
-    const extra = shuffleItems(pool.filter((i) => !picked.has(i.id)));
+    const extra = shuffleItems(available.filter((i) => !picked.has(i.id)));
     for (const item of extra.slice(0, targetCount - selected.length)) {
       picked.add(item.id);
       selected.push(item);
     }
   }
 
-  return { items: shuffleItems(selected), resetCycle };
+  return selected;
+}
+
+/**
+ * Selects an open-review batch using a weighted tiered mix:
+ * - ~50% weakest & newest (lowest interval / easeFactor)
+ * - ~30% due soonest (earliest nextReview)
+ * - ~20% random long-term refresh
+ * Excludes already-reviewed IDs in the current cycle, and if fewer than
+ * `sessionSize` remain, resets the cycle and fills the rest up to `sessionSize`.
+ */
+export function selectSmartReviewBatch(
+  learnedItems: VocabItem[],
+  getSrs: (id: string) => SRSData | undefined,
+  excludeIds: Set<string> = new Set(),
+  sessionSize: number = SESSION_SIZE
+): SmartReviewBatch {
+  if (learnedItems.length === 0) {
+    return { items: [], resetCycle: false };
+  }
+
+  const targetCount = Math.min(sessionSize, learnedItems.length);
+  const remaining = learnedItems.filter((item) => !excludeIds.has(item.id));
+
+  if (remaining.length >= targetCount) {
+    const selected = pickTieredItems(remaining, getSrs, targetCount);
+    return { items: shuffleItems(selected), resetCycle: false };
+  }
+
+  // Take all remaining unreviewed items, then reset cycle and fill up to targetCount
+  const pickedIds = new Set(remaining.map((i) => i.id));
+  const needed = targetCount - remaining.length;
+  const fill = pickTieredItems(learnedItems, getSrs, needed, pickedIds);
+
+  return {
+    items: shuffleItems([...remaining, ...fill]),
+    resetCycle: true,
+  };
 }
 
 export function formatFormEntries(

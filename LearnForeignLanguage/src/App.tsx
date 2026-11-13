@@ -66,7 +66,7 @@ function App() {
     const current = targetCol.srsData[itemId];
     // Protect SRS intervals: extra same-day practice on future-scheduled items
     // does not inflate or reset their scheduled review interval.
-    if (!shouldUpdateSrsOnGrade(current)) {
+    if (!shouldUpdateSrsOnGrade(current, grade)) {
       return;
     }
 

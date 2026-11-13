@@ -258,30 +258,16 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
     onGradeItem(gradedId, grade);
 
     if (filter === 'all') {
-      if (grade < 3 && queue.length > 1) {
-        setCardIndex((prev) => (prev + 1) % queue.length);
-      } else if (grade >= 3) {
-        setCardIndex((prev) => (prev + 1 < queue.length ? prev + 1 : 0));
-      }
+      setCardIndex((prev) => (prev + 1 < queue.length ? prev + 1 : 0));
       return;
     }
 
-    if (grade < 3) {
-      setSessionIds((prev) => {
-        const rest = prev.filter((id) => id !== gradedId);
-        return [...rest, gradedId];
-      });
-      if (sessionIds.length > 1 && safeIndex >= sessionIds.length - 1) {
-        setCardIndex(0);
-      }
-    } else {
-      if (filter === 'review') {
-        setReviewedCycleIds((prev) =>
-          prev.includes(gradedId) ? prev : [...prev, gradedId]
-        );
-      }
-      completeSessionItem(gradedId);
+    if (filter === 'review' && grade >= 3) {
+      setReviewedCycleIds((prev) =>
+        prev.includes(gradedId) ? prev : [...prev, gradedId]
+      );
     }
+    completeSessionItem(gradedId);
   };
 
   const handleWellKnown = () => {
@@ -341,33 +327,24 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   );
 
   const gradeOptions = [
-    { label: 'Need More Practice', grade: 1, cls: 'grade-again' },
-    { label: 'I Know It', grade: 4, cls: 'grade-good' },
+    { label: 'Show it more', grade: 1, cls: 'grade-again' },
+    { label: 'Show it less', grade: 4, cls: 'grade-good' },
   ].map((opt) => ({
     ...opt,
     intervalText:
-      status === 'future'
-        ? opt.grade === 1
-          ? 'practice again'
-          : `keep ${daysUntilDue}d`
+      status === 'future' && opt.grade >= 3
+        ? `keep ${daysUntilDue}d`
         : `${calculateNextReview(currentSrs, opt.grade).interval}d`,
   }));
 
   const learnedCount = useMemo(
     () =>
-      Object.values(phraseSrs).filter((s) => s.repetition > 0).length +
-      Object.values(vocabSrs).filter((s) => s.repetition > 0).length,
+      Object.values(phraseSrs).filter((s) => s.repetition > 0 || s.lastReviewed > 0).length +
+      Object.values(vocabSrs).filter((s) => s.repetition > 0 || s.lastReviewed > 0).length,
     [phraseSrs, vocabSrs]
   );
 
-  const unreviewedInCycle = useMemo(
-    () => reviewPool.filter((i) => !reviewedCycleIds.includes(i.id)).length,
-    [reviewPool, reviewedCycleIds]
-  );
-  const nextReviewBatchCount = Math.min(
-    SESSION_SIZE,
-    unreviewedInCycle > 0 ? unreviewedInCycle : reviewPool.length
-  );
+  const nextReviewBatchCount = Math.min(SESSION_SIZE, reviewPool.length);
 
   const todayCount = todayPool.length;
 
@@ -721,16 +698,14 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
 
           {isRevealed && (
             <div className="recall-grade-bar">
-              {gradeOptions.map((opt, idx) => (
+              {gradeOptions.map((opt) => (
                 <button
                   key={opt.label}
                   type="button"
                   className={`recall-grade-btn ${opt.cls}`}
                   onClick={() => handleGrade(opt.grade)}
                 >
-                  <span className="grade-label">
-                    {opt.label} <kbd className="grade-kbd">{idx + 1}</kbd>
-                  </span>
+                  <span className="grade-label">{opt.label}</span>
                   <span className="grade-interval">{opt.intervalText}</span>
                 </button>
               ))}
