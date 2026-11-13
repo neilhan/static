@@ -1,0 +1,93 @@
+.mini-fretboard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #2b211a 0%, #221913 100%);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mini-two-string-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem 0;
+  border-radius: 10px;
+  border: 2px solid var(--tile-color);
+  background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--tile-color) 18%, transparent) 0%,
+      color-mix(in srgb, var(--tile-color) 14%, transparent) 100%
+    ),
+    linear-gradient(180deg, #2b211a 0%, #221913 100%);
+  overflow: hidden;
+}
+
+.mini-string-row {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.mini-string-row.is-inactive-string {
+  opacity: 0.28;
+}
+
+.mini-string-wire {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, #e5e7eb 0%, #9ca3af 100%);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mini-fret-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1.5px solid rgba(156, 163, 175, 0.55);
+  position: relative;
+  z-index: 2;
+}
+
+.mini-fret-cell:last-child {
+  border-right: none;
+}
+
+.mini-note-dot {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.2rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.mini-note-dot.is-anchor {
+  border: 2.5px solid #fbbf24;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.35);
+}
+
+.mini-note-dot.is-target {
+  border: 2px solid #f8fafc;
+}
+
+.mini-fret-labels {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+

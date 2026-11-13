@@ -1,0 +1,165 @@
+.triads-board-panel {
+  gap: 1.25rem;
+}
+
+.triads-controls-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel-alt);
+}
+
+.triads-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.triads-control-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.triads-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.triads-strings-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.triads-voicings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.9rem;
+}
+
+.triad-voicing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-panel-alt);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.triad-voicing-card:hover {
+  border-color: rgba(78, 205, 196, 0.55);
+  transform: translateY(-1px);
+}
+
+.triad-voicing-card.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(78, 205, 196, 0.35);
+}
+
+.triad-voicing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.triad-inversion-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.triad-fret-badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  color: var(--accent);
+}
+
+.triads-empty-msg {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.triads-legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.triads-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+}
+
+.triads-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.triad-active-chord-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-panel);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.triad-chord-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.triad-chip-remove {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.1rem;
+}
+
+.triad-chip-remove:hover {
+  color: var(--text-primary);
+}
+
+.triad-card-chord-pill {
+  display: inline-block;
+  margin-right: 0.4rem;
+  padding: 0.08rem 0.42rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
