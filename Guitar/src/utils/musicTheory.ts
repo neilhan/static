@@ -82,6 +82,12 @@ export const PITCH_CLASS_COLORS: Record<number, string> = {
 
 export type TileFilter = 'none' | 'gab-cde' | 'cde-fga' | 'efg-abc' | 'all';
 
+export interface TileBlockRow {
+  stringIndex: number;
+  startFret: number;
+  endFret: number;
+}
+
 export interface TileBlock {
   id: string;
   tileId: Exclude<TileFilter, 'none' | 'all'>;
@@ -91,6 +97,11 @@ export interface TileBlock {
   bottomStringIndex: number;
   startFret: number;
   endFret: number;
+  topStartFret?: number;
+  topEndFret?: number;
+  bottomStartFret?: number;
+  bottomEndFret?: number;
+  rowBounds?: TileBlockRow[];
 }
 
 export interface TileDefinition {
@@ -104,6 +115,10 @@ export interface TileDefinition {
     bottomStringIndex: number;
     startFret: number;
     endFret: number;
+    topStartFret?: number;
+    topEndFret?: number;
+    bottomStartFret?: number;
+    bottomEndFret?: number;
   }>;
 }
 
@@ -118,7 +133,16 @@ export const REPEATING_TILE_DEFS: TileDefinition[] = [
       { topStringIndex: 4, bottomStringIndex: 5, startFret: 3, endFret: 7 },
       { topStringIndex: 3, bottomStringIndex: 4, startFret: 10, endFret: 14 },
       { topStringIndex: 2, bottomStringIndex: 3, startFret: 5, endFret: 9 },
-      { topStringIndex: 1, bottomStringIndex: 2, startFret: 0, endFret: 5 },
+      {
+        topStringIndex: 1,
+        bottomStringIndex: 2,
+        startFret: 0,
+        endFret: 5,
+        topStartFret: 1,
+        topEndFret: 5,
+        bottomStartFret: 0,
+        bottomEndFret: 4,
+      },
       { topStringIndex: 0, bottomStringIndex: 1, startFret: 8, endFret: 12 },
       { topStringIndex: 0, bottomStringIndex: 0, startFret: 3, endFret: 7 },
     ],
@@ -133,7 +157,16 @@ export const REPEATING_TILE_DEFS: TileDefinition[] = [
       { topStringIndex: 4, bottomStringIndex: 5, startFret: 8, endFret: 12 },
       { topStringIndex: 3, bottomStringIndex: 4, startFret: 3, endFret: 7 },
       { topStringIndex: 2, bottomStringIndex: 3, startFret: 10, endFret: 14 },
-      { topStringIndex: 1, bottomStringIndex: 2, startFret: 5, endFret: 10 },
+      {
+        topStringIndex: 1,
+        bottomStringIndex: 2,
+        startFret: 5,
+        endFret: 10,
+        topStartFret: 6,
+        topEndFret: 10,
+        bottomStartFret: 5,
+        bottomEndFret: 9,
+      },
       { topStringIndex: 0, bottomStringIndex: 1, startFret: 1, endFret: 5 },
       { topStringIndex: 0, bottomStringIndex: 0, startFret: 8, endFret: 12 },
     ],
@@ -148,7 +181,16 @@ export const REPEATING_TILE_DEFS: TileDefinition[] = [
       { topStringIndex: 4, bottomStringIndex: 5, startFret: 0, endFret: 3 },
       { topStringIndex: 3, bottomStringIndex: 4, startFret: 7, endFret: 10 },
       { topStringIndex: 2, bottomStringIndex: 3, startFret: 2, endFret: 5 },
-      { topStringIndex: 1, bottomStringIndex: 2, startFret: 9, endFret: 13 },
+      {
+        topStringIndex: 1,
+        bottomStringIndex: 2,
+        startFret: 9,
+        endFret: 13,
+        topStartFret: 10,
+        topEndFret: 13,
+        bottomStartFret: 9,
+        bottomEndFret: 12,
+      },
       { topStringIndex: 0, bottomStringIndex: 1, startFret: 5, endFret: 8 },
       { topStringIndex: 0, bottomStringIndex: 0, startFret: 0, endFret: 3 },
     ],
@@ -175,15 +217,53 @@ export function getTileBlocksForFretboard(
         const clippedStart = Math.max(0, rawStart);
         const clippedEnd = Math.min(maxFret, rawEnd);
         if (clippedStart > clippedEnd) continue;
+
+        let steppedProps: Pick<
+          TileBlock,
+          'topStartFret' | 'topEndFret' | 'bottomStartFret' | 'bottomEndFret'
+        > = {};
+        let topStringIndex = base.topStringIndex;
+        let bottomStringIndex = base.bottomStringIndex;
+
+        if (
+          base.topStartFret !== undefined &&
+          base.topEndFret !== undefined &&
+          base.bottomStartFret !== undefined &&
+          base.bottomEndFret !== undefined
+        ) {
+          const topStart = Math.max(0, base.topStartFret + octaveShift);
+          const topEnd = Math.min(maxFret, base.topEndFret + octaveShift);
+          const bottomStart = Math.max(0, base.bottomStartFret + octaveShift);
+          const bottomEnd = Math.min(maxFret, base.bottomEndFret + octaveShift);
+
+          const hasTop = topStart <= topEnd;
+          const hasBottom = bottomStart <= bottomEnd;
+          if (!hasTop && !hasBottom) continue;
+
+          if (hasTop && hasBottom) {
+            steppedProps = {
+              topStartFret: topStart,
+              topEndFret: topEnd,
+              bottomStartFret: bottomStart,
+              bottomEndFret: bottomEnd,
+            };
+          } else if (hasTop) {
+            bottomStringIndex = topStringIndex;
+          } else {
+            topStringIndex = bottomStringIndex;
+          }
+        }
+
         blocks.push({
           id: `${def.id}-${base.topStringIndex}-${clippedStart}-${octaveShift}`,
           tileId: def.id,
           label: def.label,
           color: def.color,
-          topStringIndex: base.topStringIndex,
-          bottomStringIndex: base.bottomStringIndex,
+          topStringIndex,
+          bottomStringIndex,
           startFret: clippedStart,
           endFret: clippedEnd,
+          ...steppedProps,
         });
       }
     }
@@ -671,7 +751,7 @@ export function getPentatonicBoxes(
   return boxes;
 }
 
-export type PentatonicShiftGroup = 'even' | 'odd';
+export type PentatonicShiftGroup = 'all' | 'even' | 'odd';
 export type PentatonicShiftShape = '2-3' | '3-2';
 
 export function getPentatonicOctaveShiftBlocks(
@@ -693,22 +773,33 @@ export function getPentatonicOctaveShiftBlocks(
   const color = shape === '2-3' ? '#06b6d4' : '#a855f7';
   const labelPrefix = shape === '2-3' ? '2+3' : '3+2';
 
+  const evenPairs = [
+    { topS: 4, botS: 5, shiftLabel: 'Base', targetShift: 0 },
+    { topS: 2, botS: 3, shiftLabel: '+2 frets', targetShift: 2 },
+    { topS: 0, botS: 1, shiftLabel: '+3 frets (B-shift)', targetShift: 5 },
+  ];
+  const oddPairs = [
+    { topS: 3, botS: 4, shiftLabel: 'Base', targetShift: 0 },
+    { topS: 1, botS: 2, shiftLabel: '+3 frets (B-shift)', targetShift: 3 },
+  ];
+
   const pairs: Array<{
     topS: number;
     botS: number;
     shiftLabel: string;
     targetShift: number;
   }> =
-    group === 'even'
+    group === 'all'
       ? [
-          { topS: 4, botS: 5, shiftLabel: 'Base', targetShift: 0 },
-          { topS: 2, botS: 3, shiftLabel: '+2 frets', targetShift: 2 },
-          { topS: 0, botS: 1, shiftLabel: '+3 frets (B-shift)', targetShift: 5 },
+          evenPairs[0],
+          oddPairs[0],
+          evenPairs[1],
+          oddPairs[1],
+          evenPairs[2],
         ]
-      : [
-          { topS: 3, botS: 4, shiftLabel: 'Base', targetShift: 0 },
-          { topS: 1, botS: 2, shiftLabel: '+3 frets (B-shift)', targetShift: 3 },
-        ];
+      : group === 'even'
+        ? evenPairs
+        : oddPairs;
 
   const getPcAtVirtualFret = (openPc: number, fret: number): number =>
     (((openPc + fret) % 12) + 12) % 12;
@@ -737,6 +828,10 @@ export function getPentatonicOctaveShiftBlocks(
 
       let startFret = f;
       let endFret = f;
+      let rawTopStart = f;
+      let rawTopEnd = f;
+      let rawBotStart = f;
+      let rawBotEnd = f;
 
       if (shape === '2-3') {
         const fLow1 = f;
@@ -750,8 +845,12 @@ export function getPentatonicOctaveShiftBlocks(
         const fUp3 = findNextFret(pair.topS, fUp2 + 1, threePc);
         if (fUp3 === -999) continue;
 
-        startFret = Math.min(fLow1, fUp1);
-        endFret = Math.max(fLow2, fUp3);
+        rawBotStart = fLow1;
+        rawBotEnd = fLow2;
+        rawTopStart = fUp1;
+        rawTopEnd = fUp3;
+        startFret = Math.min(rawBotStart, rawTopStart);
+        endFret = Math.max(rawBotEnd, rawTopEnd);
       } else {
         const fLow1 = f;
         const fLow2 = findNextFret(pair.botS, fLow1 + 1, twoPc);
@@ -764,16 +863,55 @@ export function getPentatonicOctaveShiftBlocks(
         const fUp2 = findNextFret(pair.topS, fUp1 + 1, sixPc);
         if (fUp2 === -999) continue;
 
-        startFret = Math.min(fLow1, fUp1);
-        endFret = Math.max(fLow3, fUp2);
+        rawBotStart = fLow1;
+        rawBotEnd = fLow3;
+        rawTopStart = fUp1;
+        rawTopEnd = fUp2;
+        startFret = Math.min(rawBotStart, rawTopStart);
+        endFret = Math.max(rawBotEnd, rawTopEnd);
       }
 
       if (endFret - startFret > 5) continue;
       if (endFret < 0 || startFret > maxFret) continue;
 
-      const clippedStart = Math.max(0, startFret);
-      const clippedEnd = Math.min(maxFret, endFret);
-      const dedupeKey = `${pair.topS}-${pair.botS}-${clippedStart}-${clippedEnd}`;
+      const clampRow = (rowStart: number, rowEnd: number) => {
+        if (rowEnd < 0 || rowStart > maxFret) return undefined;
+        return {
+          start: Math.max(0, rowStart),
+          end: Math.min(maxFret, rowEnd),
+        };
+      };
+      const topBounds = clampRow(rawTopStart, rawTopEnd);
+      const botBounds = clampRow(rawBotStart, rawBotEnd);
+      if (!topBounds && !botBounds) continue;
+
+      let topStringIndex = pair.topS;
+      let bottomStringIndex = pair.botS;
+      let clippedStart = Math.max(0, startFret);
+      let clippedEnd = Math.min(maxFret, endFret);
+      let steppedProps: Pick<
+        TileBlock,
+        'topStartFret' | 'topEndFret' | 'bottomStartFret' | 'bottomEndFret'
+      > = {};
+
+      if (topBounds && botBounds) {
+        steppedProps = {
+          topStartFret: topBounds.start,
+          topEndFret: topBounds.end,
+          bottomStartFret: botBounds.start,
+          bottomEndFret: botBounds.end,
+        };
+      } else if (topBounds) {
+        bottomStringIndex = pair.topS;
+        clippedStart = topBounds.start;
+        clippedEnd = topBounds.end;
+      } else if (botBounds) {
+        topStringIndex = pair.botS;
+        clippedStart = botBounds.start;
+        clippedEnd = botBounds.end;
+      }
+
+      const dedupeKey = `${topStringIndex}-${bottomStringIndex}-${clippedStart}-${clippedEnd}`;
       if (seen.has(dedupeKey)) continue;
       seen.add(dedupeKey);
 
@@ -782,11 +920,58 @@ export function getPentatonicOctaveShiftBlocks(
         tileId: 'gab-cde',
         label: `${labelPrefix} (${pair.shiftLabel})`,
         color,
-        topStringIndex: pair.topS,
-        bottomStringIndex: pair.botS,
+        topStringIndex,
+        bottomStringIndex,
         startFret: clippedStart,
         endFret: clippedEnd,
+        ...steppedProps,
       });
+    }
+  }
+
+  // Include cut-off edge tiles on String 6 (bottom edge) and String 1 (top edge)
+  if (group === 'all' && tuningStrings.length >= 2) {
+    const edgeSpecs: Array<{
+      stringIndex: number;
+      startPc: number;
+      span: number;
+    }> = [
+      {
+        stringIndex: tuningStrings.length - 1,
+        startPc: shape === '2-3' ? rPc : fivePc,
+        span: shape === '2-3' ? 4 : 2,
+      },
+      {
+        stringIndex: 0,
+        startPc: shape === '2-3' ? fivePc : rPc,
+        span: shape === '2-3' ? 2 : 4,
+      },
+    ];
+
+    for (const edge of edgeSpecs) {
+      const openPc = tuningStrings[edge.stringIndex];
+      for (let f = -edge.span; f <= maxFret; f++) {
+        if (getPcAtVirtualFret(openPc, f) !== edge.startPc) continue;
+        const rawStart = f;
+        const rawEnd = f + edge.span;
+        if (rawEnd < 0 || rawStart > maxFret) continue;
+        const clippedStart = Math.max(0, rawStart);
+        const clippedEnd = Math.min(maxFret, rawEnd);
+        const dedupeKey = `${edge.stringIndex}-${edge.stringIndex}-${clippedStart}-${clippedEnd}`;
+        if (seen.has(dedupeKey)) continue;
+        seen.add(dedupeKey);
+
+        blocks.push({
+          id: `pent-shift-${shape}-edge-${dedupeKey}`,
+          tileId: 'gab-cde',
+          label: `${labelPrefix} (Edge)`,
+          color,
+          topStringIndex: edge.stringIndex,
+          bottomStringIndex: edge.stringIndex,
+          startFret: clippedStart,
+          endFret: clippedEnd,
+        });
+      }
     }
   }
 

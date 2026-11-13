@@ -42,7 +42,7 @@ export const PentatonicBoard: React.FC<PentatonicBoardProps> = ({
   const [viewMode, setViewMode] = useState<PentatonicViewMode>('boxes');
   const [selectedPattern, setSelectedPattern] = useState<1 | 2 | 3 | 4 | 5 | 'all'>(1);
   const [shiftShape, setShiftShape] = useState<PentatonicShiftShape>('2-3');
-  const [shiftGroup, setShiftGroup] = useState<PentatonicShiftGroup>('even');
+  const [shiftGroup, setShiftGroup] = useState<PentatonicShiftGroup>('all');
   const [labelMode, setLabelMode] = useState<LabelDisplayMode>('notes');
 
   const def = PENTATONIC_DEFINITIONS[mode];
@@ -84,6 +84,13 @@ export const PentatonicBoard: React.FC<PentatonicBoardProps> = ({
       bottomStringIndex: 5,
       startFret: b.minFret,
       endFret: b.maxFret,
+      rowBounds: [...b.stringFrets]
+        .sort((a, c) => a.stringIndex - c.stringIndex)
+        .map((sf) => ({
+          stringIndex: sf.stringIndex,
+          startFret: sf.frets[0],
+          endFret: sf.frets[1],
+        })),
     }));
   }, [
     viewMode,
@@ -269,6 +276,13 @@ export const PentatonicBoard: React.FC<PentatonicBoardProps> = ({
 
           {viewMode === 'shifts' && (
             <div className="chord-study-pill-row" style={{ marginTop: '0.25rem' }}>
+              <button
+                type="button"
+                className={`toggle-btn ${shiftGroup === 'all' ? 'active' : ''}`}
+                onClick={() => setShiftGroup('all')}
+              >
+                All 2-String Pairs (+ Edge Tiles)
+              </button>
               <button
                 type="button"
                 className={`toggle-btn ${shiftGroup === 'even' ? 'active' : ''}`}

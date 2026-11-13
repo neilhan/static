@@ -61,6 +61,12 @@ interface TileBlockRect {
   height: number;
 }
 
+interface SteppedTileOverlay {
+  id: string;
+  points: string;
+  color: string;
+}
+
 interface TriadShapeOverlay {
   id: string;
   points: string;
@@ -101,6 +107,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
   const neckRef = useRef<HTMLDivElement>(null);
   const [segments, setSegments] = useState<ConnectionSegment[]>([]);
   const [tileBlockRects, setTileBlockRects] = useState<TileBlockRect[]>([]);
+  const [steppedTiles, setSteppedTiles] = useState<SteppedTileOverlay[]>([]);
   const [triadShapes, setTriadShapes] = useState<TriadShapeOverlay[]>([]);
 
   const selectedPitchClasses = React.useMemo(() => {
@@ -191,8 +198,90 @@ export const Fretboard: React.FC<FretboardProps> = ({
           ...overlayBlocks,
         ];
         const nextRects: TileBlockRect[] = [];
+        const nextStepped: SteppedTileOverlay[] = [];
 
         blocks.forEach((block) => {
+          const rows =
+            block.rowBounds && block.rowBounds.length > 0
+              ? block.rowBounds
+              : block.topStartFret !== undefined &&
+                  block.topEndFret !== undefined &&
+                  block.bottomStartFret !== undefined &&
+                  block.bottomEndFret !== undefined
+                ? [
+                    {
+                      stringIndex: block.topStringIndex,
+                      startFret: block.topStartFret,
+                      endFret: block.topEndFret,
+                    },
+                    {
+                      stringIndex: block.bottomStringIndex,
+                      startFret: block.bottomStartFret,
+                      endFret: block.bottomEndFret,
+                    },
+                  ]
+                : null;
+
+          if (rows) {
+            const measured = rows.map((row) => {
+              const leftEl = neck.querySelector<HTMLElement>(
+                `[data-string-index="${row.stringIndex}"][data-fret="${row.startFret}"]`
+              );
+              const rightEl = neck.querySelector<HTMLElement>(
+                `[data-string-index="${row.stringIndex}"][data-fret="${row.endFret}"]`
+              );
+              if (!leftEl || !rightEl) return null;
+              const lRect = leftEl.getBoundingClientRect();
+              const rRect = rightEl.getBoundingClientRect();
+              return {
+                leftX: lRect.left - neckRect.left + 3,
+                rightX: rRect.right - neckRect.left - 8,
+                topY: lRect.top - neckRect.top,
+                botY: lRect.bottom - neckRect.top,
+              };
+            });
+
+            if (measured.some((m) => m === null)) return;
+            const validRows = measured as Array<{
+              leftX: number;
+              rightX: number;
+              topY: number;
+              botY: number;
+            }>;
+
+            const n = validRows.length;
+            const pts: string[] = [
+              `${validRows[0].leftX},${validRows[0].topY + 3}`,
+              `${validRows[0].rightX},${validRows[0].topY + 3}`,
+            ];
+
+            for (let i = 0; i < n - 1; i++) {
+              const midY = (validRows[i].botY + validRows[i + 1].topY) / 2;
+              if (Math.abs(validRows[i].rightX - validRows[i + 1].rightX) > 0.5) {
+                pts.push(`${validRows[i].rightX},${midY}`);
+                pts.push(`${validRows[i + 1].rightX},${midY}`);
+              }
+            }
+
+            pts.push(`${validRows[n - 1].rightX},${validRows[n - 1].botY - 3}`);
+            pts.push(`${validRows[n - 1].leftX},${validRows[n - 1].botY - 3}`);
+
+            for (let i = n - 1; i > 0; i--) {
+              const midY = (validRows[i - 1].botY + validRows[i].topY) / 2;
+              if (Math.abs(validRows[i].leftX - validRows[i - 1].leftX) > 0.5) {
+                pts.push(`${validRows[i].leftX},${midY}`);
+                pts.push(`${validRows[i - 1].leftX},${midY}`);
+              }
+            }
+
+            nextStepped.push({
+              id: block.id,
+              points: pts.join(' '),
+              color: block.color,
+            });
+            return;
+          }
+
           const topLeft = neck.querySelector<HTMLElement>(
             `[data-string-index="${block.topStringIndex}"][data-fret="${block.startFret}"]`
           );
@@ -209,14 +298,16 @@ export const Fretboard: React.FC<FretboardProps> = ({
             color: block.color,
             left: tlRect.left - neckRect.left + 3,
             top: tlRect.top - neckRect.top + 3,
-            width: brRect.right - tlRect.left - 6,
+            width: brRect.right - tlRect.left - 11,
             height: brRect.bottom - tlRect.top - 6,
           });
         });
 
         setTileBlockRects(nextRects);
+        setSteppedTiles(nextStepped);
       } else {
         setTileBlockRects((prev) => (prev.length === 0 ? prev : []));
+        setSteppedTiles((prev) => (prev.length === 0 ? prev : []));
       }
 
       if (shouldComputeTriads) {
@@ -304,8 +395,19 @@ export const Fretboard: React.FC<FretboardProps> = ({
               aria-hidden="true"
             />
           ))}
-          {(segments.length > 0 || triadShapes.length > 0) && (
+          {(segments.length > 0 || triadShapes.length > 0 || steppedTiles.length > 0) && (
             <svg className="fretboard-lines-svg" aria-hidden="true">
+              {steppedTiles.map((tile) => (
+                <polygon
+                  key={`step-${tile.id}`}
+                  points={tile.points}
+                  fill={tile.color}
+                  fillOpacity={0.14}
+                  stroke={tile.color}
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                />
+              ))}
               {triadShapes.map((shape) => (
                 <g key={`triad-${shape.id}`} opacity={shape.isDimmed ? 0.2 : 0.95}>
                   <polygon

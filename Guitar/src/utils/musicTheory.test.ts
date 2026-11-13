@@ -45,7 +45,16 @@ describe('musicTheory', () => {
         expect.objectContaining({ topStringIndex: 3, bottomStringIndex: 4, startFret: 0, endFret: 2 }),
         expect.objectContaining({ topStringIndex: 3, bottomStringIndex: 4, startFret: 10, endFret: 14 }),
         expect.objectContaining({ topStringIndex: 2, bottomStringIndex: 3, startFret: 5, endFret: 9 }),
-        expect.objectContaining({ topStringIndex: 1, bottomStringIndex: 2, startFret: 0, endFret: 5 }),
+        expect.objectContaining({
+          topStringIndex: 1,
+          bottomStringIndex: 2,
+          startFret: 0,
+          endFret: 5,
+          topStartFret: 1,
+          topEndFret: 5,
+          bottomStartFret: 0,
+          bottomEndFret: 4,
+        }),
         expect.objectContaining({ topStringIndex: 1, bottomStringIndex: 2, startFret: 12, endFret: 15 }),
         expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 1, startFret: 0, endFret: 0 }),
         expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 1, startFret: 8, endFret: 12 }),
@@ -184,6 +193,24 @@ describe('musicTheory', () => {
         expect.objectContaining({ topStringIndex: 4, bottomStringIndex: 5, startFret: 8, endFret: 12 }),
         expect.objectContaining({ topStringIndex: 2, bottomStringIndex: 3, startFret: 10, endFret: 14 }),
         expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 1, startFret: 1, endFret: 5 }),
+      ])
+    );
+
+    // 'all' includes every 2-string pair (S6-5..S2-1) plus S6 & S1 cut-off edge tiles
+    const cMajorShiftsAll23 = getPentatonicOctaveShiftBlocks(
+      standard.strings,
+      15,
+      0,
+      'major',
+      '2-3',
+      'all'
+    );
+    expect(cMajorShiftsAll23).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ topStringIndex: 5, bottomStringIndex: 5, startFret: 8, endFret: 12 }),
+        expect.objectContaining({ topStringIndex: 3, bottomStringIndex: 4, startFret: 10, endFret: 14 }),
+        expect.objectContaining({ topStringIndex: 1, bottomStringIndex: 2, startFret: 0, endFret: 5 }),
+        expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 0, startFret: 3, endFret: 5 }),
       ])
     );
   });
