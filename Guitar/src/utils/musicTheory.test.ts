@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { getFretMidi, midiToFreq } from './guitarAudio';
 import {
   formatPitchClass,
   getFretPitchClass,
@@ -213,6 +214,16 @@ describe('musicTheory', () => {
         expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 0, startFret: 3, endFret: 5 }),
       ])
     );
+  });
+
+  it('computes accurate MIDI pitch and frequency for standard and alternate tunings', () => {
+    // Standard tuning: S6 open = E2 (40), S1 open = E4 (64), S1 F5 = A4 (69 = 440Hz)
+    expect(getFretMidi(4, 5, 0)).toBe(40);
+    expect(getFretMidi(4, 0, 0)).toBe(64);
+    expect(getFretMidi(4, 0, 5)).toBe(69);
+    expect(midiToFreq(69)).toBeCloseTo(440, 5);
+    // Drop D: S6 open = D2 (38)
+    expect(getFretMidi(2, 5, 0)).toBe(38);
   });
 });
 

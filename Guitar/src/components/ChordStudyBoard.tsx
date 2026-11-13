@@ -16,6 +16,11 @@ import {
   TriadQuality,
   TriadVoicing,
 } from '../utils/musicTheory';
+import {
+  playArpeggioThenChord,
+  playChordNotes,
+  playFretNote,
+} from '../utils/guitarAudio';
 import { Fretboard, FretMarker, makeFretKey } from './Fretboard';
 import { MiniFretboard, MiniFretNote } from './MiniFretboard';
 import { SectionHeader } from './SectionHeader';
@@ -422,6 +427,25 @@ export const ChordStudyBoard: React.FC<ChordStudyBoardProps> = ({
         }
         actions={
           <>
+            {voicings.length > 0 && (
+              <button
+                type="button"
+                className="toggle-btn"
+                onClick={() => {
+                  const target = activeVoicing ?? voicings[0];
+                  if (!target) return;
+                  playChordNotes(
+                    target.notes.map((n) => ({
+                      openPc: strings[n.stringIndex],
+                      stringIndex: n.stringIndex,
+                      fret: n.fret,
+                    }))
+                  );
+                }}
+              >
+                Play Chord
+              </button>
+            )}
             {cfg.showRootInBassToggle && (
               <button
                 type="button"
@@ -667,6 +691,29 @@ export const ChordStudyBoard: React.FC<ChordStudyBoardProps> = ({
         triadVoicings={voicings}
         activeTriadVoicingId={activeVoicingId}
         selectedFrets={selectedFrets}
+        playSoundOnClick={false}
+        onToggleFret={(stringIndex, fret) => {
+          const matchingVoicing =
+            (activeVoicing?.notes.some(
+              (n) => n.stringIndex === stringIndex && n.fret === fret
+            )
+              ? activeVoicing
+              : undefined) ??
+            voicings.find((v) =>
+              v.notes.some((n) => n.stringIndex === stringIndex && n.fret === fret)
+            );
+          if (matchingVoicing) {
+            playArpeggioThenChord(
+              matchingVoicing.notes.map((n) => ({
+                openPc: strings[n.stringIndex],
+                stringIndex: n.stringIndex,
+                fret: n.fret,
+              }))
+            );
+            return;
+          }
+          playFretNote(strings[stringIndex], stringIndex, fret);
+        }}
         getMarker={getChordMarker}
       />
 
@@ -708,11 +755,21 @@ export const ChordStudyBoard: React.FC<ChordStudyBoardProps> = ({
                 key={voicing.id}
                 type="button"
                 className={`chord-voicing-card ${isSelected ? 'is-active' : ''}`}
-                onClick={() =>
+                onClick={() => {
+                  const isDeselecting = activeVoicingId === voicing.id;
+                  if (!isDeselecting) {
+                    playChordNotes(
+                      voicing.notes.map((n) => ({
+                        openPc: strings[n.stringIndex],
+                        stringIndex: n.stringIndex,
+                        fret: n.fret,
+                      }))
+                    );
+                  }
                   setActiveVoicingId((prev) =>
                     prev === voicing.id ? null : voicing.id
-                  )
-                }
+                  );
+                }}
               >
                 <div className="chord-voicing-header">
                   <span className="chord-inversion-title">

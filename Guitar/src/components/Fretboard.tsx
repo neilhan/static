@@ -13,6 +13,7 @@ import {
   TileFilter,
   TriadVoicing,
 } from '../utils/musicTheory';
+import { playFretNote } from '../utils/guitarAudio';
 import './Fretboard.css';
 
 export type MarkerBorderKind = 'root' | 'solid' | 'dashed' | 'selected' | 'muted';
@@ -38,6 +39,7 @@ interface FretboardProps {
   triadVoicings?: Array<TriadVoicing | SeventhVoicing>;
   activeTriadVoicingId?: string | null;
   selectedFrets: Set<string>;
+  playSoundOnClick?: boolean;
   getMarker?: (stringIndex: number, fret: number, pitchClass: number) => FretMarker | null;
   onToggleFret?: (stringIndex: number, fret: number, pitchClass: number) => void;
 }
@@ -100,6 +102,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
   triadVoicings = EMPTY_TRIAD_VOICINGS,
   activeTriadVoicingId = null,
   selectedFrets,
+  playSoundOnClick = true,
   getMarker,
   onToggleFret,
 }) => {
@@ -508,7 +511,12 @@ export const Fretboard: React.FC<FretboardProps> = ({
                       data-string-index={stringIndex}
                       data-fret={fret}
                       className={`fret-cell ${fret === 0 ? 'is-nut' : ''}`}
-                      onClick={() => onToggleFret?.(stringIndex, fret, pc)}
+                      onClick={() => {
+                        if (playSoundOnClick) {
+                          playFretNote(openPc, stringIndex, fret);
+                        }
+                        onToggleFret?.(stringIndex, fret, pc);
+                      }}
                       title={`String ${stringIndex + 1} (${openLabel}), Fret ${fret}: ${noteLabel}`}
                       aria-label={`String ${stringIndex + 1} fret ${fret} ${noteLabel}`}
                       aria-pressed={isSelected}

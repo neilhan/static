@@ -483,6 +483,7 @@ export const SHELL_STRING_SETS: Array<{
   label: string;
   strings: [number, number, number];
 }> = [
+  { id: '1-2-3', label: 'S1–2–3 (G-string root)', strings: [0, 1, 2] },
   { id: '2-3-4', label: 'S2–3–4 (D-string root)', strings: [1, 2, 3] },
   { id: '2-3-5', label: 'S2–3–5 (A-string skip)', strings: [1, 2, 4] },
   { id: '3-4-5', label: 'S3–4–5 (A-string root)', strings: [2, 3, 4] },

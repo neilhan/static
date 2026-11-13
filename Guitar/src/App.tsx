@@ -7,6 +7,11 @@ import { RepeatingTilesBoard } from "./components/RepeatingTilesBoard";
 import { ChordStudyBoard } from "./components/ChordStudyBoard";
 import { PentatonicBoard } from "./components/PentatonicBoard";
 import {
+  isSoundEnabled,
+  playChordNotes,
+  setSoundEnabled,
+} from "./utils/guitarAudio";
+import {
   AccidentalMode,
   formatPitchClass,
   getFretPitchClass,
@@ -17,8 +22,17 @@ import {
 const FRET_COUNTS = [12, 15, 22];
 
 type AccidentalDisplay = "off" | "sharp" | "flat";
+type StudyTab = "fretboard" | "triads" | "shells" | "pentatonic";
+
+const STUDY_TABS: Array<{ id: StudyTab; label: string }> = [
+  { id: "fretboard", label: "Fretboard & Tiles" },
+  { id: "triads", label: "Triads" },
+  { id: "shells", label: "7th Shell Chords" },
+  { id: "pentatonic", label: "Pentatonic Scales" },
+];
 
 function App() {
+  const [activeTab, setActiveTab] = useState<StudyTab>("fretboard");
   const [tuningId, setTuningId] = useState<string>(TUNING_PRESETS[0].id);
   const [maxFret, setMaxFret] = useState<number>(15);
   const [accidentalDisplay, setAccidentalDisplay] = useState<AccidentalDisplay>("off");
@@ -28,6 +42,15 @@ function App() {
   const [tileFilter, setTileFilter] = useState<TileFilter>("gab-cde");
   const [lastTileFilter, setLastTileFilter] = useState<Exclude<TileFilter, "none">>("gab-cde");
   const [selectedFrets, setSelectedFrets] = useState<Set<string>>(() => new Set());
+  const [soundOn, setSoundOn] = useState<boolean>(() => isSoundEnabled());
+
+  const handleToggleSound = () => {
+    setSoundOn((prev) => {
+      const next = !prev;
+      setSoundEnabled(next);
+      return next;
+    });
+  };
 
   const handleSelectTile = (next: TileFilter) => {
     setTileFilter(next);
@@ -124,12 +147,34 @@ function App() {
               />
             </a>
             <span className="breadcrumb-separator">/</span>
+            <img
+              src={`${import.meta.env.BASE_URL ?? "./"}guitar.svg`}
+              alt="Guitar icon"
+              width="32"
+              height="32"
+              className="header-app-icon"
+            />
             <h1>Guitar Fretboard Lookup</h1>
           </div>
         </header>
 
-        <main className="panel guitar-main">
-          <div className="fretboard-toolbar">
+        <div className="study-tabs-bar">
+          <div className="study-tabs" role="tablist" aria-label="Study sections">
+            {STUDY_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                className={`study-tab ${activeTab === tab.id ? "active" : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="study-global-controls">
             <label className="toolbar-field">
               <span>Tuning</span>
               <select
@@ -158,7 +203,22 @@ function App() {
               </select>
             </label>
 
-            <div className="toolbar-pills">
+            <button
+              type="button"
+              className={`pill-btn ${soundOn ? "active" : ""}`}
+              onClick={handleToggleSound}
+              title="Toggle guitar audio playback across all sections"
+            >
+              {soundOn ? "Sound: On" : "Sound: Off"}
+            </button>
+          </div>
+        </div>
+
+        {activeTab === "fretboard" && (
+          <>
+            <main className="panel guitar-main">
+              <div className="fretboard-toolbar">
+                <div className="toolbar-pills">
               <button
                 type="button"
                 className={`pill-btn ${showAllNotes ? "active" : ""}`}
@@ -195,13 +255,38 @@ function App() {
                 {tileFilter !== "none" ? "Tiles: On" : "Tiles: Off"}
               </button>
               {selectedFrets.size > 0 && (
-                <button
-                  type="button"
-                  className="pill-btn"
-                  onClick={() => setSelectedFrets(new Set())}
-                >
-                  Clear ({selectedFrets.size})
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="pill-btn active"
+                    onClick={() => {
+                      const notes = Array.from(selectedFrets)
+                        .map((key) => {
+                          const [sStr, fStr] = key.split(":");
+                          const stringIndex = Number(sStr);
+                          const fret = Number(fStr);
+                          const openPc = activeTuning.strings[stringIndex];
+                          return openPc === undefined
+                            ? null
+                            : { openPc, stringIndex, fret };
+                        })
+                        .filter(
+                          (n): n is { openPc: number; stringIndex: number; fret: number } =>
+                            n !== null
+                        );
+                      playChordNotes(notes, 0.08);
+                    }}
+                  >
+                    Play Selected
+                  </button>
+                  <button
+                    type="button"
+                    className="pill-btn"
+                    onClick={() => setSelectedFrets(new Set())}
+                  >
+                    Clear ({selectedFrets.size})
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -234,45 +319,47 @@ function App() {
                 ))}
               </div>
             )}
-          </div>
-        </main>
+              </div>
+            </main>
 
-        <div style={{ marginTop: "1.5rem" }}>
-          <RepeatingTilesBoard
-            accidentals={accidentals}
-            selectedPitchClasses={activePitchClass !== null ? [activePitchClass] : []}
-            activeSet={activePatternSet}
-            onSelectSet={handleSelectPatternSet}
-            tileFilter={tileFilter}
-            onSelectTile={handleSelectTile}
-          />
-        </div>
+            <div style={{ marginTop: "1.5rem" }}>
+              <RepeatingTilesBoard
+                accidentals={accidentals}
+                selectedPitchClasses={activePitchClass !== null ? [activePitchClass] : []}
+                activeSet={activePatternSet}
+                onSelectSet={handleSelectPatternSet}
+                tileFilter={tileFilter}
+                onSelectTile={handleSelectTile}
+              />
+            </div>
+          </>
+        )}
 
-        <div style={{ marginTop: "1.5rem" }}>
+        {activeTab === "triads" && (
           <ChordStudyBoard
             mode="triad"
             strings={activeTuning.strings}
             maxFret={maxFret}
             accidentals={accidentals}
           />
-        </div>
+        )}
 
-        <div style={{ marginTop: "1.5rem" }}>
+        {activeTab === "shells" && (
           <ChordStudyBoard
             mode="shell"
             strings={activeTuning.strings}
             maxFret={maxFret}
             accidentals={accidentals}
           />
-        </div>
+        )}
 
-        <div style={{ marginTop: "1.5rem" }}>
+        {activeTab === "pentatonic" && (
           <PentatonicBoard
             strings={activeTuning.strings}
             maxFret={maxFret}
             accidentals={accidentals}
           />
-        </div>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import {
   REPEATING_TILE_DEFS,
   TileFilter,
 } from '../utils/musicTheory';
+import { playSequence } from '../utils/guitarAudio';
 import { PatternFilter } from './Fretboard';
 import { MiniFretboard, MiniFretNote } from './MiniFretboard';
 import { SectionHeader } from './SectionHeader';
@@ -21,6 +22,12 @@ interface RepeatingTilesBoardProps {
 }
 
 const TILE_COLS = [0, 1, 2, 3, 4];
+
+const TILE_MIDI_SEQUENCES: Record<Exclude<TileFilter, 'none' | 'all'>, number[]> = {
+  'gab-cde': [43, 45, 47, 48, 50, 52],
+  'cde-fga': [48, 50, 52, 53, 55, 57],
+  'efg-abc': [40, 41, 43, 45, 47, 48],
+};
 
 const TILE_MINI_PATTERNS: Record<
   Exclude<TileFilter, 'none' | 'all'>,
@@ -146,6 +153,16 @@ export const RepeatingTilesBoard: React.FC<RepeatingTilesBoardProps> = ({
               <div className="tile-block-card-footer">
                 <span>Upper: {preview.topLabel}</span>
                 <span>Lower: {preview.bottomLabel}</span>
+                <button
+                  type="button"
+                  className="toggle-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playSequence(TILE_MIDI_SEQUENCES[tile.id], 0.16, 0.7);
+                  }}
+                >
+                  Play
+                </button>
               </div>
             </button>
           );

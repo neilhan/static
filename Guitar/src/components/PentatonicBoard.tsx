@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import {
   AccidentalMode,
   formatPitchClass,
+  getFretPitchClass,
   getPentatonicBoxes,
   getPentatonicDegree,
   getPentatonicOctaveShiftBlocks,
@@ -13,6 +14,7 @@ import {
   PITCH_CLASS_COLORS,
   TileBlock,
 } from '../utils/musicTheory';
+import { getFretMidi, playFretNote, playSequence } from '../utils/guitarAudio';
 import { Fretboard, FretMarker } from './Fretboard';
 import { MiniFretboard, MiniFretNote } from './MiniFretboard';
 import { SectionHeader } from './SectionHeader';
@@ -146,6 +148,35 @@ export const PentatonicBoard: React.FC<PentatonicBoardProps> = ({
           <>
             <button
               type="button"
+              className="toggle-btn"
+              onClick={() => {
+                const activeBox =
+                  viewMode === 'boxes' && selectedPattern !== 'all'
+                    ? cardBoxes[selectedPattern - 1]
+                    : null;
+                if (activeBox) {
+                  const midis = [...activeBox.stringFrets]
+                    .sort((a, b) => b.stringIndex - a.stringIndex)
+                    .flatMap(({ stringIndex, frets }) =>
+                      frets.map((fret) => getFretMidi(strings[stringIndex], stringIndex, fret))
+                    );
+                  playSequence(midis, 0.14, 0.65);
+                  return;
+                }
+                const intervals = [...def.intervals];
+                if (includeBlues) {
+                  intervals.push(mode === 'minor' ? 6 : 3);
+                  intervals.sort((a, b) => a - b);
+                }
+                const baseMidi = 48 + rootPc; // C3..B3 range
+                const midis = [...intervals.map((iv) => baseMidi + iv), baseMidi + 12];
+                playSequence(midis, 0.16, 0.7);
+              }}
+            >
+              Play Scale
+            </button>
+            <button
+              type="button"
               className={`toggle-btn ${includeBlues ? 'active' : ''}`}
               onClick={() => setIncludeBlues((v) => !v)}
             >
@@ -247,7 +278,17 @@ export const PentatonicBoard: React.FC<PentatonicBoardProps> = ({
                       key={num}
                       type="button"
                       className={`toggle-btn ${selectedPattern === num ? 'active' : ''}`}
-                      onClick={() => setSelectedPattern(num)}
+                      onClick={() => {
+                        setSelectedPattern(num);
+                        const targetBox = cardBoxes[num - 1];
+                        if (!targetBox) return;
+                        const midis = [...targetBox.stringFrets]
+                          .sort((a, b) => b.stringIndex - a.stringIndex)
+                          .flatMap(({ stringIndex, frets }) =>
+                            frets.map((fret) => getFretMidi(strings[stringIndex], stringIndex, fret))
+                          );
+                        playSequence(midis, 0.14, 0.65);
+                      }}
                     >
                       Pattern {num}
                     </button>
@@ -323,6 +364,60 @@ export const PentatonicBoard: React.FC<PentatonicBoardProps> = ({
         connectSameNotes={false}
         overlayBlocks={overlayBlocks}
         selectedFrets={EMPTY_FRETS}
+        playSoundOnClick={false}
+        onToggleFret={(stringIndex, fret, pc) => {
+          if (
+            viewMode === 'shifts' &&
+            getPentatonicDegree(pc, rootPc, mode, includeBlues)
+          ) {
+            const getRowRange = (block: TileBlock, sIdx: number): [number, number] | null => {
+              if (sIdx < block.topStringIndex || sIdx > block.bottomStringIndex) return null;
+              if (
+                sIdx === block.topStringIndex &&
+                block.topStartFret !== undefined &&
+                block.topEndFret !== undefined
+              ) {
+                return [block.topStartFret, block.topEndFret];
+              }
+              if (
+                sIdx === block.bottomStringIndex &&
+                block.bottomStartFret !== undefined &&
+                block.bottomEndFret !== undefined
+              ) {
+                return [block.bottomStartFret, block.bottomEndFret];
+              }
+              return [block.startFret, block.endFret];
+            };
+
+            const matchingBlock = overlayBlocks.find((block) => {
+              const range = getRowRange(block, stringIndex);
+              return range !== null && fret >= range[0] && fret <= range[1];
+            });
+
+            if (matchingBlock) {
+              const midis: number[] = [];
+              for (
+                let sIdx = matchingBlock.bottomStringIndex;
+                sIdx >= matchingBlock.topStringIndex;
+                sIdx--
+              ) {
+                const range = getRowRange(matchingBlock, sIdx);
+                if (!range) continue;
+                for (let f = range[0]; f <= range[1]; f++) {
+                  const notePc = getFretPitchClass(strings[sIdx], f);
+                  if (getPentatonicDegree(notePc, rootPc, mode, includeBlues)) {
+                    midis.push(getFretMidi(strings[sIdx], sIdx, f));
+                  }
+                }
+              }
+              if (midis.length > 0) {
+                playSequence(midis, 0.14, 0.65);
+                return;
+              }
+            }
+          }
+          playFretNote(strings[stringIndex], stringIndex, fret);
+        }}
         getMarker={getPentatonicMarker}
       />
 
@@ -362,7 +457,15 @@ export const PentatonicBoard: React.FC<PentatonicBoardProps> = ({
               key={box.id}
               type="button"
               className={`chord-voicing-card ${isSelected ? 'is-active' : ''}`}
-              onClick={() => setSelectedPattern(num)}
+              onClick={() => {
+                setSelectedPattern(num);
+                const midis = [...box.stringFrets]
+                  .sort((a, b) => b.stringIndex - a.stringIndex)
+                  .flatMap(({ stringIndex, frets }) =>
+                    frets.map((fret) => getFretMidi(strings[stringIndex], stringIndex, fret))
+                  );
+                playSequence(midis, 0.14, 0.65);
+              }}
             >
               <div className="chord-voicing-header">
                 <span className="chord-inversion-title">
