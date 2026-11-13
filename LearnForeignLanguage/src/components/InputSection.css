@@ -36,39 +36,3 @@
   background-color: var(--control-bg);
   color: var(--text-primary);
 }
-
-/* Text Input & Overlay */
-.text-input-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.text-input-container label {
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.editor-wrapper {
-  width: 100%;
-}
-
-.conversation-textarea {
-  width: 100%;
-  padding: 1rem;
-  border: 1px solid var(--control-border);
-  border-radius: 12px;
-  font-family: monospace;
-  font-size: 0.95rem;
-  resize: vertical;
-  min-height: 300px;
-  line-height: 1.5;
-  color: var(--text-primary);
-  background-color: var(--control-bg);
-  transition: background-color 0.2s;
-}
-
-.conversation-textarea:focus {
-  outline: 2px solid var(--accent);
-  border-color: transparent;
-}

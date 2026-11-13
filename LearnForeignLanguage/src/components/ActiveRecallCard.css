@@ -323,14 +323,6 @@
   margin: 0;
 }
 
-
-.grade-kbd {
-  font-size: 0.7rem;
-  opacity: 0.65;
-  margin-left: 0.2rem;
-  font-family: inherit;
-}
-
 .recall-nav-row {
   display: flex;
   justify-content: space-between;

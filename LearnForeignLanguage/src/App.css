@@ -172,8 +172,7 @@ button {
   transition: all 0.2s;
 }
 
-.btn-primary,
-.btn-play-large {
+.btn-primary {
   background-color: var(--accent-strong);
   color: white;
   padding: 0.6rem 1.2rem;
@@ -183,43 +182,9 @@ button {
   font-size: 1rem;
 }
 
-.btn-play-large {
-  padding: 0.75rem 1.5rem;
-  font-size: 1.1rem;
-}
-
-.btn-primary:hover,
-.btn-play-large:hover {
+.btn-primary:hover {
   background-color: #535bf2; /* Slightly lighter than accent-strong */
   transform: translateY(-1px);
-}
-
-.btn-play-large.active {
-  background-color: #ef4444;
-}
-
-.btn-play-large.active:hover {
-  background-color: #dc2626;
-}
-
-.btn-queue-mode {
-  background-color: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  padding: 0.65rem 1rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
-}
-
-.btn-queue-mode:hover {
-  border-color: var(--accent-strong);
-  color: var(--accent-strong);
-}
-
-.btn-queue-mode.active {
-  border-color: var(--accent-strong);
-  color: var(--accent-strong);
-  box-shadow: 0 0 0 1px rgba(100, 108, 255, 0.25);
 }
 
 .btn-sm {

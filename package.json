@@ -7,6 +7,7 @@
     "build": "pnpm run -r build",
     "dev": "pnpm run -r dev",
     "dev:farnsworth": "pnpm --filter farnsworth-cw-trainer dev",
+    "dev:guitar": "pnpm --filter guitar dev",
     "dev:sporttimer": "pnpm --filter sporttimer dev",
     "dev:life": "pnpm --filter life dev",
     "dev:language": "pnpm --filter learn-foreign-language dev",
