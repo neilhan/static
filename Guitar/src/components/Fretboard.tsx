@@ -136,6 +136,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
     if (!neck || (!shouldComputeLines && !shouldComputeTiles && !shouldComputeTriads)) {
       setSegments((prev) => (prev.length === 0 ? prev : []));
       setTileBlockRects((prev) => (prev.length === 0 ? prev : []));
+      setSteppedTiles((prev) => (prev.length === 0 ? prev : []));
       setTriadShapes((prev) => (prev.length === 0 ? prev : []));
       return;
     }
