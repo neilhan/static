@@ -1167,8 +1167,18 @@ export function getDiatonicScaleBoxes(
 
       for (let sIdx = 5; sIdx >= 0; sIdx--) {
         const openPc = tuningStrings[sIdx];
+        // In CAGED G Shape (pattern 1), the 7th degree on S3 sits 1 fret below pent.minFret
+        const rowMinFret =
+          pent.patternNumber === 1 && sIdx === 2
+            ? Math.max(0, pent.minFret - 1)
+            : pent.minFret;
+        // In CAGED A Shape (pattern 5), the B-string shift puts the 4th degree 1 fret past pent.maxFret
+        const rowMaxFret =
+          pent.patternNumber === 5 && sIdx === 1
+            ? Math.min(maxFret, pent.maxFret + 1)
+            : pent.maxFret;
         const notes: number[] = [];
-        for (let f = pent.minFret; f <= pent.maxFret; f++) {
+        for (let f = rowMinFret; f <= rowMaxFret; f++) {
           if (getDiatonicDegree(getFretPitchClass(openPc, f), rootPc, mode)) {
             notes.push(f);
           }

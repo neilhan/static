@@ -281,6 +281,18 @@ describe('musicTheory', () => {
     // C Major CAGED: 5 positions, each convertible to overlay blocks
     const cMajorCaged = getDiatonicScaleBoxes(standard.strings, 15, 0, 'ionian', 'caged');
     expect(new Set(cMajorCaged.map((b) => b.positionNumber)).size).toBe(5);
+    const aShape = cMajorCaged.find((b) => b.positionNumber === 5 && b.minFret === 2);
+    expect(aShape?.stringFrets.find((sf) => sf.stringIndex === 1)).toEqual({
+      stringIndex: 1,
+      frets: [3, 6],
+      notes: [3, 5, 6],
+    });
+    const gShape = cMajorCaged.find((b) => b.positionNumber === 1 && b.minFret === 4);
+    expect(gShape?.stringFrets.find((sf) => sf.stringIndex === 2)).toEqual({
+      stringIndex: 2,
+      frets: [4, 7],
+      notes: [4, 5, 7],
+    });
     const overlays = scaleBoxesToOverlayBlocks(cMajorCaged);
     expect(overlays.length).toBe(cMajorCaged.length);
     expect(overlays[0].rowBounds?.length).toBeGreaterThan(0);
