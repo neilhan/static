@@ -27,6 +27,7 @@ const TILE_MIDI_SEQUENCES: Record<Exclude<TileFilter, 'none' | 'all'>, number[]>
   'gab-cde': [43, 45, 47, 48, 50, 52],
   'cde-fga': [48, 50, 52, 53, 55, 57],
   'efg-abc': [40, 41, 43, 45, 47, 48],
+  'bcd-efg': [47, 48, 50, 52, 53, 55],
 };
 
 const TILE_MINI_PATTERNS: Record<
@@ -69,6 +70,18 @@ const TILE_MINI_PATTERNS: Record<
       { row: 1, col: 3, label: 'G', color: PITCH_CLASS_COLORS[7] },
     ],
   },
+  'bcd-efg': {
+    topLabel: 'S5 (A) / S1 (e)',
+    bottomLabel: 'S6 (E) / S2 (B)',
+    notes: [
+      { row: 0, col: 0, label: 'E', color: PITCH_CLASS_COLORS[4] },
+      { row: 0, col: 1, label: 'F', color: PITCH_CLASS_COLORS[5] },
+      { row: 0, col: 3, label: 'G', color: PITCH_CLASS_COLORS[7] },
+      { row: 1, col: 0, label: 'B', color: PITCH_CLASS_COLORS[11] },
+      { row: 1, col: 1, label: 'C', color: PITCH_CLASS_COLORS[0] },
+      { row: 1, col: 3, label: 'D', color: PITCH_CLASS_COLORS[2] },
+    ],
+  },
 };
 
 const OCTAVE_FILTER_OPTIONS: { id: PatternFilter; label: string }[] = [
@@ -93,7 +106,7 @@ export const RepeatingTilesBoard: React.FC<RepeatingTilesBoardProps> = ({
     <section className="panel tiles-board-panel" aria-label="Repeating note tiles">
       <SectionHeader
         title="Repeating 2-String Tiles"
-        subtitle="Natural notes repeat in three 2-string blocks across the neck. Click a tile to highlight its color blocks on the fretboard."
+        subtitle="Natural notes repeat in 2-string blocks across the neck. Click a tile to highlight its color blocks on the fretboard."
         actions={
           <>
             <button
@@ -101,7 +114,7 @@ export const RepeatingTilesBoard: React.FC<RepeatingTilesBoardProps> = ({
               className={`toggle-btn ${tileFilter === 'all' ? 'active' : ''}`}
               onClick={() => onSelectTile(tileFilter === 'all' ? 'none' : 'all')}
             >
-              All 3 Tiles: {tileFilter === 'all' ? 'On' : 'Off'}
+              All Tiles: {tileFilter === 'all' ? 'On' : 'Off'}
             </button>
             {tileFilter !== 'none' && (
               <button

@@ -80,7 +80,7 @@ export const PITCH_CLASS_COLORS: Record<number, string> = {
   11: '#db2777', // B (Pink)
 };
 
-export type TileFilter = 'none' | 'gab-cde' | 'cde-fga' | 'efg-abc' | 'all';
+export type TileFilter = 'none' | 'gab-cde' | 'cde-fga' | 'efg-abc' | 'bcd-efg' | 'all';
 
 export interface TileBlockRow {
   stringIndex: number;
@@ -193,6 +193,30 @@ export const REPEATING_TILE_DEFS: TileDefinition[] = [
       },
       { topStringIndex: 0, bottomStringIndex: 1, startFret: 5, endFret: 8 },
       { topStringIndex: 0, bottomStringIndex: 0, startFret: 0, endFret: 3 },
+    ],
+  },
+  {
+    id: 'bcd-efg',
+    label: 'B C D / E F G',
+    subtitle: 'All occurrences across S6–S1 (including S1/S6 single-string & edge tiles)',
+    color: '#10b981',
+    baseBoxes: [
+      { topStringIndex: 5, bottomStringIndex: 5, startFret: 0, endFret: 3 },
+      { topStringIndex: 4, bottomStringIndex: 5, startFret: 7, endFret: 10 },
+      { topStringIndex: 3, bottomStringIndex: 4, startFret: 2, endFret: 5 },
+      { topStringIndex: 2, bottomStringIndex: 3, startFret: 9, endFret: 12 },
+      {
+        topStringIndex: 1,
+        bottomStringIndex: 2,
+        startFret: 4,
+        endFret: 8,
+        topStartFret: 5,
+        topEndFret: 8,
+        bottomStartFret: 4,
+        bottomEndFret: 7,
+      },
+      { topStringIndex: 0, bottomStringIndex: 1, startFret: 0, endFret: 3 },
+      { topStringIndex: 0, bottomStringIndex: 0, startFret: 7, endFret: 10 },
     ],
   },
 ];
@@ -977,5 +1001,305 @@ export function getPentatonicOctaveShiftBlocks(
   }
 
   return blocks;
+}
+
+export type DiatonicMode =
+  | 'ionian'
+  | 'dorian'
+  | 'phrygian'
+  | 'lydian'
+  | 'mixolydian'
+  | 'aeolian'
+  | 'locrian';
+
+export type ScaleLayoutMode = '3nps' | 'caged';
+
+export interface DiatonicScaleDefinition {
+  id: DiatonicMode;
+  label: string;
+  shortLabel: string;
+  intervals: [number, number, number, number, number, number, number];
+  degreeLabels: [string, string, string, string, string, string, string];
+  /** Semitones from this mode's root up to its parent Major (Ionian) root */
+  parentMajorOffset: number;
+  /** Degree label that gives this mode its characteristic color */
+  characteristicDegree: string;
+}
+
+export const DIATONIC_SCALE_ORDER: DiatonicMode[] = [
+  'ionian',
+  'dorian',
+  'phrygian',
+  'lydian',
+  'mixolydian',
+  'aeolian',
+  'locrian',
+];
+
+export const DIATONIC_SCALE_DEFINITIONS: Record<DiatonicMode, DiatonicScaleDefinition> = {
+  ionian: {
+    id: 'ionian',
+    label: 'Major (Ionian)',
+    shortLabel: 'Major',
+    intervals: [0, 2, 4, 5, 7, 9, 11],
+    degreeLabels: ['R', '2', '3', '4', '5', '6', '7'],
+    parentMajorOffset: 0,
+    characteristicDegree: '7',
+  },
+  dorian: {
+    id: 'dorian',
+    label: 'Dorian',
+    shortLabel: 'Dorian',
+    intervals: [0, 2, 3, 5, 7, 9, 10],
+    degreeLabels: ['R', '2', 'b3', '4', '5', '6', 'b7'],
+    parentMajorOffset: 10,
+    characteristicDegree: '6',
+  },
+  phrygian: {
+    id: 'phrygian',
+    label: 'Phrygian',
+    shortLabel: 'Phrygian',
+    intervals: [0, 1, 3, 5, 7, 8, 10],
+    degreeLabels: ['R', 'b2', 'b3', '4', '5', 'b6', 'b7'],
+    parentMajorOffset: 8,
+    characteristicDegree: 'b2',
+  },
+  lydian: {
+    id: 'lydian',
+    label: 'Lydian',
+    shortLabel: 'Lydian',
+    intervals: [0, 2, 4, 6, 7, 9, 11],
+    degreeLabels: ['R', '2', '3', '#4', '5', '6', '7'],
+    parentMajorOffset: 7,
+    characteristicDegree: '#4',
+  },
+  mixolydian: {
+    id: 'mixolydian',
+    label: 'Mixolydian',
+    shortLabel: 'Mixolydian',
+    intervals: [0, 2, 4, 5, 7, 9, 10],
+    degreeLabels: ['R', '2', '3', '4', '5', '6', 'b7'],
+    parentMajorOffset: 5,
+    characteristicDegree: 'b7',
+  },
+  aeolian: {
+    id: 'aeolian',
+    label: 'Natural Minor (Aeolian)',
+    shortLabel: 'Minor',
+    intervals: [0, 2, 3, 5, 7, 8, 10],
+    degreeLabels: ['R', '2', 'b3', '4', '5', 'b6', 'b7'],
+    parentMajorOffset: 3,
+    characteristicDegree: 'b6',
+  },
+  locrian: {
+    id: 'locrian',
+    label: 'Locrian',
+    shortLabel: 'Locrian',
+    intervals: [0, 1, 3, 5, 6, 8, 10],
+    degreeLabels: ['R', 'b2', 'b3', '4', 'b5', 'b6', 'b7'],
+    parentMajorOffset: 1,
+    characteristicDegree: 'b5',
+  },
+};
+
+export const SCALE_PATTERN_COLORS: Record<number, string> = {
+  1: '#ef4444',
+  2: '#f59e0b',
+  3: '#10b981',
+  4: '#06b6d4',
+  5: '#3b82f6',
+  6: '#8b5cf6',
+  7: '#ec4899',
+};
+
+const CAGED_SHAPE_NAMES: Record<1 | 2 | 3 | 4 | 5, string> = {
+  1: 'G Shape',
+  2: 'E Shape',
+  3: 'D Shape',
+  4: 'C Shape',
+  5: 'A Shape',
+};
+
+export interface ScaleBox {
+  id: string;
+  positionNumber: number;
+  label: string;
+  color: string;
+  minFret: number;
+  maxFret: number;
+  stringFrets: Array<{ stringIndex: number; frets: [number, number]; notes: number[] }>;
+}
+
+export function getDiatonicDegree(
+  pc: number,
+  rootPc: number,
+  mode: DiatonicMode
+): { degree: string; index: number; isCharacteristic: boolean } | null {
+  const def = DIATONIC_SCALE_DEFINITIONS[mode];
+  const interval = ((pc - rootPc) % 12 + 12) % 12;
+  const idx = def.intervals.indexOf(interval);
+  if (idx === -1) return null;
+  const degree = def.degreeLabels[idx];
+  return {
+    degree,
+    index: idx,
+    isCharacteristic: degree === def.characteristicDegree,
+  };
+}
+
+export function getDiatonicScaleBoxes(
+  tuningStrings: number[],
+  maxFret: number,
+  rootPc: number,
+  mode: DiatonicMode,
+  layout: ScaleLayoutMode
+): ScaleBox[] {
+  const def = DIATONIC_SCALE_DEFINITIONS[mode];
+  const boxes: ScaleBox[] = [];
+
+  if (layout === 'caged') {
+    const parentMajorPc = (rootPc + def.parentMajorOffset) % 12;
+    const pentBoxes = getPentatonicBoxes(tuningStrings, maxFret, parentMajorPc, 'major');
+    for (const pent of pentBoxes) {
+      const stringFrets: ScaleBox['stringFrets'] = [];
+      let boxMin = Infinity;
+      let boxMax = -Infinity;
+
+      for (let sIdx = 5; sIdx >= 0; sIdx--) {
+        const openPc = tuningStrings[sIdx];
+        const notes: number[] = [];
+        for (let f = pent.minFret; f <= pent.maxFret; f++) {
+          if (getDiatonicDegree(getFretPitchClass(openPc, f), rootPc, mode)) {
+            notes.push(f);
+          }
+        }
+        if (notes.length === 0) continue;
+        stringFrets.push({
+          stringIndex: sIdx,
+          frets: [notes[0], notes[notes.length - 1]],
+          notes,
+        });
+        boxMin = Math.min(boxMin, notes[0]);
+        boxMax = Math.max(boxMax, notes[notes.length - 1]);
+      }
+
+      if (stringFrets.length === 0) continue;
+      boxes.push({
+        id: `scale-caged-${pent.patternNumber}-${boxMin}`,
+        positionNumber: pent.patternNumber,
+        label: `Pos ${pent.patternNumber} (${CAGED_SHAPE_NAMES[pent.patternNumber]})`,
+        color: SCALE_PATTERN_COLORS[pent.patternNumber],
+        minFret: boxMin,
+        maxFret: boxMax,
+        stringFrets,
+      });
+    }
+
+    boxes.sort((a, b) => a.minFret - b.minFret || a.positionNumber - b.positionNumber);
+    return boxes;
+  }
+
+  // 3-Notes-Per-String (3NPS): 7 interlocking positions
+  const lowEOpen = tuningStrings[5] ?? 4;
+  for (let p = 1; p <= 7; p++) {
+    const startPc = (rootPc + def.intervals[p - 1]) % 12;
+    const baseS6Fret = ((startPc - lowEOpen) % 12 + 12) % 12;
+
+    for (const octaveShift of [0, 12]) {
+      const anchorFret = baseS6Fret + octaveShift;
+      if (anchorFret > maxFret) continue;
+
+      const stringFrets: ScaleBox['stringFrets'] = [];
+      let boxMin = Infinity;
+      let boxMax = -Infinity;
+      let valid = true;
+      let targetIdx = p - 1;
+      let prevF1 = anchorFret;
+
+      for (let sIdx = 5; sIdx >= 0; sIdx--) {
+        const openPc = tuningStrings[sIdx];
+        const pc1 = (rootPc + def.intervals[targetIdx % 7]) % 12;
+        const pc2 = (rootPc + def.intervals[(targetIdx + 1) % 7]) % 12;
+        const pc3 = (rootPc + def.intervals[(targetIdx + 2) % 7]) % 12;
+
+        const searchStart = sIdx === 5 ? anchorFret : Math.max(0, prevF1 - 1);
+        let f1 = -1;
+        for (let f = searchStart; f <= maxFret; f++) {
+          if (getFretPitchClass(openPc, f) === pc1) {
+            f1 = f;
+            break;
+          }
+        }
+        let f2 = -1;
+        if (f1 !== -1) {
+          for (let f = f1 + 1; f <= maxFret; f++) {
+            if (getFretPitchClass(openPc, f) === pc2) {
+              f2 = f;
+              break;
+            }
+          }
+        }
+        let f3 = -1;
+        if (f2 !== -1) {
+          for (let f = f2 + 1; f <= maxFret; f++) {
+            if (getFretPitchClass(openPc, f) === pc3) {
+              f3 = f;
+              break;
+            }
+          }
+        }
+
+        if (f1 === -1 || f2 === -1 || f3 === -1) {
+          valid = false;
+          break;
+        }
+
+        stringFrets.push({
+          stringIndex: sIdx,
+          frets: [f1, f3],
+          notes: [f1, f2, f3],
+        });
+        boxMin = Math.min(boxMin, f1);
+        boxMax = Math.max(boxMax, f3);
+        prevF1 = f1;
+        targetIdx += 3;
+      }
+
+      if (!valid) continue;
+
+      boxes.push({
+        id: `scale-3nps-${p}-${boxMin}`,
+        positionNumber: p,
+        label: `Pos ${p} (${def.degreeLabels[p - 1]})`,
+        color: SCALE_PATTERN_COLORS[p],
+        minFret: boxMin,
+        maxFret: boxMax,
+        stringFrets,
+      });
+    }
+  }
+
+  boxes.sort((a, b) => a.minFret - b.minFret || a.positionNumber - b.positionNumber);
+  return boxes;
+}
+
+export function scaleBoxesToOverlayBlocks(boxes: ScaleBox[]): TileBlock[] {
+  return boxes.map((b) => ({
+    id: `scale-overlay-${b.id}`,
+    tileId: 'gab-cde',
+    label: b.label,
+    color: b.color,
+    topStringIndex: 0,
+    bottomStringIndex: 5,
+    startFret: b.minFret,
+    endFret: b.maxFret,
+    rowBounds: [...b.stringFrets]
+      .sort((a, c) => a.stringIndex - c.stringIndex)
+      .map((sf) => ({
+        stringIndex: sf.stringIndex,
+        startFret: sf.frets[0],
+        endFret: sf.frets[1],
+      })),
+  }));
 }
 

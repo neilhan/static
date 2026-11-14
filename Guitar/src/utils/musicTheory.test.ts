@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { getFretMidi, midiToFreq } from './guitarAudio';
 import {
   formatPitchClass,
+  getDiatonicDegree,
+  getDiatonicScaleBoxes,
   getFretPitchClass,
   getPentatonicBoxes,
   getPentatonicDegree,
@@ -11,6 +13,7 @@ import {
   getTileBlocksForFretboard,
   getTriadDegree,
   getTriadVoicings,
+  scaleBoxesToOverlayBlocks,
   TUNING_PRESETS,
 } from './musicTheory';
 
@@ -65,6 +68,28 @@ describe('musicTheory', () => {
 
     const allBlocks15 = getTileBlocksForFretboard(15, 'all');
     expect(allBlocks15.length).toBeGreaterThan(gabBlocks15.length);
+
+    const bcdBlocks15 = getTileBlocksForFretboard(15, 'bcd-efg');
+    expect(bcdBlocks15).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ topStringIndex: 5, bottomStringIndex: 5, startFret: 0, endFret: 3 }),
+        expect.objectContaining({ topStringIndex: 4, bottomStringIndex: 5, startFret: 7, endFret: 10 }),
+        expect.objectContaining({ topStringIndex: 3, bottomStringIndex: 4, startFret: 2, endFret: 5 }),
+        expect.objectContaining({ topStringIndex: 2, bottomStringIndex: 3, startFret: 9, endFret: 12 }),
+        expect.objectContaining({
+          topStringIndex: 1,
+          bottomStringIndex: 2,
+          startFret: 4,
+          endFret: 8,
+          topStartFret: 5,
+          topEndFret: 8,
+          bottomStartFret: 4,
+          bottomEndFret: 7,
+        }),
+        expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 1, startFret: 0, endFret: 3 }),
+        expect.objectContaining({ topStringIndex: 0, bottomStringIndex: 0, startFret: 7, endFret: 10 }),
+      ])
+    );
   });
 
   it('computes 3-string chord triad voicings for any 3 strings and chord quality', () => {
@@ -224,6 +249,41 @@ describe('musicTheory', () => {
     expect(midiToFreq(69)).toBeCloseTo(440, 5);
     // Drop D: S6 open = D2 (38)
     expect(getFretMidi(2, 5, 0)).toBe(38);
+  });
+
+  it('computes diatonic scale degrees and 3NPS / CAGED scale blocks', () => {
+    const standard = TUNING_PRESETS[0];
+
+    // C Dorian: R=C(0), b3=Eb(3), characteristic 6=A(9)
+    expect(getDiatonicDegree(0, 0, 'dorian')).toEqual({
+      degree: 'R',
+      index: 0,
+      isCharacteristic: false,
+    });
+    expect(getDiatonicDegree(9, 0, 'dorian')).toEqual({
+      degree: '6',
+      index: 5,
+      isCharacteristic: true,
+    });
+    expect(getDiatonicDegree(11, 0, 'dorian')).toBeNull();
+
+    // C Major 3NPS across 15 frets: Pos 1 starts at S6 F8 (C, D, E)
+    const cMajor3nps = getDiatonicScaleBoxes(standard.strings, 15, 0, 'ionian', '3nps');
+    const pos1 = cMajor3nps.find((b) => b.positionNumber === 1);
+    expect(pos1).toBeDefined();
+    expect(pos1?.stringFrets[0]).toEqual({
+      stringIndex: 5,
+      frets: [8, 12],
+      notes: [8, 10, 12],
+    });
+    expect(pos1?.stringFrets.every((sf) => sf.notes.length === 3)).toBe(true);
+
+    // C Major CAGED: 5 positions, each convertible to overlay blocks
+    const cMajorCaged = getDiatonicScaleBoxes(standard.strings, 15, 0, 'ionian', 'caged');
+    expect(new Set(cMajorCaged.map((b) => b.positionNumber)).size).toBe(5);
+    const overlays = scaleBoxesToOverlayBlocks(cMajorCaged);
+    expect(overlays.length).toBe(cMajorCaged.length);
+    expect(overlays[0].rowBounds?.length).toBeGreaterThan(0);
   });
 });
 

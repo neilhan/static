@@ -6,6 +6,7 @@ import { Fretboard, makeFretKey, PatternFilter } from "./components/Fretboard";
 import { RepeatingTilesBoard } from "./components/RepeatingTilesBoard";
 import { ChordStudyBoard } from "./components/ChordStudyBoard";
 import { PentatonicBoard } from "./components/PentatonicBoard";
+import { ScaleStudyBoard } from "./components/ScaleStudyBoard";
 import {
   isSoundEnabled,
   playChordNotes,
@@ -13,8 +14,14 @@ import {
 } from "./utils/guitarAudio";
 import {
   AccidentalMode,
+  DIATONIC_SCALE_DEFINITIONS,
+  DIATONIC_SCALE_ORDER,
+  DiatonicMode,
   formatPitchClass,
+  getDiatonicScaleBoxes,
   getFretPitchClass,
+  scaleBoxesToOverlayBlocks,
+  ScaleLayoutMode,
   TileFilter,
   TUNING_PRESETS,
 } from "./utils/musicTheory";
@@ -22,10 +29,11 @@ import {
 const FRET_COUNTS = [12, 15, 22];
 
 type AccidentalDisplay = "off" | "sharp" | "flat";
-type StudyTab = "fretboard" | "triads" | "shells" | "pentatonic";
+type StudyTab = "fretboard" | "triads" | "shells" | "pentatonic" | "scales";
 
 const STUDY_TABS: Array<{ id: StudyTab; label: string }> = [
   { id: "fretboard", label: "Fretboard & Tiles" },
+  { id: "scales", label: "Scales & Modes" },
   { id: "triads", label: "Triads" },
   { id: "shells", label: "7th Shell Chords" },
   { id: "pentatonic", label: "Pentatonic Scales" },
@@ -43,6 +51,11 @@ function App() {
   const [lastTileFilter, setLastTileFilter] = useState<Exclude<TileFilter, "none">>("gab-cde");
   const [selectedFrets, setSelectedFrets] = useState<Set<string>>(() => new Set());
   const [soundOn, setSoundOn] = useState<boolean>(() => isSoundEnabled());
+  const [showScaleBlocks, setShowScaleBlocks] = useState<boolean>(false);
+  const [scaleRootPc, setScaleRootPc] = useState<number>(0);
+  const [scaleMode, setScaleMode] = useState<DiatonicMode>("ionian");
+  const [scaleLayout, setScaleLayout] = useState<ScaleLayoutMode>("3nps");
+  const [scalePos, setScalePos] = useState<number | "all">("all");
 
   const handleToggleSound = () => {
     setSoundOn((prev) => {
@@ -81,6 +94,22 @@ function App() {
     () => TUNING_PRESETS.find((t) => t.id === tuningId) ?? TUNING_PRESETS[0],
     [tuningId]
   );
+
+  const fretboardScaleOverlayBlocks = useMemo(() => {
+    if (!showScaleBlocks) return [];
+    const allBoxes = getDiatonicScaleBoxes(
+      activeTuning.strings,
+      maxFret,
+      scaleRootPc,
+      scaleMode,
+      scaleLayout
+    );
+    const maxPos = scaleLayout === "3nps" ? 7 : 5;
+    const pos = scalePos !== "all" && scalePos <= maxPos ? scalePos : "all";
+    const filtered =
+      pos === "all" ? allBoxes : allBoxes.filter((b) => b.positionNumber === pos);
+    return scaleBoxesToOverlayBlocks(filtered);
+  }, [showScaleBlocks, activeTuning.strings, maxFret, scaleRootPc, scaleMode, scaleLayout, scalePos]);
 
   const handleToggleFret = (stringIndex: number, fret: number) => {
     const key = makeFretKey(stringIndex, fret);
@@ -254,6 +283,16 @@ function App() {
               >
                 {tileFilter !== "none" ? "Tiles: On" : "Tiles: Off"}
               </button>
+              <button
+                type="button"
+                className={`pill-btn ${showScaleBlocks ? "active" : ""}`}
+                onClick={() => setShowScaleBlocks((v) => !v)}
+                title="Overlay 3NPS or CAGED scale blocks on the fretboard"
+              >
+                {showScaleBlocks
+                  ? `Scale Blocks: ${formatPitchClass(scaleRootPc, accidentals)} ${DIATONIC_SCALE_DEFINITIONS[scaleMode].shortLabel}`
+                  : "Scale Blocks: Off"}
+              </button>
               {selectedFrets.size > 0 && (
                 <>
                   <button
@@ -291,6 +330,73 @@ function App() {
             </div>
           </div>
 
+          {showScaleBlocks && (
+            <div
+              className="fretboard-toolbar"
+              style={{ marginTop: "0.5rem", gap: "0.5rem", flexWrap: "wrap" }}
+              aria-label="Scale block overlay options"
+            >
+              <div className="toolbar-pills" style={{ flexWrap: "wrap" }}>
+                <select
+                  className="pill-btn"
+                  aria-label="Scale root"
+                  value={scaleRootPc}
+                  onChange={(e) => setScaleRootPc(Number(e.target.value))}
+                >
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((pc) => (
+                    <option key={pc} value={pc}>
+                      Root: {formatPitchClass(pc, accidentals)}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="pill-btn"
+                  aria-label="Scale mode"
+                  value={scaleMode}
+                  onChange={(e) => setScaleMode(e.target.value as DiatonicMode)}
+                >
+                  {DIATONIC_SCALE_ORDER.map((m) => (
+                    <option key={m} value={m}>
+                      {DIATONIC_SCALE_DEFINITIONS[m].label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className={`pill-btn ${scaleLayout === "3nps" ? "active" : ""}`}
+                  onClick={() => setScaleLayout("3nps")}
+                >
+                  3NPS (7)
+                </button>
+                <button
+                  type="button"
+                  className={`pill-btn ${scaleLayout === "caged" ? "active" : ""}`}
+                  onClick={() => setScaleLayout("caged")}
+                >
+                  CAGED (5)
+                </button>
+                <select
+                  className="pill-btn"
+                  aria-label="Scale position"
+                  value={scalePos}
+                  onChange={(e) =>
+                    setScalePos(e.target.value === "all" ? "all" : Number(e.target.value))
+                  }
+                >
+                  <option value="all">All Positions</option>
+                  {Array.from(
+                    { length: scaleLayout === "3nps" ? 7 : 5 },
+                    (_, i) => i + 1
+                  ).map((pos) => (
+                    <option key={pos} value={pos}>
+                      Pos {pos}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
           <Fretboard
             strings={activeTuning.strings}
             maxFret={maxFret}
@@ -302,6 +408,7 @@ function App() {
             tileFilter={tileFilter}
             selectedFrets={selectedFrets}
             onToggleFret={handleToggleFret}
+            overlayBlocks={fretboardScaleOverlayBlocks}
           />
 
           <div className="selected-readout">
@@ -355,6 +462,14 @@ function App() {
 
         {activeTab === "pentatonic" && (
           <PentatonicBoard
+            strings={activeTuning.strings}
+            maxFret={maxFret}
+            accidentals={accidentals}
+          />
+        )}
+
+        {activeTab === "scales" && (
+          <ScaleStudyBoard
             strings={activeTuning.strings}
             maxFret={maxFret}
             accidentals={accidentals}
