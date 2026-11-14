@@ -72,6 +72,7 @@ interface SteppedTileOverlay {
 interface TriadShapeOverlay {
   id: string;
   points: string;
+  tailPoints?: string;
   color: string;
   isDimmed: boolean;
 }
@@ -318,21 +319,26 @@ export const Fretboard: React.FC<FretboardProps> = ({
         const nextTriadShapes: TriadShapeOverlay[] = [];
 
         triadVoicings.forEach((voicing) => {
-          const pts: string[] = [];
+          const coords: Array<{ x: number; y: number }> = [];
           for (const note of voicing.notes) {
             const cell = neck.querySelector<HTMLElement>(
               `[data-string-index="${note.stringIndex}"][data-fret="${note.fret}"]`
             );
             if (!cell) return;
             const r = cell.getBoundingClientRect();
-            const x = r.left - neckRect.left + r.width / 2;
-            const y = r.top - neckRect.top + r.height / 2;
-            pts.push(`${x},${y}`);
+            coords.push({
+              x: r.left - neckRect.left + r.width / 2,
+              y: r.top - neckRect.top + r.height / 2,
+            });
           }
-          if (pts.length === voicing.notes.length && pts.length >= 3) {
+          if (coords.length === voicing.notes.length && coords.length >= 3) {
+            const isLineChain = coords.length > 3;
             nextTriadShapes.push({
               id: voicing.id,
-              points: pts.join(' '),
+              points: isLineChain ? '' : coords.map((c) => `${c.x},${c.y}`).join(' '),
+              tailPoints: isLineChain
+                ? coords.map((c) => `${c.x},${c.y}`).join(' ')
+                : undefined,
               color: voicing.color ?? INVERSION_COLORS[voicing.inversion],
               isDimmed:
                 activeTriadVoicingId !== null && activeTriadVoicingId !== voicing.id,
@@ -414,21 +420,45 @@ export const Fretboard: React.FC<FretboardProps> = ({
               ))}
               {triadShapes.map((shape) => (
                 <g key={`triad-${shape.id}`} opacity={shape.isDimmed ? 0.2 : 0.95}>
-                  <polygon
-                    points={shape.points}
-                    fill={shape.color}
-                    fillOpacity={shape.isDimmed ? 0.04 : 0.14}
-                    stroke="rgba(15, 23, 42, 0.85)"
-                    strokeWidth={6}
-                    strokeLinejoin="round"
-                  />
-                  <polygon
-                    points={shape.points}
-                    fill="none"
-                    stroke={shape.color}
-                    strokeWidth={3}
-                    strokeLinejoin="round"
-                  />
+                  {shape.points && (
+                    <>
+                      <polygon
+                        points={shape.points}
+                        fill={shape.color}
+                        fillOpacity={shape.isDimmed ? 0.04 : 0.14}
+                        stroke="rgba(15, 23, 42, 0.85)"
+                        strokeWidth={6}
+                        strokeLinejoin="round"
+                      />
+                      <polygon
+                        points={shape.points}
+                        fill="none"
+                        stroke={shape.color}
+                        strokeWidth={3}
+                        strokeLinejoin="round"
+                      />
+                    </>
+                  )}
+                  {shape.tailPoints && (
+                    <>
+                      <polyline
+                        points={shape.tailPoints}
+                        fill="none"
+                        stroke="rgba(15, 23, 42, 0.85)"
+                        strokeWidth={6}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <polyline
+                        points={shape.tailPoints}
+                        fill="none"
+                        stroke={shape.color}
+                        strokeWidth={3}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </>
+                  )}
                 </g>
               ))}
               {segments.map((seg) => (

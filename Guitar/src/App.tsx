@@ -54,7 +54,7 @@ function App() {
   const [showScaleBlocks, setShowScaleBlocks] = useState<boolean>(false);
   const [scaleRootPc, setScaleRootPc] = useState<number>(0);
   const [scaleMode, setScaleMode] = useState<DiatonicMode>("ionian");
-  const [scaleLayout, setScaleLayout] = useState<ScaleLayoutMode>("3nps");
+  const [scaleLayout, setScaleLayout] = useState<ScaleLayoutMode>("caged");
   const [scalePos, setScalePos] = useState<number | "all">("all");
 
   const handleToggleSound = () => {
@@ -363,17 +363,17 @@ function App() {
                 </select>
                 <button
                   type="button"
-                  className={`pill-btn ${scaleLayout === "3nps" ? "active" : ""}`}
-                  onClick={() => setScaleLayout("3nps")}
-                >
-                  3NPS (7)
-                </button>
-                <button
-                  type="button"
                   className={`pill-btn ${scaleLayout === "caged" ? "active" : ""}`}
                   onClick={() => setScaleLayout("caged")}
                 >
                   CAGED (5)
+                </button>
+                <button
+                  type="button"
+                  className={`pill-btn ${scaleLayout === "3nps" ? "active" : ""}`}
+                  onClick={() => setScaleLayout("3nps")}
+                >
+                  3NPS (7)
                 </button>
                 <select
                   className="pill-btn"
