@@ -322,7 +322,6 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
       } else if (isRevealed) {
         if (e.key === '1') handleGrade(1);
         else if (e.key === '2') handleGrade(4);
-        else if (e.key === '3') handleWellKnown();
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -346,19 +345,14 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   );
 
   const gradeOptions = [
-    { label: 'Bad', grade: 1 as const, cls: 'grade-again' },
-    { label: 'Good', grade: 4 as const, cls: 'grade-good' },
-    { label: 'Know Well', grade: 'well' as const, cls: 'grade-easy' },
+    { label: 'Show it more', grade: 1, cls: 'grade-again' },
+    { label: 'Know it well', grade: 4, cls: 'grade-good' },
   ].map((opt) => ({
     ...opt,
     intervalText:
-      opt.grade === 'well'
-        ? (currentSrs?.interval ?? 0) >= 21
-          ? `keep ${daysUntilDue}d`
-          : '21d'
-        : status === 'future' && opt.grade >= 3
-          ? `keep ${daysUntilDue}d`
-          : `${calculateNextReview(currentSrs, opt.grade).interval}d`,
+      status === 'future' && opt.grade >= 3
+        ? `keep ${daysUntilDue}d`
+        : `${calculateNextReview(currentSrs, opt.grade).interval}d`,
   }));
 
   const learnedCount = useMemo(
@@ -756,9 +750,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
                   key={opt.label}
                   type="button"
                   className={`recall-grade-btn ${opt.cls}`}
-                  onClick={() =>
-                    opt.grade === 'well' ? handleWellKnown() : handleGrade(opt.grade)
-                  }
+                  onClick={() => handleGrade(opt.grade)}
                 >
                   <span className="grade-label">{opt.label}</span>
                   <span className="grade-interval">{opt.intervalText}</span>
