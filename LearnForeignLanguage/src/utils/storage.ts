@@ -26,8 +26,8 @@ const getYesterdayKey = (dateKey: string): string => {
 };
 
 export const DEFAULT_NEW_CAPS: Record<SourceId, number> = {
-  phrases: 4,
-  vocab: 10,
+  phrases: 2,
+  vocab: 12,
 };
 
 export const createDefaultDailyProgress = (

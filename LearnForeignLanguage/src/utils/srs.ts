@@ -97,3 +97,11 @@ export const markAsWellKnown = (now: number = Date.now()): SRSData => {
     easeFactor: 2.5,
   };
 };
+
+export const markAsIntroduced = (now: number = Date.now()): SRSData => ({
+  lastReviewed: now,
+  nextReview: now,
+  interval: 1,
+  repetition: 1,
+  easeFactor: 2.5,
+});

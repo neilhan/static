@@ -255,7 +255,7 @@
 
 .recall-grade-bar {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.65rem;
   border-top: 1px solid var(--border-color);
   padding-top: 0.9rem;
@@ -373,4 +373,86 @@
   justify-content: center;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+
+.recall-function-area {
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel-alt);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.recall-function-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.recall-function-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.recall-function-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.recall-function-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.recall-add-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.recall-add-form {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.recall-add-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.recall-add-input {
+  width: 3.4rem;
+  padding: 0.28rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--control-field-border);
+  background-color: var(--control-field);
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+.recall-reset-controls,
+.recall-reset-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.recall-reset-btn {
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+.recall-reset-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
 }

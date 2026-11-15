@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import "./components/CollectionManager.css";
-import { loadState, saveState, recordDailyReview } from "./utils/storage";
-import { calculateNextReview, markAsWellKnown } from "./utils/srs";
+import { loadState, saveState, recordDailyReview, createDefaultState } from "./utils/storage";
+import { calculateNextReview, markAsIntroduced, markAsWellKnown } from "./utils/srs";
 import { getSourceItems } from "./utils/curriculum";
 import { shouldUpdateSrsOnGrade } from "./utils/recall";
 import { InputSection } from "./components/InputSection";
@@ -16,6 +16,7 @@ import { IconGraphic } from "@static/shared";
 function App() {
   // Initialize state from storage or default
   const [state, setState] = useState<AppState>(() => loadState());
+  const [resetVersion, setResetVersion] = useState(0);
 
   // Persist state on changes
   useEffect(() => {
@@ -111,6 +112,35 @@ function App() {
     }));
   };
 
+  const handleIntroduceItems = (itemIds: string[]) => {
+    if (itemIds.length === 0) return;
+    const now = Date.now();
+
+    setState((prev) => {
+      const additionsBySource: Record<SourceId, Record<string, ReturnType<typeof markAsIntroduced>>> = {
+        phrases: {},
+        vocab: {},
+      };
+
+      for (const itemId of itemIds) {
+        const sourceId = getSourceForItem(itemId);
+        const col = prev.collections.find((c) => c.id === sourceId);
+        if (!col?.srsData[itemId]) {
+          additionsBySource[sourceId][itemId] = markAsIntroduced(now);
+        }
+      }
+
+      return {
+        ...prev,
+        collections: prev.collections.map((c) => {
+          const additions = additionsBySource[c.id as SourceId];
+          if (!additions || Object.keys(additions).length === 0) return c;
+          return { ...c, srsData: { ...c.srsData, ...additions } };
+        }),
+      };
+    });
+  };
+
   const handleChangeNewCap = (sourceId: SourceId, cap: number) => {
     setState((prev) => ({
       ...prev,
@@ -122,6 +152,11 @@ function App() {
         },
       },
     }));
+  };
+
+  const handleResetAll = () => {
+    setState(createDefaultState());
+    setResetVersion((v) => v + 1);
   };
 
   if (!activeCollection) return <div>Loading...</div>;
@@ -168,13 +203,14 @@ function App() {
             </div>
 
             <ActiveRecallCard
+              key={resetVersion}
               phraseItems={getSourceItems("phrases")}
               phraseSrs={phrasesCollection?.srsData ?? {}}
               vocabItems={getSourceItems("vocab")}
               vocabSrs={vocabCollection?.srsData ?? {}}
-              phraseNewCap={state.dailyProgress.newCapBySource.phrases ?? 4}
+              phraseNewCap={state.dailyProgress.newCapBySource.phrases ?? 2}
               phraseNewToday={state.dailyProgress.newLearnedBySource.phrases ?? 0}
-              vocabNewCap={state.dailyProgress.newCapBySource.vocab ?? 10}
+              vocabNewCap={state.dailyProgress.newCapBySource.vocab ?? 12}
               vocabNewToday={state.dailyProgress.newLearnedBySource.vocab ?? 0}
               targetLang={activeCollection.targetLang}
               targetVoiceURI={activeCollection.targetVoiceURI}
@@ -182,14 +218,17 @@ function App() {
               nativeVoiceURI={activeCollection.nativeVoiceURI}
               onGradeItem={handleGradeItem}
               onMarkWellKnown={handleMarkWellKnown}
+              onIntroduceItems={handleIntroduceItems}
               onChangeNewCap={handleChangeNewCap}
-            />
-
-            <InputSection
-              targetVoiceURI={activeCollection.targetVoiceURI}
-              onTargetChange={handleTargetChange}
-              nativeVoiceURI={activeCollection.nativeVoiceURI}
-              onNativeChange={handleNativeChange}
+              onResetAll={handleResetAll}
+              voiceControls={
+                <InputSection
+                  targetVoiceURI={activeCollection.targetVoiceURI}
+                  onTargetChange={handleTargetChange}
+                  nativeVoiceURI={activeCollection.nativeVoiceURI}
+                  onNativeChange={handleNativeChange}
+                />
+              }
             />
           </section>
         </main>

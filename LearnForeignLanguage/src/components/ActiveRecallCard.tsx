@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { SourceId, SRSData, VocabItem } from '../types';
 import { calculateNextReview, getReviewStatus } from '../utils/srs';
 import {
+  allocateNewItemsSeparate,
   buildMixedRecallQueue,
   checkTypedRecall,
   formatFormEntries,
@@ -27,11 +28,14 @@ interface ActiveRecallCardProps {
   nativeVoiceURI: string;
   onGradeItem: (itemId: string, grade: number) => void;
   onMarkWellKnown: (itemId: string) => void;
+  onIntroduceItems: (itemIds: string[]) => void;
   onChangeNewCap: (sourceId: SourceId, cap: number) => void;
+  onResetAll: () => void;
+  voiceControls?: React.ReactNode;
 }
 
-const PHRASE_CAP_OPTIONS = [0, 2, 4, 6, 10];
-const VOCAB_CAP_OPTIONS = [0, 5, 10, 15, 20];
+const PHRASE_CAP_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 10];
+const VOCAB_CAP_OPTIONS = [0, 6, 12, 18, 24, 30];
 
 const speakText = (
   text: string,
@@ -80,7 +84,10 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   nativeVoiceURI,
   onGradeItem,
   onMarkWellKnown,
+  onIntroduceItems,
   onChangeNewCap,
+  onResetAll,
+  voiceControls,
 }) => {
   const [filter, setFilter] = useState<RecallFilter>('due-and-new');
   const [direction, setDirection] = useState<'native-to-target' | 'target-to-native'>(
@@ -93,12 +100,13 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   const [isRevealed, setIsRevealed] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [cardIndex, setCardIndex] = useState(0);
-  const [extraPhraseNew, setExtraPhraseNew] = useState(0);
-  const [extraVocabNew, setExtraVocabNew] = useState(0);
+  const [phraseAddInput, setPhraseAddInput] = useState('2');
+  const [vocabAddInput, setVocabAddInput] = useState('12');
+  const [confirmReset, setConfirmReset] = useState(false);
   const [reviewedCycleIds, setReviewedCycleIds] = useState<string[]>([]);
 
-  const remainingPhraseCap = Math.max(0, phraseNewCap + extraPhraseNew - phraseNewToday);
-  const remainingVocabCap = Math.max(0, vocabNewCap + extraVocabNew - vocabNewToday);
+  const remainingPhraseCap = Math.max(0, phraseNewCap - phraseNewToday);
+  const remainingVocabCap = Math.max(0, vocabNewCap - vocabNewToday);
 
   const itemMap = useMemo(() => {
     const map = new Map<string, VocabItem>();
@@ -273,10 +281,20 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   const handleWellKnown = () => {
     if (!currentItem) return;
     const id = currentItem.id;
-    onMarkWellKnown(id);
-    if (filter !== 'all') {
-      completeSessionItem(id);
+    const entry = id.startsWith('es-p-') ? phraseSrs[id] : vocabSrs[id];
+    if ((entry?.interval ?? 0) >= 21) {
+      handleGrade(4);
+      return;
     }
+    onMarkWellKnown(id);
+    if (filter === 'all') {
+      setCardIndex((prev) => (prev + 1 < queue.length ? prev + 1 : 0));
+      return;
+    }
+    if (filter === 'review') {
+      setReviewedCycleIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    }
+    completeSessionItem(id);
   };
 
   useEffect(() => {
@@ -304,6 +322,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
       } else if (isRevealed) {
         if (e.key === '1') handleGrade(1);
         else if (e.key === '2') handleGrade(4);
+        else if (e.key === '3') handleWellKnown();
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -327,14 +346,19 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   );
 
   const gradeOptions = [
-    { label: 'Show it more', grade: 1, cls: 'grade-again' },
-    { label: 'Show it less', grade: 4, cls: 'grade-good' },
+    { label: 'Bad', grade: 1 as const, cls: 'grade-again' },
+    { label: 'Good', grade: 4 as const, cls: 'grade-good' },
+    { label: 'Know Well', grade: 'well' as const, cls: 'grade-easy' },
   ].map((opt) => ({
     ...opt,
     intervalText:
-      status === 'future' && opt.grade >= 3
-        ? `keep ${daysUntilDue}d`
-        : `${calculateNextReview(currentSrs, opt.grade).interval}d`,
+      opt.grade === 'well'
+        ? (currentSrs?.interval ?? 0) >= 21
+          ? `keep ${daysUntilDue}d`
+          : '21d'
+        : status === 'future' && opt.grade >= 3
+          ? `keep ${daysUntilDue}d`
+          : `${calculateNextReview(currentSrs, opt.grade).interval}d`,
   }));
 
   const learnedCount = useMemo(
@@ -344,25 +368,62 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
     [phraseSrs, vocabSrs]
   );
 
+  const remainingUnseenCount = useMemo(() => {
+    const unseenPhrases = phraseItems.filter(
+      (i) => !phraseSrs[i.id] || getReviewStatus(phraseSrs[i.id].nextReview) === 'new'
+    ).length;
+    const unseenVocab = vocabItems.filter(
+      (i) => !vocabSrs[i.id] || getReviewStatus(vocabSrs[i.id].nextReview) === 'new'
+    ).length;
+    return (
+      Math.max(0, unseenPhrases - remainingPhraseCap) +
+      Math.max(0, unseenVocab - remainingVocabCap)
+    );
+  }, [phraseItems, phraseSrs, vocabItems, vocabSrs, remainingPhraseCap, remainingVocabCap]);
+
   const nextReviewBatchCount = Math.min(SESSION_SIZE, reviewPool.length);
 
   const todayCount = todayPool.length;
 
-  const handleIntroNewSet = () => {
-    const nextPhraseCap = remainingPhraseCap + 3;
-    const nextVocabCap = remainingVocabCap + 5;
-    setExtraPhraseNew((c) => c + 3);
-    setExtraVocabNew((c) => c + 5);
-    const nextPool = buildMixedRecallQueue(
+  const activateAddedItems = (addedIds: string[]) => {
+    if (addedIds.length === 0) return;
+    onIntroduceItems(addedIds);
+
+    if (filter === 'due-and-new' && sessionIds.length > 0) {
+      const existing = new Set(sessionIds);
+      const freshIds = addedIds.filter((id) => !existing.has(id));
+      if (freshIds.length > 0) {
+        setSessionIds((prev) => [...prev, ...freshIds]);
+        setSessionTotal((prev) => prev + freshIds.length);
+      }
+      return;
+    }
+
+    setSessionIds(addedIds);
+    setSessionTotal(addedIds.length);
+    setCardIndex(0);
+    setFilter('due-and-new');
+  };
+
+  const handleAddCustomSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsedPhrases = Number.parseInt(phraseAddInput, 10);
+    const parsedVocab = Number.parseInt(vocabAddInput, 10);
+    const maxPhrases = Number.isFinite(parsedPhrases) && parsedPhrases > 0 ? parsedPhrases : 0;
+    const maxVocab = Number.isFinite(parsedVocab) && parsedVocab > 0 ? parsedVocab : 0;
+    if (maxPhrases === 0 && maxVocab === 0) return;
+
+    const { addedItems } = allocateNewItemsSeparate(
       phraseItems,
       phraseSrs,
       vocabItems,
       vocabSrs,
-      'due-and-new',
-      nextPhraseCap,
-      nextVocabCap
+      remainingPhraseCap,
+      remainingVocabCap,
+      maxPhrases,
+      maxVocab
     );
-    startTodaySession(nextPool);
+    activateAddedItems(addedItems.map((i) => i.id));
   };
 
   const renderSessionEndActions = () => {
@@ -392,14 +453,6 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
             Continue Reviewing ({nextReviewBatchCount})
           </button>
         )}
-        <button
-          type="button"
-          className={!todayIsPrimary && !reviewIsPrimary ? 'btn-primary btn-sm' : 'btn-outline btn-sm'}
-          title="Add 3 new phrases and 5 new words to today's learning progress"
-          onClick={handleIntroNewSet}
-        >
-          Intro New Set
-        </button>
       </div>
     );
   };
@@ -483,7 +536,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
             className={`recall-pill ${filter === 'review' ? 'active' : ''}`}
             onClick={startRandomReview}
             disabled={learnedCount === 0}
-            title="Review items you have already started learning in random order"
+            title="Review past items (smart mix including weakest, due soonest, and known items)"
           >
             Review ({learnedCount})
           </button>
@@ -703,7 +756,9 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
                   key={opt.label}
                   type="button"
                   className={`recall-grade-btn ${opt.cls}`}
-                  onClick={() => handleGrade(opt.grade)}
+                  onClick={() =>
+                    opt.grade === 'well' ? handleWellKnown() : handleGrade(opt.grade)
+                  }
                 >
                   <span className="grade-label">{opt.label}</span>
                   <span className="grade-interval">{opt.intervalText}</span>
@@ -732,6 +787,86 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
           </div>
         </div>
       )}
+
+      {voiceControls}
+
+      <div className="recall-function-area">
+        <div className="recall-function-header">
+          <span className="recall-function-title">Curriculum &amp; Progress</span>
+          <span className="recall-function-hint">
+            Open a new set of items into learning (e.g. if you already know earlier words), or reset all progress.
+          </span>
+        </div>
+        <div className="recall-function-actions">
+          <div className="recall-add-controls">
+            <form className="recall-add-form" onSubmit={handleAddCustomSubmit}>
+              <span className="recall-add-label">Add up to</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                className="recall-add-input"
+                value={phraseAddInput}
+                onChange={(e) => setPhraseAddInput(e.target.value)}
+                aria-label="Number of phrases to add"
+              />
+              <span className="recall-add-label">phrases +</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                className="recall-add-input"
+                value={vocabAddInput}
+                onChange={(e) => setVocabAddInput(e.target.value)}
+                aria-label="Number of words to add"
+              />
+              <span className="recall-add-label">words</span>
+              <button
+                type="submit"
+                className="recall-pill"
+                disabled={remainingUnseenCount === 0}
+                title="Add up to this many unseen phrases and words into learning"
+              >
+                Add Items
+              </button>
+            </form>
+          </div>
+
+          <div className="recall-reset-controls">
+            {!confirmReset ? (
+              <button
+                type="button"
+                className="recall-pill recall-reset-btn"
+                onClick={() => setConfirmReset(true)}
+                title="Reset all learned progress and daily stats"
+              >
+                Reset Everything
+              </button>
+            ) : (
+              <div className="recall-reset-confirm">
+                <span className="recall-add-label">Reset all progress?</span>
+                <button
+                  type="button"
+                  className="recall-pill recall-reset-btn"
+                  onClick={() => {
+                    setConfirmReset(false);
+                    onResetAll();
+                  }}
+                >
+                  Confirm Reset
+                </button>
+                <button
+                  type="button"
+                  className="recall-pill"
+                  onClick={() => setConfirmReset(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
+  allocateNewItemsSeparate,
+  allocateNewItemsUpTo,
   buildMixedRecallQueue,
   buildRecallQueue,
   checkTypedRecall,
   formatFormEntries,
+  getLearnedItemEntries,
   normalizeSpanish,
   selectSmartReviewBatch,
   shouldUpdateSrsOnGrade,
@@ -145,6 +148,89 @@ describe('recall helpers', () => {
     const round3 = selectSmartReviewBatch(items, (id) => srsMap[id], excludeAll, 25);
     expect(round3.resetCycle).toBe(true);
     expect(round3.items).toHaveLength(25);
+  });
+
+  it('allocates up to N unseen items across phrases and vocab with spillover', () => {
+    const phrases: VocabItem[] = Array.from({ length: 4 }, (_, i) => ({
+      id: `es-p-${i}`,
+      target: `p${i}`,
+      native: `ep${i}`,
+    }));
+    const vocab: VocabItem[] = Array.from({ length: 10 }, (_, i) => ({
+      id: `es-w-${i}`,
+      target: `w${i}`,
+      native: `ew${i}`,
+    }));
+
+    // 1 phrase and 2 words already in today's cap -> 3 phrases and 8 words remain (1:6 ratio -> 1 phrase + 6 words)
+    const set7 = allocateNewItemsUpTo(phrases, {}, vocab, {}, 1, 2, 7);
+    expect(set7.addedPhraseCount).toBe(1);
+    expect(set7.addedVocabCount).toBe(6);
+    expect(set7.addedItems.map((i) => i.id)).toEqual([
+      'es-p-1',
+      'es-w-2',
+      'es-w-3',
+      'es-w-4',
+      'es-w-5',
+      'es-w-6',
+      'es-w-7',
+    ]);
+
+    // Asking for 10 when only 1 phrase and 2 words remain -> caps at 3 total ("up to")
+    const spillover = allocateNewItemsUpTo(phrases, {}, vocab, {}, 3, 8, 10);
+    expect(spillover.addedPhraseCount).toBe(1);
+    expect(spillover.addedVocabCount).toBe(2);
+    expect(spillover.addedItems).toHaveLength(3);
+
+    // Separate allocation picks independently from phrases and vocab without spillover
+    const sep = allocateNewItemsSeparate(phrases, {}, vocab, {}, 1, 2, 2, 1);
+    expect(sep.addedPhraseCount).toBe(2);
+    expect(sep.addedVocabCount).toBe(1);
+    expect(sep.addedItems.map((i) => i.id)).toEqual(['es-p-1', 'es-w-2', 'es-p-2']);
+
+    const onlyVocab = allocateNewItemsSeparate(phrases, {}, vocab, {}, 0, 0, 0, 3);
+    expect(onlyVocab.addedPhraseCount).toBe(0);
+    expect(onlyVocab.addedVocabCount).toBe(3);
+    expect(onlyVocab.addedItems.map((i) => i.id)).toEqual(['es-w-0', 'es-w-1', 'es-w-2']);
+  });
+
+  it('filters and searches past learned items including known/mastered ones', () => {
+    const now = Date.now();
+    const phrases: VocabItem[] = [
+      { id: 'es-p-1', target: 'Buenos días', native: 'Good morning' },
+      { id: 'es-p-2', target: '¿Qué tal?', native: 'How is it going?' },
+    ];
+    const vocab: VocabItem[] = [
+      { id: 'es-w-1', target: 'casa', native: 'house' },
+      { id: 'es-w-2', target: 'perro', native: 'dog' },
+    ];
+    const phraseSrs = {
+      'es-p-1': markAsWellKnown(now),
+      'es-p-2': { lastReviewed: now - 2000, nextReview: now - 1000, interval: 1, repetition: 1, easeFactor: 2.5 },
+    };
+    const vocabSrs = {
+      'es-w-1': { lastReviewed: now, nextReview: now + 86400_000, interval: 6, repetition: 2, easeFactor: 2.5 },
+      // es-w-2 is unseen
+    };
+
+    expect(getLearnedItemEntries(phrases, phraseSrs, vocab, vocabSrs, 'all').map((e) => e.item.id)).toEqual([
+      'es-p-2',
+      'es-w-1',
+      'es-p-1',
+    ]);
+    expect(getLearnedItemEntries(phrases, phraseSrs, vocab, vocabSrs, 'known').map((e) => e.item.id)).toEqual([
+      'es-p-1',
+    ]);
+    expect(getLearnedItemEntries(phrases, phraseSrs, vocab, vocabSrs, 'learning').map((e) => e.item.id)).toEqual([
+      'es-p-2',
+      'es-w-1',
+    ]);
+    expect(getLearnedItemEntries(phrases, phraseSrs, vocab, vocabSrs, 'due').map((e) => e.item.id)).toEqual([
+      'es-p-2',
+    ]);
+    expect(getLearnedItemEntries(phrases, phraseSrs, vocab, vocabSrs, 'all', 'morning').map((e) => e.item.id)).toEqual([
+      'es-p-1',
+    ]);
   });
 });
 

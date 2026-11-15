@@ -2,8 +2,11 @@ import { SRSData, VocabItem, WordForms } from '../types';
 import { getReviewStatus } from './srs';
 
 export type RecallFilter = 'due-and-new' | 'review' | 'all';
+export type ReviewSubFilter = 'smart' | 'known' | 'all-past';
+export type PastBrowserFilter = 'all' | 'known' | 'learning' | 'due';
 export type RecallMatchResult = 'exact' | 'accent-diff' | 'mismatch';
 export const SESSION_SIZE = 25;
+export const KNOWN_INTERVAL_DAYS = 21;
 
 export function shouldUpdateSrsOnGrade(current?: SRSData, grade?: number): boolean {
   if (!current) return true;
@@ -289,5 +292,159 @@ export function formatFormEntries(
   }
 
   return entries;
+}
+
+export interface NewItemsAllocation {
+  addedPhraseCount: number;
+  addedVocabCount: number;
+  addedItems: VocabItem[];
+}
+
+/**
+ * Allocates up to `maxToAdd` unseen items across phrases and vocab (targeting
+ * a ~1:6 phrase-to-word ratio matching 500 phrases : 3,000 words, spilling
+ * over if one pool is exhausted), skipping items already covered by
+ * `currentPhraseCap` / `currentVocabCap`.
+ */
+export function allocateNewItemsUpTo(
+  phraseItems: VocabItem[],
+  phraseSrs: Record<string, SRSData>,
+  vocabItems: VocabItem[],
+  vocabSrs: Record<string, SRSData>,
+  currentPhraseCap: number,
+  currentVocabCap: number,
+  maxToAdd: number
+): NewItemsAllocation {
+  const target = Math.max(0, Math.floor(maxToAdd));
+  if (target === 0) {
+    return { addedPhraseCount: 0, addedVocabCount: 0, addedItems: [] };
+  }
+
+  const isUnseen = (item: VocabItem, srs: Record<string, SRSData>) => {
+    const entry = srs[item.id];
+    return !entry || getReviewStatus(entry.nextReview) === 'new';
+  };
+
+  const availablePhrases = phraseItems
+    .filter((item) => isUnseen(item, phraseSrs))
+    .slice(Math.max(0, currentPhraseCap));
+  const availableVocab = vocabItems
+    .filter((item) => isUnseen(item, vocabSrs))
+    .slice(Math.max(0, currentVocabCap));
+
+  let phraseWant = Math.min(availablePhrases.length, Math.round(target / 7));
+  let vocabWant = Math.min(availableVocab.length, target - phraseWant);
+
+  const remaining = target - (phraseWant + vocabWant);
+  if (remaining > 0) {
+    const extraPhrases = Math.min(availablePhrases.length - phraseWant, remaining);
+    phraseWant += extraPhrases;
+    const stillRemaining = remaining - extraPhrases;
+    if (stillRemaining > 0) {
+      vocabWant += Math.min(availableVocab.length - vocabWant, stillRemaining);
+    }
+  }
+
+  const addedItems = interleaveArrays(
+    availablePhrases.slice(0, phraseWant),
+    availableVocab.slice(0, vocabWant)
+  );
+
+  return {
+    addedPhraseCount: phraseWant,
+    addedVocabCount: vocabWant,
+    addedItems,
+  };
+}
+
+/**
+ * Allocates up to `maxPhrases` unseen phrases and `maxVocab` unseen words
+ * independently (without cross-pool spillover), skipping items already covered
+ * by `currentPhraseCap` / `currentVocabCap`.
+ */
+export function allocateNewItemsSeparate(
+  phraseItems: VocabItem[],
+  phraseSrs: Record<string, SRSData>,
+  vocabItems: VocabItem[],
+  vocabSrs: Record<string, SRSData>,
+  currentPhraseCap: number,
+  currentVocabCap: number,
+  maxPhrases: number,
+  maxVocab: number
+): NewItemsAllocation {
+  const phraseTarget = Math.max(0, Math.floor(maxPhrases));
+  const vocabTarget = Math.max(0, Math.floor(maxVocab));
+  if (phraseTarget === 0 && vocabTarget === 0) {
+    return { addedPhraseCount: 0, addedVocabCount: 0, addedItems: [] };
+  }
+
+  const isUnseen = (item: VocabItem, srs: Record<string, SRSData>) => {
+    const entry = srs[item.id];
+    return !entry || getReviewStatus(entry.nextReview) === 'new';
+  };
+
+  const availablePhrases = phraseItems
+    .filter((item) => isUnseen(item, phraseSrs))
+    .slice(Math.max(0, currentPhraseCap));
+  const availableVocab = vocabItems
+    .filter((item) => isUnseen(item, vocabSrs))
+    .slice(Math.max(0, currentVocabCap));
+
+  const pickedPhrases = availablePhrases.slice(0, phraseTarget);
+  const pickedVocab = availableVocab.slice(0, vocabTarget);
+
+  return {
+    addedPhraseCount: pickedPhrases.length,
+    addedVocabCount: pickedVocab.length,
+    addedItems: interleaveArrays(pickedPhrases, pickedVocab),
+  };
+}
+
+export interface LearnedItemEntry {
+  item: VocabItem;
+  srs: SRSData;
+  status: 'new' | 'due' | 'future';
+  isKnown: boolean;
+}
+
+/**
+ * Returns all past/learned items (including well-known/mastered items)
+ * matching `filter` and optional search query, sorted by nextReview ascending.
+ */
+export function getLearnedItemEntries(
+  phraseItems: VocabItem[],
+  phraseSrs: Record<string, SRSData>,
+  vocabItems: VocabItem[],
+  vocabSrs: Record<string, SRSData>,
+  filter: PastBrowserFilter = 'all',
+  query: string = ''
+): LearnedItemEntry[] {
+  const entries: LearnedItemEntry[] = [];
+  const collect = (items: VocabItem[], srsMap: Record<string, SRSData>) => {
+    for (const item of items) {
+      const srs = srsMap[item.id];
+      if (!srs || (srs.repetition <= 0 && srs.lastReviewed <= 0)) continue;
+      const status = getReviewStatus(srs.nextReview);
+      const isKnown = srs.interval >= KNOWN_INTERVAL_DAYS;
+      if (filter === 'known' && !isKnown) continue;
+      if (filter === 'learning' && isKnown) continue;
+      if (filter === 'due' && status !== 'due') continue;
+      entries.push({ item, srs, status, isKnown });
+    }
+  };
+
+  collect(phraseItems, phraseSrs);
+  collect(vocabItems, vocabSrs);
+
+  const normalizedQuery = normalizeSpanish(query);
+  const filtered = normalizedQuery
+    ? entries.filter(
+        ({ item }) =>
+          normalizeSpanish(item.target).includes(normalizedQuery) ||
+          normalizeSpanish(item.native).includes(normalizedQuery)
+      )
+    : entries;
+
+  return filtered.sort((a, b) => a.srs.nextReview - b.srs.nextReview);
 }
 
