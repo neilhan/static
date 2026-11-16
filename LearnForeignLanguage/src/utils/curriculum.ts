@@ -2,7 +2,6 @@ import phrasesData from '../data/spanish-500-phrases.json';
 import wordsData from '../data/spanish-3000-words.json';
 import {
   CollectionProgress,
-  Conversation,
   ConversationCollection,
   SourceId,
   VocabItem,
@@ -34,8 +33,18 @@ const SOURCE_META: Record<SourceId, { name: string; items: VocabItem[] }> = {
   },
 };
 
+const ITEM_SOURCE_MAP = new Map<string, SourceId>(
+  (Object.entries(SOURCE_META) as [SourceId, { name: string; items: VocabItem[] }][]).flatMap(
+    ([sourceId, meta]) => meta.items.map((item) => [item.id, sourceId] as const)
+  )
+);
+
 export function getSourceItems(sourceId: SourceId): VocabItem[] {
   return SOURCE_META[sourceId].items;
+}
+
+export function getItemSourceId(itemId: string): SourceId | undefined {
+  return ITEM_SOURCE_MAP.get(itemId);
 }
 
 export function buildSourceCollection(
@@ -43,20 +52,12 @@ export function buildSourceCollection(
   progress: Partial<CollectionProgress> = {}
 ): ConversationCollection {
   const { name, items } = SOURCE_META[sourceId];
-  const conversations: Conversation[] = items.map((item) => ({
-    id: item.id,
-    contentHash: item.id,
-    sentences: [{ target: item.target, native: item.native }],
-  }));
-
-  const rawInput = items.map((item) => `${item.target} - ${item.native}`).join('\n\n');
 
   return {
     id: sourceId,
     packId: sourceId,
     name,
-    rawInput,
-    conversations,
+    itemCount: items.length,
     targetVoiceURI: progress.targetVoiceURI ?? DEFAULT_PROGRESS.targetVoiceURI,
     targetLang: progress.targetLang ?? DEFAULT_PROGRESS.targetLang,
     nativeVoiceURI: progress.nativeVoiceURI ?? DEFAULT_PROGRESS.nativeVoiceURI,

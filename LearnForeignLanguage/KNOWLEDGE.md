@@ -41,5 +41,5 @@
 ---
 
 ## Verification
-- **Unit Tests (`vitest`):** Validates `spanish-500-phrases.json` (500 items) and `spanish-3000-words.json` (3,000 items), SRS scheduling in `src/utils/srs.ts`, and `src/utils/parser.test.ts`.
+- **Unit Tests (`vitest`):** Validates `spanish-500-phrases.json` (500 items), `spanish-3000-words.json` (3,000 items), and `localStorage` persistence in `src/utils/curriculum.test.ts`, and active recall / queue / SRS grading helpers in `src/utils/recall.test.ts`.
 - **Build Check:** `pnpm build` inside `LearnForeignLanguage/`.

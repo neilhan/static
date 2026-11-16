@@ -7,10 +7,10 @@
 
 ## Architecture & Key Files
 - `src/App.tsx` — Top-level controls (Tuning presets, Fret range `0–12 / 0–15 / 0–22`, All Notes, Sharps/Flats toggle, Connect Same Notes, Repeating Tiles toggle, Scale Blocks overlay toggle, global Sound On/Off, Play Selected) and 6-tab study layout (`Fretboard & Tiles`, `Scales & Modes`, `Triads`, `7th Shell Chords`, `Pentatonic Scales`, `Circle of 5ths`).
-- `src/utils/musicTheory.ts` — Core music theory engine: pitch-class math, `#`/`b` formatting, tuning presets, repeating 2-string tile blocks, 3-string triad & shell chord voicing finders, pentatonic degrees, 5 box positions, 2-string octave shift tiles, diatonic modes (3NPS & CAGED scale boxes), and Circle of Fifths helpers (`CIRCLE_OF_FIFTHS`, `getKeyWedge`, `getChangedPitchClass`, `getKeySignatureAccidentals`).
+- `src/utils/musicTheory.ts` & `src/utils/theory/` — Core music theory engine split into focused modules (`notes.ts` for pitch-class math, `#`/`b` formatting, and tuning presets; `tiles.ts` for repeating 2-string tile blocks; `chords.ts` for 3-string triad & shell chord voicing finders; `scales.ts` for pentatonic degrees, 5 box positions, 2-string octave shift tiles, and diatonic modes 3NPS & CAGED scale boxes; `circleOfFifths.ts` for `CIRCLE_OF_FIFTHS`, `getKeyWedge`, `getChangedPitchClass`, and `getKeySignatureAccidentals`), with `musicTheory.ts` re-exporting all modules as a barrel.
 - `src/utils/guitarAudio.ts` — Zero-asset Web Audio API plucked-guitar synthesizer (`getFretMidi`, `midiToFreq`, `playMidiNote`, `playFretNote`, `playChordNotes`, `playArpeggioThenChord`, `playSequence`) with global `isSoundEnabled` / `setSoundEnabled`.
 - `src/components/Fretboard.tsx` & `Fretboard.css` — Shared 6-string fretboard renderer: nut, inlay dots, note badges, octave/unison SVG connection lines, triad/shell polygon overlays, rectangular & multi-row stepped SVG tile/box overlays, and fret-click audio playback.
-- `src/components/MiniFretboard.tsx` & `src/components/SectionHeader.tsx` — Shared mini diagram card and section header primitives reused across study boards.
+- `src/components/MiniFretboard.tsx`, `src/components/PitchClassSelector.tsx`, & `src/components/SectionHeader.tsx` — Shared mini diagram card, 12-note root pitch-class pill selector, and section header primitives reused across study boards.
 - `src/components/RepeatingTilesBoard.tsx` — Repeating 2-string natural-note tiles (`G A B / C D E`, `C D E / F G A`, `E F G / A B C`) and octave connection filters (`All`, `2-String Octaves`, `3-String Crossings`, `Unison Shifts`).
 - `src/components/ChordStudyBoard.tsx` — Reusable 3-string chord study board powering both **Triads** (`mode="triad"`) and **7th Shell Chords** (`mode="shell"`).
 - `src/components/PentatonicBoard.tsx` — Pentatonic scales study board (**5 Boxes View** + **2-String Octave Shifts**).
@@ -57,5 +57,5 @@
 ---
 
 ## Verification
-- **Unit Tests (`vitest`):** `src/utils/musicTheory.test.ts` covers pitch formatting, fret note math, repeating 2-string tiles (including stepped S3–S2 bounds), triad & shell voicings, pentatonic boxes & 2-string shifts, diatonic scale degrees & 3NPS/CAGED boxes, Circle of Fifths positions/wedges/1-note diffs/key signatures, and `guitarAudio` MIDI/frequency calculation.
+- **Unit Tests (`vitest`):** `npm --prefix Guitar test` (`vitest run`) runs `src/utils/musicTheory.test.ts`, covering pitch formatting, fret note math, repeating 2-string tiles (including stepped S3–S2 bounds), triad & shell voicings, pentatonic boxes & 2-string shifts, diatonic scale degrees & 3NPS/CAGED boxes, Circle of Fifths positions/wedges/1-note diffs/key signatures, and `guitarAudio` MIDI/frequency calculation.
 - **Build Check:** `tsc && vite build` (`pnpm --filter guitar build` / `npm --prefix Guitar run build`).

@@ -17,7 +17,7 @@ export const CollectionManager: React.FC<CollectionManagerProps> = ({
 
       <ul className="collection-list">
         {collections.map((collection) => {
-          const total = collection.conversations.length;
+          const total = collection.itemCount;
           const entries = Object.values(collection.srsData);
           const mastered = entries.filter((s) => s.interval >= 21).length;
           const learning = entries.filter(

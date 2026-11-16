@@ -23,6 +23,7 @@ import {
 } from '../utils/guitarAudio';
 import { Fretboard, FretMarker, makeFretKey } from './Fretboard';
 import { MiniFretboard, MiniFretNote } from './MiniFretboard';
+import { PitchClassSelector } from './PitchClassSelector';
 import { SectionHeader } from './SectionHeader';
 import './ChordStudyBoard.css';
 
@@ -54,8 +55,6 @@ interface ProgressionPreset {
   romanLabel: string;
   steps: ProgressionStep[];
 }
-
-const ALL_PITCH_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 const TRIAD_PROGRESSIONS: ProgressionPreset[] = [
   {
@@ -559,31 +558,11 @@ export const ChordStudyBoard: React.FC<ChordStudyBoardProps> = ({
             {cfg.qualitySectionLabel}{' '}
             {isMultiChord ? '(Pick & click "+ Add Chord")' : ''}
           </span>
-          <div className="chord-study-pill-row">
-            {ALL_PITCH_CLASSES.map((pc) => {
-              const label = formatPitchClass(pc, accidentals);
-              const isActive = pickerRootPc === pc;
-              return (
-                <button
-                  key={pc}
-                  type="button"
-                  className={`toggle-btn ${isActive ? 'active' : ''}`}
-                  style={
-                    isActive
-                      ? {
-                          backgroundColor: PITCH_CLASS_COLORS[pc],
-                          borderColor: PITCH_CLASS_COLORS[pc],
-                          color: '#ffffff',
-                        }
-                      : undefined
-                  }
-                  onClick={() => handlePickRoot(pc)}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <PitchClassSelector
+            value={pickerRootPc}
+            onChange={handlePickRoot}
+            accidentals={accidentals}
+          />
           <div className="chord-study-pill-row" style={{ marginTop: '0.25rem' }}>
             {cfg.qualities.map((q) => {
               const info = getQualityInfo(mode, q);
