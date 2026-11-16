@@ -51,7 +51,7 @@ export function Header({
                 svgMarkup={homeIcon}
                 size="md"
                 className="home-icon"
-                style={{ width: 18, height: 18 }}
+                style={{ width: 24, height: 24 }}
               />
             </a>
             <span className="breadcrumb-sep">/</span>
