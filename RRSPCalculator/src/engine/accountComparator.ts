@@ -51,6 +51,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
   let rrspOutofPocketTotal = 0;
   let nonRegOutofPocketTotal = 0;
   let corpOutofPocketTotal = 0;
+  let tfsaOutofPocketTotal = 0;
 
   if (mode === "preTax") {
     rrspAnnualContrib = annualSaving;
@@ -63,12 +64,14 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
     corpOutofPocketTotal = corpAnnualContrib * yearsAccumulation;
 
     tfsaAnnualContrib = annualSaving * (1 - effectiveWorkMTR);
+    tfsaOutofPocketTotal = tfsaAnnualContrib * yearsAccumulation;
   } else {
     nonRegAnnualContrib = annualSaving;
     nonRegOutofPocketTotal = annualSaving * yearsAccumulation;
     corpAnnualContrib = annualSaving;
     corpOutofPocketTotal = annualSaving * yearsAccumulation;
     tfsaAnnualContrib = annualSaving;
+    tfsaOutofPocketTotal = tfsaAnnualContrib * yearsAccumulation;
 
     if (reinvestRefund) {
       const grossUp = annualSaving / (1 - effectiveWorkMTR);
@@ -122,6 +125,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
       rrspOutofPocketTotal = rTotal;
       nonRegOutofPocketTotal = totalNonRegCostBasis;
       corpOutofPocketTotal = totalCorpCostBasis;
+      tfsaOutofPocketTotal = tfsaTotal;
     } else {
       rrspBal = combinedStart;
       nonRegBal = combinedStart;
@@ -132,6 +136,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
       rrspOutofPocketTotal = combinedStart;
       nonRegOutofPocketTotal = totalNonRegCostBasis;
       corpOutofPocketTotal = totalCorpCostBasis;
+      tfsaOutofPocketTotal = combinedStart;
     }
     annualRefundReceived = 0;
   } else {
@@ -249,7 +254,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
     if (actualGrossDraw >= baseRrspDecum.gross) {
       rrspYears += 1;
     } else {
-      rrspYears += actualGrossDraw / baseRrspDecum.gross;
+      rrspYears += baseRrspDecum.gross > 0 ? actualGrossDraw / baseRrspDecum.gross : 1;
       break;
     }
 
@@ -272,6 +277,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
   );
   const nonRegDecumHistory: YearRecord[] = [];
   let nonRegDrawBal = nonRegBal;
+  let nonRegCostBasisRemaining = totalNonRegCostBasis;
   let nonRegYears = 0;
   const nonRegRetireRate = retireGrowthRate * 0.85;
   let nonRegPerpetual = false;
@@ -282,15 +288,29 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
     const age2 = person2RetireAge + y - 1;
     const start = nonRegDrawBal;
     const growth = start * nonRegRetireRate;
-    const actualGrossDraw = Math.min(start + growth, nonRegDecum.gross);
+    const avail = start + growth;
+    const yearGainRatio =
+      avail > 0 ? Math.max(0, Math.min(0.95, (avail - nonRegCostBasisRemaining) / avail)) : 0;
+    const yearNonRegTarget = calcGrossNonRegWithdrawal(
+      retireNetSpending,
+      yearGainRatio,
+      householdMode,
+      age1,
+      age2
+    );
+    const actualGrossDraw = Math.min(avail, yearNonRegTarget.gross);
 
     const tax =
       householdMode === "couple"
-        ? calculateCoupleTax(actualGrossDraw * initialGainRatio * 0.5, age1, age2, true).totalTax
-        : calculateOntarioIncomeTax(actualGrossDraw * initialGainRatio * 0.5, age1 >= 65);
+        ? calculateCoupleTax(actualGrossDraw * yearGainRatio * 0.5, age1, age2, true).totalTax
+        : calculateOntarioIncomeTax(actualGrossDraw * yearGainRatio * 0.5, age1 >= 65);
 
     const net = actualGrossDraw - tax;
-    nonRegDrawBal = Math.max(0, start + growth - actualGrossDraw);
+    nonRegDrawBal = Math.max(0, avail - actualGrossDraw);
+    nonRegCostBasisRemaining = Math.max(
+      0,
+      nonRegCostBasisRemaining - actualGrossDraw * (1 - yearGainRatio)
+    );
 
     nonRegDecumHistory.push({
       year: y,
@@ -305,10 +325,10 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
       endBalance: Math.round(nonRegDrawBal),
     });
 
-    if (actualGrossDraw >= nonRegDecum.gross) {
+    if (actualGrossDraw >= yearNonRegTarget.gross) {
       nonRegYears += 1;
     } else {
-      nonRegYears += actualGrossDraw / nonRegDecum.gross;
+      nonRegYears += yearNonRegTarget.gross > 0 ? actualGrossDraw / yearNonRegTarget.gross : 1;
       break;
     }
 
@@ -332,6 +352,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
   );
   const corpDecumHistory: YearRecord[] = [];
   let corpDrawBal = corpBal;
+  let corpCostBasisRemaining = totalCorpCostBasis;
   let corpYears = 0;
   const corpRetireRate = retireGrowthRate * 0.88;
   let corpPerpetual = false;
@@ -342,9 +363,20 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
     const age2 = person2RetireAge + y - 1;
     const start = corpDrawBal;
     const growth = start * corpRetireRate;
-    const actualGrossDraw = Math.min(start + growth, corpDecum.gross);
+    const avail = start + growth;
+    const yearCorpGainRatio =
+      avail > 0 ? Math.max(0, Math.min(0.95, (avail - corpCostBasisRemaining) / avail)) : 0;
+    const yearCorpTarget = calcGrossCorpWithdrawal(
+      retireNetSpending,
+      yearCorpGainRatio,
+      householdMode,
+      age1,
+      age2,
+      enableIncomeSplitting
+    );
+    const actualGrossDraw = Math.min(avail, yearCorpTarget.gross);
 
-    const distInfo = calcCorpDistributionTaxInfo(actualGrossDraw, initialCorpGainRatio);
+    const distInfo = calcCorpDistributionTaxInfo(actualGrossDraw, yearCorpGainRatio);
     let tax = 0;
     if (householdMode === "couple" && enableIncomeSplitting) {
       const halfGrossed = distInfo.grossedUpDividend * 0.5;
@@ -361,7 +393,11 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
     }
 
     const net = actualGrossDraw - tax;
-    corpDrawBal = Math.max(0, start + growth - actualGrossDraw);
+    corpDrawBal = Math.max(0, avail - actualGrossDraw);
+    corpCostBasisRemaining = Math.max(
+      0,
+      corpCostBasisRemaining - actualGrossDraw * (1 - yearCorpGainRatio)
+    );
 
     corpDecumHistory.push({
       year: y,
@@ -376,10 +412,10 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
       endBalance: Math.round(corpDrawBal),
     });
 
-    if (actualGrossDraw >= corpDecum.gross) {
+    if (actualGrossDraw >= yearCorpTarget.gross) {
       corpYears += 1;
     } else {
-      corpYears += actualGrossDraw / corpDecum.gross;
+      corpYears += yearCorpTarget.gross > 0 ? actualGrossDraw / yearCorpTarget.gross : 1;
       break;
     }
 
@@ -422,7 +458,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
     if (actualGrossDraw >= tfsaDecumGross) {
       tfsaYears += 1;
     } else {
-      tfsaYears += actualGrossDraw / tfsaDecumGross;
+      tfsaYears += tfsaDecumGross > 0 ? actualGrossDraw / tfsaDecumGross : 1;
       break;
     }
 
@@ -498,7 +534,7 @@ export function runSimulation(params: SimulationParams): FullSimulationCompariso
       accountName:
         householdMode === "couple" ? "Couple's Combined TFSAs" : "TFSA (Tax-Free Savings Account)",
       terminalBalance: Math.round(tfsaBal),
-      totalOutofPocketCost: Math.round(nonRegOutofPocketTotal),
+      totalOutofPocketCost: Math.round(tfsaOutofPocketTotal),
       totalTaxRefundsReceived: 0,
       annualGrossWithdrawalNeeded: tfsaDecumGross,
       annualRetirementTaxPaid: 0,

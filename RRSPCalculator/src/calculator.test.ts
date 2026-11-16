@@ -373,6 +373,117 @@ describe("Portfolio Strategy Simulator (Single & Couple)", () => {
     // CCPC retains 87.8% (after 12.2% SBD) vs 60% personal after-tax (40% blended MTR), so Corp terminal balance > nonReg
     expect(compCorp.corp.terminalBalance).toBeGreaterThan(compCorp.nonReg.terminalBalance);
   });
+
+  it("applies OAS clawback only when OAS is received, caps it at actual OAS, and deducts it from net cashflow", () => {
+    const noOasHighIncome = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      startAtRetirement: true,
+      retireNetSpending: 130000,
+      startingRetirementAssets: { rrsp: 2500000, pi: 0, tfsa: 0 },
+      includeOtherIncome: false,
+      decumStrategy: "rrspMeltdown",
+    });
+    expect(noOasHighIncome.totalOASClawbackPaid).toBe(0);
+
+    const withOasHighIncome = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      startAtRetirement: true,
+      retireNetSpending: 130000,
+      startingRetirementAssets: { rrsp: 2500000, pi: 0, tfsa: 0 },
+      includeOtherIncome: true,
+      person1CppAnnual: 12000,
+      person1CppStartAge: 65,
+      person1OasAnnual: 8560,
+      decumStrategy: "rrspMeltdown",
+    });
+    expect(withOasHighIncome.totalOASClawbackPaid).toBeGreaterThan(0);
+    const firstRetire = withOasHighIncome.history[0];
+    // Ledger identity: gross inflows minus totalTax (which includes OAS clawback) equals netSpendReceived
+    const grossInflows =
+      firstRetire.guaranteedGross +
+      firstRetire.rrspGrossDraw +
+      firstRetire.piGrossDraw +
+      firstRetire.corpGrossDraw +
+      firstRetire.tfsaGrossDraw;
+    expect(firstRetire.netSpendReceived).toBe(Math.round(grossInflows - firstRetire.totalTax));
+  });
+
+  it("caps oasShield RRSP withdrawals accounting for guaranteed income so OAS clawback is avoided", () => {
+    const res = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      startAtRetirement: true,
+      retireNetSpending: 100000,
+      startingRetirementAssets: { rrsp: 500000, pi: 0, tfsa: 600000 },
+      includeOtherIncome: true,
+      person1CppAnnual: 15000,
+      person1CppStartAge: 65,
+      person1OasAnnual: 8560,
+      employerPensionAnnual: 25000,
+      employerPensionStartAge: 65,
+      decumStrategy: "oasShield",
+    });
+
+    // First year guaranteed = 48,560; OAS shield caps RRSP at 88,000 - 48,560 = 39,440 (total < 91k)
+    expect(res.history[0].rrspGrossDraw).toBeLessThanOrEqual(40000);
+    expect(res.totalOASClawbackPaid).toBe(0);
+  });
+
+  it("does not double-withdraw from TFSA in taxableFirst when RRSP covers remaining shortfall", () => {
+    const res = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      startAtRetirement: true,
+      retireNetSpending: 60000,
+      startingRetirementAssets: { rrsp: 500000, pi: 20000, piUnrealizedGainPct: 0, tfsa: 200000 },
+      decumStrategy: "taxableFirst",
+    });
+
+    // Year 1: PI grows 4.25% to $20,850 and is fully spent; RRSP covers remaining net; TFSA remains untouched
+    expect(res.history[0].piGrossDraw).toBe(20850);
+    expect(res.history[0].rrspGrossDraw).toBeGreaterThan(40000);
+    expect(res.history[0].tfsaGrossDraw).toBe(0);
+    expect(res.history[0].netSpendReceived).toBeGreaterThanOrEqual(59700);
+    expect(res.history[0].netSpendReceived).toBeLessThanOrEqual(60300);
+  });
+
+  it("finds safe spending below $15,000, tracks TFSA breakdown cost basis, and records age-85 estate on early retirement", () => {
+    const smallOpt = findMaxSafeSpending({
+      ...baseSingleParams,
+      startAtRetirement: true,
+      retireAge: 65,
+      startingRetirementAssets: { rrsp: 0, pi: 0, tfsa: 200000 },
+    }, 95);
+    expect(smallOpt.maxSpending).toBeGreaterThan(5000);
+    expect(smallOpt.maxSpending).toBeLessThan(15000);
+
+    const compBreakdown = runSimulation({
+      householdMode: "single",
+      annualSaving: 40000,
+      mode: "preTax",
+      reinvestRefund: false,
+      yearsAccumulation: 15,
+      retireAge: 65,
+      retireNetSpending: 80000,
+      workTaxRate: 0.43,
+      growthRatePreTax: 0.07,
+      taxDrag: 0.015,
+      retireGrowthRate: 0.05,
+      startAtRetirement: true,
+      startingRetirementAssets: { rrsp: 700000, pi: 300000, piUnrealizedGainPct: 50, tfsa: 200000 },
+      comparatorUseBreakdown: true,
+    });
+    expect(compBreakdown.tfsa.totalOutofPocketCost).toBe(200000);
+
+    const earlyPerpetual = simulatePortfolioStrategy({
+      ...baseSingleParams,
+      startAtRetirement: true,
+      retireAge: 38,
+      retireNetSpending: 40000,
+      startingRetirementAssets: { rrsp: 0, pi: 0, tfsa: 5000000 },
+      decumStrategy: "oasShield",
+    });
+    expect(earlyPerpetual.isPerpetual).toBe(true);
+    expect(earlyPerpetual.estateValueAtAge85).toBeGreaterThan(5000000);
+  });
 });
 
 

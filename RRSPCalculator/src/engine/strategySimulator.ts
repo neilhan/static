@@ -43,7 +43,6 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
   const currentAge2 = Math.max(18, person2RetireAge - yearsAccumulation);
 
   const rrspAnnualLimit = householdMode === "couple" ? 32490 * 2 : 32490;
-  const oasThreshold = householdMode === "couple" ? 91000 * 2 : 91000;
 
   let rawRrsp = 0;
   let rawPi = 0;
@@ -291,6 +290,85 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
     };
   };
 
+  const calcAdditionalRrspForNet = (
+    targetNetAddition: number,
+    baseRegularTaxable: number,
+    baseCorpDraw: number,
+    baseCorpGainRatio: number,
+    age1: number,
+    age2: number
+  ): number => {
+    if (targetNetAddition <= 0) return 0;
+    const baseTax = evalCombinedHouseholdTax(
+      baseRegularTaxable,
+      baseCorpDraw,
+      baseCorpGainRatio,
+      age1,
+      age2
+    ).totalTax;
+    let low = targetNetAddition;
+    let high = targetNetAddition * 2.5;
+    let gross = targetNetAddition;
+    for (let i = 0; i < 40; i++) {
+      const mid = (low + high) / 2;
+      const newTax = evalCombinedHouseholdTax(
+        baseRegularTaxable + mid,
+        baseCorpDraw,
+        baseCorpGainRatio,
+        age1,
+        age2
+      ).totalTax;
+      const netAdded = mid - (newTax - baseTax);
+      if (Math.abs(netAdded - targetNetAddition) < 1) {
+        gross = mid;
+        break;
+      }
+      if (netAdded < targetNetAddition) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+      gross = mid;
+    }
+    return Math.round(gross);
+  };
+
+  const calcOasClawback = (
+    p1Oas: number,
+    p2Oas: number,
+    p1Cpp: number,
+    p2Cpp: number,
+    dbPension: number,
+    otherInc: number,
+    portfolioRegularTaxable: number,
+    grossedUpDiv: number,
+    age1: number,
+    age2: number
+  ): number => {
+    if (p1Oas <= 0 && p2Oas <= 0) return 0;
+    const singleOasThreshold = 91000;
+    if (householdMode === "couple") {
+      const canSplitRegular = enableIncomeSplitting && (age1 >= 65 || age2 >= 65);
+      const p1Guaranteed = p1Cpp + p1Oas + (dbPension + otherInc) * 0.5;
+      const p2Guaranteed = p2Cpp + p2Oas + (dbPension + otherInc) * 0.5;
+      const p1Inc =
+        p1Guaranteed +
+        (canSplitRegular ? portfolioRegularTaxable * 0.5 : portfolioRegularTaxable) +
+        (enableIncomeSplitting ? grossedUpDiv * 0.5 : grossedUpDiv);
+      const p2Inc =
+        p2Guaranteed +
+        (canSplitRegular ? portfolioRegularTaxable * 0.5 : 0) +
+        (enableIncomeSplitting ? grossedUpDiv * 0.5 : 0);
+
+      const cb1 = p1Oas > 0 ? Math.min(p1Oas, Math.max(0, p1Inc - singleOasThreshold) * 0.15) : 0;
+      const cb2 = p2Oas > 0 ? Math.min(p2Oas, Math.max(0, p2Inc - singleOasThreshold) * 0.15) : 0;
+      return cb1 + cb2;
+    }
+    const totalIncome =
+      p1Cpp + p1Oas + dbPension + otherInc + portfolioRegularTaxable + grossedUpDiv;
+    return Math.min(p1Oas, Math.max(0, totalIncome - singleOasThreshold) * 0.15);
+  };
+
   for (let y = 1; y <= maxRetireYears; y++) {
     const age1 = retireAge + y - 1;
     const age2 = person2RetireAge + y - 1;
@@ -378,30 +456,33 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
 
     if (decumStrategy === "oasShield") {
       const oasCap = householdMode === "couple" ? 176000 : 88000;
-      const rrspCap = Math.max(rrifMinGross, Math.min(rrspAvail, oasCap));
-      if (rrifMinGross > oasCap) {
+      const oasRoom = Math.max(0, oasCap - guaranteedGross);
+      const rrspCap = Math.max(rrifMinGross, Math.min(rrspAvail, oasRoom));
+      if (rrifMinGross > oasRoom) {
         isRRIFForced = true;
         yearNotes = "RRIF Min Exceeds OAS Cap";
       } else {
         isOASCapped = true;
       }
 
-      const trialTax =
-        householdMode === "couple"
-          ? calculateCoupleTax(rrspCap, age1, age2, enableIncomeSplitting).totalTax
-          : calculateOntarioIncomeTax(rrspCap, age1 >= 65);
+      const trialTax = Math.max(
+        0,
+        evalCombinedHouseholdTax(guaranteedGross + rrspCap, 0, 0, age1, age2).totalTax -
+          guaranteedTax
+      );
 
       const trialNet = Math.max(0, rrspCap - trialTax);
 
       if (trialNet >= targetNet) {
-        const needed = calcGrossRRSPWithdrawal(
+        const neededGross = calcAdditionalRrspForNet(
           targetNet,
-          householdMode,
+          guaranteedGross,
+          0,
+          0,
           age1,
-          age2,
-          enableIncomeSplitting
+          age2
         );
-        rrspGrossDraw = Math.max(rrifMinGross, Math.min(rrspAvail, needed.gross));
+        rrspGrossDraw = Math.max(rrifMinGross, Math.min(rrspAvail, neededGross));
       } else {
         rrspGrossDraw = rrspCap;
         const rrspNet = rrspGrossDraw - trialTax;
@@ -411,10 +492,17 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
           const piRes = calcGrossNonRegWithdrawal(shortfall, piGainRatio, householdMode, age1, age2);
           const drawFromPi = Math.min(piAvail, piRes.gross);
           piGrossDraw = drawFromPi;
-          const actualPiTax =
-            householdMode === "couple"
-              ? calculateCoupleTax(drawFromPi * piGainRatio * 0.5, age1, age2, true).totalTax
-              : calculateOntarioIncomeTax(drawFromPi * piGainRatio * 0.5, age1 >= 65);
+          const actualPiTax = Math.max(
+            0,
+            evalCombinedHouseholdTax(
+              guaranteedGross + rrspGrossDraw + drawFromPi * piGainRatio * 0.5,
+              0,
+              0,
+              age1,
+              age2
+            ).totalTax -
+              evalCombinedHouseholdTax(guaranteedGross + rrspGrossDraw, 0, 0, age1, age2).totalTax
+          );
 
           const piNet = drawFromPi - actualPiTax;
           shortfall = Math.max(0, shortfall - piNet);
@@ -431,10 +519,13 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
           );
           const drawFromCorp = Math.min(corpAvail, corpRes.gross);
           corpGrossDraw = drawFromCorp;
-          const corpNet = Math.max(
+          const baseReg = guaranteedGross + rrspGrossDraw + piGrossDraw * piGainRatio * 0.5;
+          const actualCorpTax = Math.max(
             0,
-            drawFromCorp - corpRes.tax * (drawFromCorp / Math.max(1, corpRes.gross))
+            evalCombinedHouseholdTax(baseReg, drawFromCorp, corpGainRatio, age1, age2).totalTax -
+              evalCombinedHouseholdTax(baseReg, 0, 0, age1, age2).totalTax
           );
+          const corpNet = Math.max(0, drawFromCorp - actualCorpTax);
           shortfall = Math.max(0, shortfall - corpNet);
         }
 
@@ -447,11 +538,12 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
     } else if (decumStrategy === "rrspMeltdown") {
       const meltdownCap = householdMode === "couple" ? 180000 : 105000;
       if (age1 < 71 && rrspAvail > 0) {
-        rrspGrossDraw = Math.min(rrspAvail, meltdownCap);
-        const rrspTax =
-          householdMode === "couple"
-            ? calculateCoupleTax(rrspGrossDraw, age1, age2, enableIncomeSplitting).totalTax
-            : calculateOntarioIncomeTax(rrspGrossDraw, age1 >= 65);
+        rrspGrossDraw = Math.max(rrifMinGross, Math.min(rrspAvail, meltdownCap));
+        const rrspTax = Math.max(
+          0,
+          evalCombinedHouseholdTax(guaranteedGross + rrspGrossDraw, 0, 0, age1, age2).totalTax -
+            guaranteedTax
+        );
 
         const rrspNet = rrspGrossDraw - rrspTax;
         if (rrspNet < targetNet) {
@@ -466,18 +558,20 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
         }
         yearNotes = "Early RRSP Meltdown";
       } else {
-        const needed = calcGrossRRSPWithdrawal(
+        const neededGross = calcAdditionalRrspForNet(
           targetNet,
-          householdMode,
+          guaranteedGross,
+          0,
+          0,
           age1,
-          age2,
-          enableIncomeSplitting
+          age2
         );
-        rrspGrossDraw = Math.max(rrifMinGross, Math.min(rrspAvail, needed.gross));
-        const rrspTax =
-          householdMode === "couple"
-            ? calculateCoupleTax(rrspGrossDraw, age1, age2, enableIncomeSplitting).totalTax
-            : calculateOntarioIncomeTax(rrspGrossDraw, age1 >= 65);
+        rrspGrossDraw = Math.max(rrifMinGross, Math.min(rrspAvail, neededGross));
+        const rrspTax = Math.max(
+          0,
+          evalCombinedHouseholdTax(guaranteedGross + rrspGrossDraw, 0, 0, age1, age2).totalTax -
+            guaranteedTax
+        );
 
         const rrspNet = rrspGrossDraw - rrspTax;
         let shortfall = Math.max(0, targetNet - rrspNet);
@@ -498,9 +592,11 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
       rrspGrossDraw = rrifMinGross;
       const rrspTax =
         rrspGrossDraw > 0
-          ? householdMode === "couple"
-            ? calculateCoupleTax(rrspGrossDraw, age1, age2, enableIncomeSplitting).totalTax
-            : calculateOntarioIncomeTax(rrspGrossDraw, age1 >= 65)
+          ? Math.max(
+              0,
+              evalCombinedHouseholdTax(guaranteedGross + rrspGrossDraw, 0, 0, age1, age2).totalTax -
+                guaranteedTax
+            )
           : 0;
 
       const rrspNet = rrspGrossDraw - rrspTax;
@@ -510,11 +606,25 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
         const piRes = calcGrossNonRegWithdrawal(shortfall, piGainRatio, householdMode, age1, age2);
         const draw = Math.min(piAvail, piRes.gross);
         piGrossDraw = draw;
+        const baseTax = evalCombinedHouseholdTax(
+          guaranteedGross + rrspGrossDraw,
+          0,
+          0,
+          age1,
+          age2
+        ).totalTax;
         const net =
           draw -
-          (householdMode === "couple"
-            ? calculateCoupleTax(draw * piGainRatio * 0.5, age1, age2, true).totalTax
-            : calculateOntarioIncomeTax(draw * piGainRatio * 0.5, age1 >= 65));
+          Math.max(
+            0,
+            evalCombinedHouseholdTax(
+              guaranteedGross + rrspGrossDraw + draw * piGainRatio * 0.5,
+              0,
+              0,
+              age1,
+              age2
+            ).totalTax - baseTax
+          );
         shortfall = Math.max(0, shortfall - net);
       }
 
@@ -529,20 +639,39 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
         );
         const draw = Math.min(corpAvail, corpRes.gross);
         corpGrossDraw = draw;
-        const net = Math.max(0, draw - corpRes.tax * (draw / Math.max(1, corpRes.gross)));
+        const baseReg = guaranteedGross + rrspGrossDraw + piGrossDraw * piGainRatio * 0.5;
+        const baseTax = evalCombinedHouseholdTax(baseReg, 0, 0, age1, age2).totalTax;
+        const corpTax = Math.max(
+          0,
+          evalCombinedHouseholdTax(baseReg, draw, corpGainRatio, age1, age2).totalTax - baseTax
+        );
+        const net = Math.max(0, draw - corpTax);
         shortfall = Math.max(0, shortfall - net);
       }
 
       if (shortfall > 0 && rrspAvail > rrspGrossDraw) {
-        const needed = calcGrossRRSPWithdrawal(
+        const baseReg = guaranteedGross + rrspGrossDraw + piGrossDraw * piGainRatio * 0.5;
+        const baseTax = evalCombinedHouseholdTax(baseReg, corpGrossDraw, corpGainRatio, age1, age2)
+          .totalTax;
+        const neededGross = calcAdditionalRrspForNet(
           shortfall,
-          householdMode,
+          baseReg,
+          corpGrossDraw,
+          corpGainRatio,
           age1,
-          age2,
-          enableIncomeSplitting
+          age2
         );
-        const addDraw = Math.min(rrspAvail - rrspGrossDraw, needed.gross);
+        const addDraw = Math.min(rrspAvail - rrspGrossDraw, neededGross);
         rrspGrossDraw += addDraw;
+        const newTax = evalCombinedHouseholdTax(
+          baseReg + addDraw,
+          corpGrossDraw,
+          corpGainRatio,
+          age1,
+          age2
+        ).totalTax;
+        const addNet = Math.max(0, addDraw - (newTax - baseTax));
+        shortfall = Math.max(0, shortfall - addNet);
       }
 
       if (shortfall > 0 && tfsaAvail > 0) {
@@ -611,14 +740,15 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
         const canTake = Math.min(corpAvail - corpGrossDraw, diff * 1.08);
         corpGrossDraw += canTake;
       } else if (rrspAvail > rrspGrossDraw) {
-        const needed = calcGrossRRSPWithdrawal(
+        const neededGross = calcAdditionalRrspForNet(
           diff,
-          householdMode,
+          regularTaxable,
+          corpGrossDraw,
+          corpGainRatio,
           age1,
-          age2,
-          enableIncomeSplitting
-        ).gross;
-        const canTake = Math.min(rrspAvail - rrspGrossDraw, needed);
+          age2
+        );
+        const canTake = Math.min(rrspAvail - rrspGrossDraw, neededGross);
         rrspGrossDraw += canTake;
       } else {
         break;
@@ -635,8 +765,19 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
       age2
     );
 
-    const yearTotalTax = taxRes.totalTax;
-    const combinedTaxableIncomeForOAS = regularTaxableIncome + taxRes.grossedUpDiv;
+    const yearClawback = calcOasClawback(
+      p1Oas,
+      p2Oas,
+      p1Cpp,
+      p2Cpp,
+      dbPension,
+      otherInc,
+      rrspGrossDraw + piTaxableGain,
+      taxRes.grossedUpDiv,
+      age1,
+      age2
+    );
+    const yearTotalTax = taxRes.totalTax + yearClawback;
 
     const netCorpTaxableImpact = Math.max(0, taxRes.grossedUpDiv * 0.45);
     const portfolioTaxableWeight = rrspGrossDraw + piTaxableGain + netCorpTaxableImpact;
@@ -652,11 +793,7 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
     const corpTax = Math.max(0, Math.round(totalPortfolioTax - rrspTax - piTax));
 
     totalLifetimeTax += yearTotalTax;
-
-    if (combinedTaxableIncomeForOAS > oasThreshold) {
-      const clawback = (combinedTaxableIncomeForOAS - oasThreshold) * 0.15;
-      totalOASClawback += clawback;
-    }
+    totalOASClawback += yearClawback;
 
     const netReceived = Math.round(
       guaranteedGross + rrspGrossDraw + piGrossDraw + corpGrossDraw + tfsaGrossDraw - yearTotalTax
@@ -720,7 +857,7 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
     if (netReceived >= retireNetSpending * 0.85) {
       yearsFunded += 1;
     } else if (totalRemaining <= 100) {
-      yearsFunded += Math.max(0, netReceived / retireNetSpending);
+      yearsFunded += retireNetSpending > 0 ? Math.max(0, netReceived / retireNetSpending) : 1;
       break;
     } else {
       yearsFunded += 1;
@@ -737,6 +874,7 @@ export function simulatePortfolioStrategy(params: StrategySimulationParams): Str
 
     if (
       y >= 45 &&
+      age1 >= 85 &&
       terminalBal.total > 0 &&
       rrspBal + piBal + corpBal + tfsaBal >= terminalBal.total
     ) {
@@ -848,13 +986,14 @@ export function findMaxSafeSpending(
   let bestResult: StrategyResult | null = null;
 
   for (const strat of strategies) {
-    let low = 15000;
-    let high = 400000;
-    let stratMax = 15000;
+    let lowStep = 0;
+    let highStep = 400;
+    let stratMax = 0;
     let stratRes: StrategyResult | null = null;
 
-    for (let iter = 0; iter < 16; iter++) {
-      const mid = Math.round((low + high) / 2 / 1000) * 1000;
+    while (lowStep <= highStep) {
+      const midStep = Math.floor((lowStep + highStep) / 2);
+      const mid = midStep * 1000;
       const res = simulatePortfolioStrategy({
         ...params,
         retireNetSpending: mid,
@@ -864,13 +1003,13 @@ export function findMaxSafeSpending(
       if (res.isPerpetual || res.longevityYears >= targetLongevityYears) {
         stratMax = mid;
         stratRes = res;
-        low = mid + 1000;
+        lowStep = midStep + 1;
       } else {
-        high = mid - 1000;
+        highStep = midStep - 1;
       }
     }
 
-    if (stratMax > bestMax && stratRes) {
+    if (stratMax >= bestMax && stratRes) {
       bestMax = stratMax;
       bestStrat = strat;
       bestResult = stratRes;
