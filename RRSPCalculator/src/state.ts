@@ -5,6 +5,12 @@ import {
   StrategySimulationParams,
 } from "./calculator";
 
+export interface OptimizeBannerInfo {
+  maxSpending: number;
+  depletionAge: number;
+  strategyName: string;
+}
+
 export interface AppState {
   householdMode: HouseholdMode;
   viewMode: "simulator" | "comparator";
@@ -71,220 +77,413 @@ export interface AppState {
   theme: "dark" | "light";
 }
 
-export const state: AppState = {
-  householdMode: "single",
-  viewMode: "simulator",
-  annualSaving: 40000,
-  yearsAccumulation: 15,
-  retireAge: 65,
-  person2RetireAge: 63,
-  retireNetSpending: 80000,
-  workTaxRate: 0.43,
-  person2WorkTaxRate: 0.30,
-  growthRatePreTax: 0.07,
-  taxDrag: 0.015,
-  retireGrowthRate: 0.05,
-  enableIncomeSplitting: true,
+function getInitialTheme(): "dark" | "light" {
+  if (typeof localStorage === "undefined") return "dark";
+  return localStorage.getItem("theme") === "light" ? "light" : "dark";
+}
 
-  // Granular Household Savings Allocation ($)
-  p1RrspSaving: 25000,
-  p2RrspSaving: 10000,
-  piSaving: 15000,
-  corpSaving: 0,
-  tfsaSaving: 0,
+export function createInitialState(): AppState {
+  return {
+    householdMode: "single",
+    viewMode: "simulator",
+    annualSaving: 40000,
+    yearsAccumulation: 15,
+    retireAge: 65,
+    person2RetireAge: 63,
+    retireNetSpending: 80000,
+    workTaxRate: 0.43,
+    person2WorkTaxRate: 0.30,
+    growthRatePreTax: 0.07,
+    taxDrag: 0.015,
+    retireGrowthRate: 0.05,
+    enableIncomeSplitting: true,
 
-  // Starting Point at Retirement Mode & Asset Breakdown ($)
-  startAtRetirement: false,
-  retireStartTotal: 1200000,
-  retireStartP1Rrsp: 700000,
-  retireStartP2Rrsp: 350000,
-  retireStartPi: 300000,
-  retireStartPiGainPct: 50,
-  retireStartCorp: 0,
-  retireStartCorpGainPct: 50,
-  retireStartTfsa: 200000,
-  comparatorUseBreakdown: false,
+    // Granular Household Savings Allocation ($)
+    p1RrspSaving: 25000,
+    p2RrspSaving: 10000,
+    piSaving: 15000,
+    corpSaving: 0,
+    tfsaSaving: 0,
 
-  // Simulator Strategy & Percentages
-  rrspPct: 70,
-  piPct: 30,
-  corpPct: 0,
-  tfsaPct: 0,
-  reinvestRefundTo: "tfsa",
-  decumStrategy: "oasShield",
+    // Starting Point at Retirement Mode & Asset Breakdown ($)
+    startAtRetirement: false,
+    retireStartTotal: 1200000,
+    retireStartP1Rrsp: 700000,
+    retireStartP2Rrsp: 350000,
+    retireStartPi: 300000,
+    retireStartPiGainPct: 50,
+    retireStartCorp: 0,
+    retireStartCorpGainPct: 50,
+    retireStartTfsa: 200000,
+    comparatorUseBreakdown: false,
 
-  // Guaranteed Pensions & Other Income
-  includeOtherIncome: false,
-  otherIncomeExpanded: false,
-  person1CppAnnual: 10000,
-  person1CppStartAge: 65,
-  person2CppAnnual: 8000,
-  person2CppStartAge: 65,
-  person1OasAnnual: 8560,
-  person2OasAnnual: 8560,
-  employerPensionAnnual: 0,
-  employerPensionStartAge: 65,
-  otherTaxableIncome: 0,
+    // Simulator Strategy & Percentages
+    rrspPct: 70,
+    piPct: 30,
+    corpPct: 0,
+    tfsaPct: 0,
+    reinvestRefundTo: "tfsa",
+    decumStrategy: "oasShield",
 
-  // Direct Comparator Specific State
-  comparatorMode: "preTax",
-  comparatorReinvest: false,
+    // Guaranteed Pensions & Other Income
+    includeOtherIncome: false,
+    otherIncomeExpanded: false,
+    person1CppAnnual: 10000,
+    person1CppStartAge: 65,
+    person2CppAnnual: 8000,
+    person2CppStartAge: 65,
+    person1OasAnnual: 8560,
+    person2OasAnnual: 8560,
+    employerPensionAnnual: 0,
+    employerPensionStartAge: 65,
+    otherTaxableIncome: 0,
 
-  chartViewMode: "balances",
-  blueprintSelectedAge: null,
+    // Direct Comparator Specific State
+    comparatorMode: "preTax",
+    comparatorReinvest: false,
 
-  ledgerOpen: false,
-  theme: (localStorage.getItem("theme") as "dark" | "light") || "dark",
-};
+    chartViewMode: "balances",
+    blueprintSelectedAge: null,
 
-export function normalizeHouseholdAllocations(): void {
-  const isCouple = state.householdMode === "couple";
+    ledgerOpen: false,
+    theme: getInitialTheme(),
+  };
+}
+
+export function computeActiveAnnualSaving(s: AppState): number {
+  const isCouple = s.householdMode === "couple";
+  return isCouple
+    ? s.p1RrspSaving + s.p2RrspSaving + s.piSaving + s.corpSaving
+    : s.p1RrspSaving + s.piSaving + s.corpSaving;
+}
+
+export function computeActiveRetireStartTotal(s: AppState): number {
+  const isCouple = s.householdMode === "couple";
+  return isCouple
+    ? s.retireStartP1Rrsp +
+        s.retireStartP2Rrsp +
+        s.retireStartPi +
+        s.retireStartCorp +
+        s.retireStartTfsa
+    : s.retireStartP1Rrsp + s.retireStartPi + s.retireStartCorp + s.retireStartTfsa;
+}
+
+export function normalizeHouseholdAllocations(s: AppState): AppState {
+  const isCouple = s.householdMode === "couple";
+  const next = { ...s };
+
   if (!isCouple) {
-    const currentSum = state.p1RrspSaving + state.piSaving + state.corpSaving;
-    if (currentSum !== state.annualSaving) {
-      const remaining = Math.max(0, state.annualSaving - state.corpSaving);
-      state.p1RrspSaving = Math.min(32490, Math.round(remaining * 0.7));
-      state.piSaving = Math.max(0, remaining - state.p1RrspSaving);
+    const currentSum = next.p1RrspSaving + next.piSaving + next.corpSaving;
+    if (currentSum !== next.annualSaving) {
+      const remaining = Math.max(0, next.annualSaving - next.corpSaving);
+      next.p1RrspSaving = Math.min(32490, Math.round(remaining * 0.7));
+      next.piSaving = Math.max(0, remaining - next.p1RrspSaving);
     }
     const currentRetireSum =
-      state.retireStartP1Rrsp + state.retireStartPi + state.retireStartCorp + state.retireStartTfsa;
-    if (currentRetireSum !== state.retireStartTotal) {
-      state.retireStartP1Rrsp = Math.max(
+      next.retireStartP1Rrsp + next.retireStartPi + next.retireStartCorp + next.retireStartTfsa;
+    if (currentRetireSum !== next.retireStartTotal) {
+      next.retireStartP1Rrsp = Math.max(
         0,
-        state.retireStartTotal - state.retireStartPi - state.retireStartCorp - state.retireStartTfsa
+        next.retireStartTotal - next.retireStartPi - next.retireStartCorp - next.retireStartTfsa
       );
-      state.retireStartTotal =
-        state.retireStartP1Rrsp + state.retireStartPi + state.retireStartCorp + state.retireStartTfsa;
+      next.retireStartTotal =
+        next.retireStartP1Rrsp + next.retireStartPi + next.retireStartCorp + next.retireStartTfsa;
     }
   } else {
-    const currentSum =
-      state.p1RrspSaving + state.p2RrspSaving + state.piSaving + state.corpSaving;
-    if (currentSum !== state.annualSaving) {
-      const remaining = Math.max(0, state.annualSaving - state.corpSaving);
+    const currentSum = next.p1RrspSaving + next.p2RrspSaving + next.piSaving + next.corpSaving;
+    if (currentSum !== next.annualSaving) {
+      const remaining = Math.max(0, next.annualSaving - next.corpSaving);
       const half = Math.min(32490, Math.round(remaining * 0.35));
-      state.p1RrspSaving = half;
-      state.p2RrspSaving = half;
-      state.piSaving = Math.max(0, remaining - half * 2);
+      next.p1RrspSaving = half;
+      next.p2RrspSaving = half;
+      next.piSaving = Math.max(0, remaining - half * 2);
     }
     const currentRetireSum =
-      state.retireStartP1Rrsp +
-      state.retireStartP2Rrsp +
-      state.retireStartPi +
-      state.retireStartCorp +
-      state.retireStartTfsa;
-    if (currentRetireSum !== state.retireStartTotal) {
+      next.retireStartP1Rrsp +
+      next.retireStartP2Rrsp +
+      next.retireStartPi +
+      next.retireStartCorp +
+      next.retireStartTfsa;
+    if (currentRetireSum !== next.retireStartTotal) {
       const rrspPool = Math.max(
         0,
-        state.retireStartTotal - state.retireStartPi - state.retireStartCorp - state.retireStartTfsa
+        next.retireStartTotal - next.retireStartPi - next.retireStartCorp - next.retireStartTfsa
       );
       const half = Math.round(rrspPool / 2);
-      state.retireStartP1Rrsp = half;
-      state.retireStartP2Rrsp = rrspPool - half;
-      state.retireStartTotal =
-        state.retireStartP1Rrsp +
-        state.retireStartP2Rrsp +
-        state.retireStartPi +
-        state.retireStartCorp +
-        state.retireStartTfsa;
+      next.retireStartP1Rrsp = half;
+      next.retireStartP2Rrsp = rrspPool - half;
+      next.retireStartTotal =
+        next.retireStartP1Rrsp +
+        next.retireStartP2Rrsp +
+        next.retireStartPi +
+        next.retireStartCorp +
+        next.retireStartTfsa;
     }
   }
+
+  return next;
 }
 
-export function getStrategyParams(): Omit<StrategySimulationParams, "decumStrategy"> {
-  const isCouple = state.householdMode === "couple";
-  const totalSaving = isCouple
-    ? state.p1RrspSaving + state.p2RrspSaving + state.piSaving + state.corpSaving
-    : state.p1RrspSaving + state.piSaving + state.corpSaving;
-  state.annualSaving = totalSaving;
+export function scaleTotalSaving(s: AppState, newTotal: number): AppState {
+  const isCouple = s.householdMode === "couple";
+  const clampedTotal = Math.max(0, newTotal);
 
-  const totalRetireStart = isCouple
-    ? state.retireStartP1Rrsp +
-      state.retireStartP2Rrsp +
-      state.retireStartPi +
-      state.retireStartCorp +
-      state.retireStartTfsa
-    : state.retireStartP1Rrsp +
-      state.retireStartPi +
-      state.retireStartCorp +
-      state.retireStartTfsa;
-  state.retireStartTotal = totalRetireStart;
+  if (isCouple) {
+    const currentSum = s.p1RrspSaving + s.p2RrspSaving + s.piSaving + s.corpSaving || 1;
+    const r1 = s.p1RrspSaving / currentSum;
+    const r2 = s.p2RrspSaving / currentSum;
+    const rCorp = s.corpSaving / currentSum;
+    let p1 = Math.round(clampedTotal * r1);
+    let p2 = Math.round(clampedTotal * r2);
+    const corp = Math.round(clampedTotal * rCorp);
+    let pi = clampedTotal - p1 - p2 - corp;
+    if (p1 > 32490) {
+      pi += p1 - 32490;
+      p1 = 32490;
+    }
+    if (p2 > 32490) {
+      pi += p2 - 32490;
+      p2 = 32490;
+    }
+    const next: AppState = {
+      ...s,
+      p1RrspSaving: p1,
+      p2RrspSaving: p2,
+      corpSaving: Math.max(0, corp),
+      piSaving: Math.max(0, pi),
+    };
+    return { ...next, annualSaving: computeActiveAnnualSaving(next) };
+  }
+
+  const currentSum = s.p1RrspSaving + s.piSaving + s.corpSaving || 1;
+  const r1 = s.p1RrspSaving / currentSum;
+  const rCorp = s.corpSaving / currentSum;
+  let p1 = Math.round(clampedTotal * r1);
+  const corp = Math.round(clampedTotal * rCorp);
+  let pi = clampedTotal - p1 - corp;
+  if (p1 > 32490) {
+    pi += p1 - 32490;
+    p1 = 32490;
+  }
+  const next: AppState = {
+    ...s,
+    p1RrspSaving: p1,
+    corpSaving: Math.max(0, corp),
+    piSaving: Math.max(0, pi),
+  };
+  return { ...next, annualSaving: computeActiveAnnualSaving(next) };
+}
+
+export function updateIndividualSaving(
+  s: AppState,
+  patch: Partial<Pick<AppState, "p1RrspSaving" | "p2RrspSaving" | "piSaving" | "corpSaving">>
+): AppState {
+  const next: AppState = { ...s, ...patch };
+  return { ...next, annualSaving: computeActiveAnnualSaving(next) };
+}
+
+export function scaleRetireStartTotal(s: AppState, newTotal: number): AppState {
+  const isCouple = s.householdMode === "couple";
+  const safeNewTotal = Math.max(0, newTotal);
+
+  if (isCouple) {
+    const currentSum =
+      s.retireStartP1Rrsp +
+        s.retireStartP2Rrsp +
+        s.retireStartPi +
+        s.retireStartCorp +
+        s.retireStartTfsa || 1;
+    const rP1 = s.retireStartP1Rrsp / currentSum;
+    const rP2 = s.retireStartP2Rrsp / currentSum;
+    const rPi = s.retireStartPi / currentSum;
+    const rCorp = s.retireStartCorp / currentSum;
+    const retireStartP1Rrsp = Math.round((safeNewTotal * rP1) / 1000) * 1000;
+    const retireStartP2Rrsp = Math.round((safeNewTotal * rP2) / 1000) * 1000;
+    const retireStartPi = Math.round((safeNewTotal * rPi) / 1000) * 1000;
+    const retireStartCorp = Math.round((safeNewTotal * rCorp) / 1000) * 1000;
+    const retireStartTfsa = Math.max(
+      0,
+      safeNewTotal - retireStartP1Rrsp - retireStartP2Rrsp - retireStartPi - retireStartCorp
+    );
+    const next: AppState = {
+      ...s,
+      retireStartP1Rrsp,
+      retireStartP2Rrsp,
+      retireStartPi,
+      retireStartCorp,
+      retireStartTfsa,
+    };
+    return { ...next, retireStartTotal: computeActiveRetireStartTotal(next) };
+  }
+
+  const currentSum =
+    s.retireStartP1Rrsp + s.retireStartPi + s.retireStartCorp + s.retireStartTfsa || 1;
+  const rP1 = s.retireStartP1Rrsp / currentSum;
+  const rPi = s.retireStartPi / currentSum;
+  const rCorp = s.retireStartCorp / currentSum;
+  const retireStartP1Rrsp = Math.round((safeNewTotal * rP1) / 1000) * 1000;
+  const retireStartPi = Math.round((safeNewTotal * rPi) / 1000) * 1000;
+  const retireStartCorp = Math.round((safeNewTotal * rCorp) / 1000) * 1000;
+  const retireStartTfsa = Math.max(
+    0,
+    safeNewTotal - retireStartP1Rrsp - retireStartPi - retireStartCorp
+  );
+  const next: AppState = {
+    ...s,
+    retireStartP1Rrsp,
+    retireStartPi,
+    retireStartCorp,
+    retireStartTfsa,
+  };
+  return { ...next, retireStartTotal: computeActiveRetireStartTotal(next) };
+}
+
+export function updateIndividualRetireStart(
+  s: AppState,
+  patch: Partial<
+    Pick<
+      AppState,
+      | "retireStartP1Rrsp"
+      | "retireStartP2Rrsp"
+      | "retireStartPi"
+      | "retireStartCorp"
+      | "retireStartTfsa"
+    >
+  >
+): AppState {
+  const next: AppState = { ...s, ...patch };
+  return { ...next, retireStartTotal: computeActiveRetireStartTotal(next) };
+}
+
+export function applyRetireStartPreset(
+  s: AppState,
+  p1Pct: number,
+  p2Pct: number,
+  piPct: number,
+  corpPct = 0
+): AppState {
+  const isCouple = s.householdMode === "couple";
+  const currentTotal = computeActiveRetireStartTotal(s);
+  const baseTotal = currentTotal > 0 ? currentTotal : 1200000;
+
+  if (isCouple) {
+    const retireStartP1Rrsp = Math.round((baseTotal * p1Pct) / 1000) * 1000;
+    const retireStartP2Rrsp = Math.round((baseTotal * p2Pct) / 1000) * 1000;
+    const retireStartPi = Math.round((baseTotal * piPct) / 1000) * 1000;
+    const retireStartCorp = Math.round((baseTotal * corpPct) / 1000) * 1000;
+    const retireStartTfsa = Math.max(
+      0,
+      baseTotal - retireStartP1Rrsp - retireStartP2Rrsp - retireStartPi - retireStartCorp
+    );
+    const next: AppState = {
+      ...s,
+      retireStartP1Rrsp,
+      retireStartP2Rrsp,
+      retireStartPi,
+      retireStartCorp,
+      retireStartTfsa,
+    };
+    return { ...next, retireStartTotal: computeActiveRetireStartTotal(next) };
+  }
+
+  const retireStartP1Rrsp = Math.round((baseTotal * p1Pct) / 1000) * 1000;
+  const retireStartPi = Math.round((baseTotal * piPct) / 1000) * 1000;
+  const retireStartCorp = Math.round((baseTotal * corpPct) / 1000) * 1000;
+  const retireStartTfsa = Math.max(
+    0,
+    baseTotal - retireStartP1Rrsp - retireStartPi - retireStartCorp
+  );
+  const next: AppState = {
+    ...s,
+    retireStartP1Rrsp,
+    retireStartPi,
+    retireStartCorp,
+    retireStartTfsa,
+  };
+  return { ...next, retireStartTotal: computeActiveRetireStartTotal(next) };
+}
+
+export function getStrategyParams(s: AppState): Omit<StrategySimulationParams, "decumStrategy"> {
+  const isCouple = s.householdMode === "couple";
+  const totalSaving = computeActiveAnnualSaving(s);
 
   return {
-    householdMode: state.householdMode,
-    annualSaving: state.annualSaving,
-    yearsAccumulation: state.yearsAccumulation,
-    retireAge: state.retireAge,
-    person2RetireAge: state.person2RetireAge,
-    retireNetSpending: state.retireNetSpending,
-    workTaxRate: state.workTaxRate,
-    person2WorkTaxRate: state.person2WorkTaxRate,
-    growthRatePreTax: state.growthRatePreTax,
-    taxDrag: state.taxDrag,
-    retireGrowthRate: state.retireGrowthRate,
-    enableIncomeSplitting: state.enableIncomeSplitting,
-    rrspPct: state.rrspPct,
-    piPct: state.piPct,
-    corpPct: state.corpPct,
-    tfsaPct: state.tfsaPct,
-    person1RrspSaving: state.p1RrspSaving,
-    person2RrspSaving: isCouple ? state.p2RrspSaving : 0,
-    piSaving: state.piSaving,
-    corpSaving: state.corpSaving,
-    tfsaSaving: state.tfsaSaving,
-    reinvestRefundTo: state.reinvestRefundTo,
-    startAtRetirement: state.startAtRetirement,
+    householdMode: s.householdMode,
+    annualSaving: totalSaving,
+    yearsAccumulation: s.yearsAccumulation,
+    retireAge: s.retireAge,
+    person2RetireAge: s.person2RetireAge,
+    retireNetSpending: s.retireNetSpending,
+    workTaxRate: s.workTaxRate,
+    person2WorkTaxRate: s.person2WorkTaxRate,
+    growthRatePreTax: s.growthRatePreTax,
+    taxDrag: s.taxDrag,
+    retireGrowthRate: s.retireGrowthRate,
+    enableIncomeSplitting: s.enableIncomeSplitting,
+    rrspPct: s.rrspPct,
+    piPct: s.piPct,
+    corpPct: s.corpPct,
+    tfsaPct: s.tfsaPct,
+    person1RrspSaving: s.p1RrspSaving,
+    person2RrspSaving: isCouple ? s.p2RrspSaving : 0,
+    piSaving: s.piSaving,
+    corpSaving: s.corpSaving,
+    tfsaSaving: s.tfsaSaving,
+    reinvestRefundTo: s.reinvestRefundTo,
+    startAtRetirement: s.startAtRetirement,
     startingRetirementAssets: {
-      rrsp: isCouple ? state.retireStartP1Rrsp + state.retireStartP2Rrsp : state.retireStartP1Rrsp,
-      person1Rrsp: state.retireStartP1Rrsp,
-      person2Rrsp: isCouple ? state.retireStartP2Rrsp : 0,
-      pi: state.retireStartPi,
-      piUnrealizedGainPct: state.retireStartPiGainPct,
-      corp: state.retireStartCorp,
-      corpUnrealizedGainPct: state.retireStartCorpGainPct,
-      tfsa: state.retireStartTfsa,
+      rrsp: isCouple ? s.retireStartP1Rrsp + s.retireStartP2Rrsp : s.retireStartP1Rrsp,
+      person1Rrsp: s.retireStartP1Rrsp,
+      person2Rrsp: isCouple ? s.retireStartP2Rrsp : 0,
+      pi: s.retireStartPi,
+      piUnrealizedGainPct: s.retireStartPiGainPct,
+      corp: s.retireStartCorp,
+      corpUnrealizedGainPct: s.retireStartCorpGainPct,
+      tfsa: s.retireStartTfsa,
     },
-    includeOtherIncome: state.includeOtherIncome,
-    person1CppAnnual: state.person1CppAnnual,
-    person1CppStartAge: state.person1CppStartAge,
-    person2CppAnnual: state.person2CppAnnual,
-    person2CppStartAge: state.person2CppStartAge,
-    person1OasAnnual: state.person1OasAnnual,
-    person2OasAnnual: state.person2OasAnnual,
-    employerPensionAnnual: state.employerPensionAnnual,
-    employerPensionStartAge: state.employerPensionStartAge,
-    otherTaxableIncome: state.otherTaxableIncome,
+    includeOtherIncome: s.includeOtherIncome,
+    person1CppAnnual: s.person1CppAnnual,
+    person1CppStartAge: s.person1CppStartAge,
+    person2CppAnnual: s.person2CppAnnual,
+    person2CppStartAge: s.person2CppStartAge,
+    person1OasAnnual: s.person1OasAnnual,
+    person2OasAnnual: s.person2OasAnnual,
+    employerPensionAnnual: s.employerPensionAnnual,
+    employerPensionStartAge: s.employerPensionStartAge,
+    otherTaxableIncome: s.otherTaxableIncome,
   };
 }
 
-export function getComparatorParams(): SimulationParams {
-  const isCouple = state.householdMode === "couple";
+export function getComparatorParams(s: AppState): SimulationParams {
+  const isCouple = s.householdMode === "couple";
+  const annualSaving = computeActiveAnnualSaving(s);
+
   return {
-    householdMode: state.householdMode,
-    annualSaving: state.annualSaving,
-    mode: state.comparatorMode,
-    reinvestRefund: state.comparatorReinvest,
-    yearsAccumulation: state.yearsAccumulation,
-    retireAge: state.retireAge,
-    person2RetireAge: state.person2RetireAge,
-    retireNetSpending: state.retireNetSpending,
-    workTaxRate: state.workTaxRate,
-    person2WorkTaxRate: state.person2WorkTaxRate,
-    growthRatePreTax: state.growthRatePreTax,
-    taxDrag: state.taxDrag,
-    retireGrowthRate: state.retireGrowthRate,
-    enableIncomeSplitting: state.enableIncomeSplitting,
-    startAtRetirement: state.startAtRetirement,
+    householdMode: s.householdMode,
+    annualSaving,
+    mode: s.comparatorMode,
+    reinvestRefund: s.comparatorReinvest,
+    yearsAccumulation: s.yearsAccumulation,
+    retireAge: s.retireAge,
+    person2RetireAge: s.person2RetireAge,
+    retireNetSpending: s.retireNetSpending,
+    workTaxRate: s.workTaxRate,
+    person2WorkTaxRate: s.person2WorkTaxRate,
+    growthRatePreTax: s.growthRatePreTax,
+    taxDrag: s.taxDrag,
+    retireGrowthRate: s.retireGrowthRate,
+    enableIncomeSplitting: s.enableIncomeSplitting,
+    startAtRetirement: s.startAtRetirement,
     startingRetirementAssets: {
-      rrsp: isCouple ? state.retireStartP1Rrsp + state.retireStartP2Rrsp : state.retireStartP1Rrsp,
-      person1Rrsp: state.retireStartP1Rrsp,
-      person2Rrsp: isCouple ? state.retireStartP2Rrsp : 0,
-      pi: state.retireStartPi,
-      piUnrealizedGainPct: state.retireStartPiGainPct,
-      corp: state.retireStartCorp,
-      corpUnrealizedGainPct: state.retireStartCorpGainPct,
-      tfsa: state.retireStartTfsa,
+      rrsp: isCouple ? s.retireStartP1Rrsp + s.retireStartP2Rrsp : s.retireStartP1Rrsp,
+      person1Rrsp: s.retireStartP1Rrsp,
+      person2Rrsp: isCouple ? s.retireStartP2Rrsp : 0,
+      pi: s.retireStartPi,
+      piUnrealizedGainPct: s.retireStartPiGainPct,
+      corp: s.retireStartCorp,
+      corpUnrealizedGainPct: s.retireStartCorpGainPct,
+      tfsa: s.retireStartTfsa,
     },
-    comparatorUseBreakdown: state.comparatorUseBreakdown,
+    comparatorUseBreakdown: s.comparatorUseBreakdown,
   };
 }
-
