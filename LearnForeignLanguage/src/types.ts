@@ -89,8 +89,7 @@ export interface ConversationCollection {
   id: string;
   packId?: string;
   name: string;
-  rawInput: string;
-  conversations: Conversation[];
+  itemCount: number;
 
   // Settings specific to this collection
   targetVoiceURI: string;

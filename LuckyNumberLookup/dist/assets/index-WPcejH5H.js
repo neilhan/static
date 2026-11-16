@@ -13,7 +13,7 @@
           <h1>Lucky Number Lookup</h1>
         </div>
       </div>
-      <p class="subtitle">Enter a number; it will be reduced modulo 80 (1–80) and looked up in the table below.</p>
+      <p class="subtitle">Enter a number: 1–81 are looked up directly; integers &gt; 81 (and 0) are reduced modulo 80 (1–80) in the table below.</p>
     </header>
 
     <section class="lookup-section">

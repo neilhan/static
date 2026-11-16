@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { SenderPlayState } from '../hooks/useMorseSender';
 import { useTrainerSettingsContext } from '../context/TrainerSettingsContext';
 import { SpeedControls } from './controls/SpeedControls';

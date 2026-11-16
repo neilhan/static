@@ -3,7 +3,7 @@ import "./App.css";
 import "./components/CollectionManager.css";
 import { loadState, saveState, recordDailyReview, createDefaultState } from "./utils/storage";
 import { calculateNextReview, markAsIntroduced, markAsWellKnown } from "./utils/srs";
-import { getSourceItems } from "./utils/curriculum";
+import { getItemSourceId, getSourceItems } from "./utils/curriculum";
 import { shouldUpdateSrsOnGrade } from "./utils/recall";
 import { InputSection } from "./components/InputSection";
 import { CollectionManager } from "./components/CollectionManager";
@@ -56,11 +56,12 @@ function App() {
   const vocabCollection =
     state.collections.find((c) => c.id === "vocab") || state.collections[1];
 
-  const getSourceForItem = (itemId: string): SourceId =>
-    itemId.startsWith("es-p-") ? "phrases" : "vocab";
+  const getSourceForItem = (itemId: string): SourceId | undefined =>
+    getItemSourceId(itemId);
 
   const handleGradeItem = (itemId: string, grade: number) => {
     const sourceId = getSourceForItem(itemId);
+    if (!sourceId) return;
     const targetCol = state.collections.find((c) => c.id === sourceId);
     if (!targetCol) return;
 
@@ -93,6 +94,7 @@ function App() {
 
   const handleMarkWellKnown = (itemId: string) => {
     const sourceId = getSourceForItem(itemId);
+    if (!sourceId) return;
     const next = markAsWellKnown();
 
     setState((prev) => ({
@@ -124,6 +126,7 @@ function App() {
 
       for (const itemId of itemIds) {
         const sourceId = getSourceForItem(itemId);
+        if (!sourceId) continue;
         const col = prev.collections.find((c) => c.id === sourceId);
         if (!col?.srsData[itemId]) {
           additionsBySource[sourceId][itemId] = markAsIntroduced(now);

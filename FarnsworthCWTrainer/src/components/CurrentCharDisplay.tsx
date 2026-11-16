@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { TrainerSettings } from '../hooks/useTrainerSettings';
 import { SenderProgress } from '../hooks/useMorseSender';
 

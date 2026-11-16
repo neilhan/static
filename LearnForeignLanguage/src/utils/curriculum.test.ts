@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   buildSourceCollection,
+  getItemSourceId,
   getSourceItems,
   PHRASE_ITEMS,
   VOCAB_ITEMS,
@@ -47,8 +48,11 @@ describe('2-source curriculum & localStorage progress', () => {
 
     const phrasesCol = buildSourceCollection('phrases');
     const vocabCol = buildSourceCollection('vocab');
-    expect(phrasesCol.conversations).toHaveLength(500);
-    expect(vocabCol.conversations).toHaveLength(3000);
+    expect(phrasesCol.itemCount).toBe(500);
+    expect(vocabCol.itemCount).toBe(3000);
+    expect(getItemSourceId(PHRASE_ITEMS[0].id)).toBe('phrases');
+    expect(getItemSourceId(VOCAB_ITEMS[0].id)).toBe('vocab');
+    expect(getItemSourceId('unknown-id')).toBeUndefined();
   });
 
   it('persists only compact progress in localStorage and hydrates both sources', () => {
@@ -71,7 +75,7 @@ describe('2-source curriculum & localStorage progress', () => {
     const reloaded = loadState();
     expect(reloaded.activeCollectionId).toBe('vocab');
     const reloadedVocab = reloaded.collections.find((c) => c.id === 'vocab')!;
-    expect(reloadedVocab.conversations).toHaveLength(3000);
+    expect(reloadedVocab.itemCount).toBe(3000);
     expect(reloadedVocab.srsData['es-w-0001'].repetition).toBe(1);
   });
 
