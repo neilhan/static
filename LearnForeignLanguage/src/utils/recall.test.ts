@@ -12,7 +12,7 @@ import {
   shouldUpdateSrsOnGrade,
   shuffleItems,
 } from './recall';
-import { markAsWellKnown } from './srs';
+import { calculateNextReview, getReviewStatus, markAsWellKnown } from './srs';
 import { VocabItem } from '../types';
 
 describe('recall helpers', () => {
@@ -43,6 +43,11 @@ describe('recall helpers', () => {
     expect(known.interval).toBe(21);
     expect(known.repetition).toBe(3);
     expect(known.nextReview).toBeGreaterThan(now);
+
+    const reset = calculateNextReview(known, 1);
+    expect(reset.repetition).toBe(0);
+    expect(reset.interval).toBe(0);
+    expect(getReviewStatus(reset.nextReview)).toBe('due');
   });
 
   it('formats verb and noun/adjective forms cleanly', () => {

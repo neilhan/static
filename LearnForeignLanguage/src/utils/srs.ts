@@ -63,7 +63,7 @@ export const calculateNextReview = (
     repetition += 1;
   } else {
     repetition = 0;
-    interval = 1;
+    interval = 0;
   }
 
   easeFactor = easeFactor + (0.1 - (5 - effectiveGrade) * (0.08 + (5 - effectiveGrade) * 0.02));

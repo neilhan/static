@@ -345,14 +345,16 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   );
 
   const gradeOptions = [
-    { label: 'Show it more', grade: 1, cls: 'grade-again' },
-    { label: 'Know it well', grade: 4, cls: 'grade-good' },
+    { label: 'Need Practice', grade: 1, cls: 'grade-again' },
+    { label: 'On Track', grade: 4, cls: 'grade-good' },
   ].map((opt) => ({
     ...opt,
     intervalText:
-      status === 'future' && opt.grade >= 3
-        ? `keep ${daysUntilDue}d`
-        : `${calculateNextReview(currentSrs, opt.grade).interval}d`,
+      opt.grade < 3
+        ? 'Reset · Today'
+        : status === 'future'
+          ? `keep ${daysUntilDue}d`
+          : `${calculateNextReview(currentSrs, opt.grade).interval}d`,
   }));
 
   const learnedCount = useMemo(
