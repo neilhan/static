@@ -7,6 +7,7 @@ import { RepeatingTilesBoard } from "./components/RepeatingTilesBoard";
 import { ChordStudyBoard } from "./components/ChordStudyBoard";
 import { PentatonicBoard } from "./components/PentatonicBoard";
 import { ScaleStudyBoard } from "./components/ScaleStudyBoard";
+import { CircleOfFifthsBoard } from "./components/CircleOfFifthsBoard";
 import {
   isSoundEnabled,
   playChordNotes,
@@ -29,7 +30,7 @@ import {
 const FRET_COUNTS = [12, 15, 22];
 
 type AccidentalDisplay = "off" | "sharp" | "flat";
-type StudyTab = "fretboard" | "triads" | "shells" | "pentatonic" | "scales";
+type StudyTab = "fretboard" | "scales" | "triads" | "shells" | "pentatonic" | "circle";
 
 const STUDY_TABS: Array<{ id: StudyTab; label: string }> = [
   { id: "fretboard", label: "Fretboard & Tiles" },
@@ -37,6 +38,7 @@ const STUDY_TABS: Array<{ id: StudyTab; label: string }> = [
   { id: "triads", label: "Triads" },
   { id: "shells", label: "7th Shell Chords" },
   { id: "pentatonic", label: "Pentatonic Scales" },
+  { id: "circle", label: "Circle of 5ths" },
 ];
 
 function App() {
@@ -473,6 +475,13 @@ function App() {
             strings={activeTuning.strings}
             maxFret={maxFret}
             accidentals={accidentals}
+          />
+        )}
+
+        {activeTab === "circle" && (
+          <CircleOfFifthsBoard
+            strings={activeTuning.strings}
+            maxFret={maxFret}
           />
         )}
       </div>

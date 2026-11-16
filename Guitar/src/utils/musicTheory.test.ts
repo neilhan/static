@@ -1,10 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { getFretMidi, midiToFreq } from './guitarAudio';
 import {
+  CIRCLE_OF_FIFTHS,
   formatPitchClass,
+  getChangedPitchClass,
   getDiatonicDegree,
   getDiatonicScaleBoxes,
+  getDiatonicScalePitchClasses,
   getFretPitchClass,
+  getKeySignatureAccidentals,
+  getKeyWedge,
   getPentatonicBoxes,
   getPentatonicDegree,
   getPentatonicOctaveShiftBlocks,
@@ -296,6 +301,53 @@ describe('musicTheory', () => {
     const overlays = scaleBoxesToOverlayBlocks(cMajorCaged);
     expect(overlays.length).toBe(cMajorCaged.length);
     expect(overlays[0].rowBounds?.length).toBeGreaterThan(0);
+  });
+
+  it('computes Circle of Fifths positions, key wedges, scales, and 1-note diffs', () => {
+    expect(CIRCLE_OF_FIFTHS).toHaveLength(12);
+    expect(CIRCLE_OF_FIFTHS[0]).toMatchObject({
+      majorPc: 0,
+      minorPc: 9,
+      signatureLabel: '0',
+    });
+    expect(CIRCLE_OF_FIFTHS[1]).toMatchObject({
+      majorPc: 7,
+      minorPc: 4,
+      accidentalMode: 'sharp',
+      signatureLabel: '1♯',
+    });
+    expect(CIRCLE_OF_FIFTHS[11]).toMatchObject({
+      majorPc: 5,
+      minorPc: 2,
+      accidentalMode: 'flat',
+      signatureLabel: '1♭',
+    });
+
+    // Key wedge for C major (index 0): IV=F(5), I=C(0), V=G(7), ii=D(2), vi=A(9), iii=E(4), vii°=B(11)
+    const cWedge = getKeyWedge(0);
+    expect(cWedge.map((c) => [c.roman, c.rootPc, c.quality])).toEqual([
+      ['IV', 5, 'major'],
+      ['I', 0, 'major'],
+      ['V', 7, 'major'],
+      ['ii', 2, 'minor'],
+      ['vi', 9, 'minor'],
+      ['iii', 4, 'minor'],
+      ['vii°', 11, 'dim'],
+    ]);
+
+    expect(getDiatonicScalePitchClasses(0, 'major')).toEqual([0, 2, 4, 5, 7, 9, 11]);
+    expect(getDiatonicScalePitchClasses(9, 'minor')).toEqual([9, 11, 0, 2, 4, 5, 7]);
+
+    // C -> G adds F# (6) CW; C -> F adds Bb (10) CCW; jumping 2 notches returns null
+    expect(getChangedPitchClass(0, 1)).toEqual({ pitchClass: 6, direction: 'cw' });
+    expect(getChangedPitchClass(0, 11)).toEqual({ pitchClass: 10, direction: 'ccw' });
+    expect(getChangedPitchClass(0, 2)).toBeNull();
+
+    // Key signature accidentals
+    expect(getKeySignatureAccidentals(0)).toEqual([]);
+    expect(getKeySignatureAccidentals(3)).toEqual(['F♯', 'C♯', 'G♯']);
+    expect(getKeySignatureAccidentals(10)).toEqual(['B♭', 'E♭']);
+    expect(getKeySignatureAccidentals(6, 'flat')).toEqual(['B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'C♭']);
   });
 });
 

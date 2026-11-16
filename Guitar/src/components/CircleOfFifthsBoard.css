@@ -1,0 +1,224 @@
+.circle-board-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.circle-board-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 430px) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .circle-board-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.circle-board-wheel-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.circle-stepper-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.circle-key-badge {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.circle-board-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.circle-info-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color-alt);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.circle-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.circle-info-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.circle-scale-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.circle-scale-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--chip-color, #4ecdc4) 45%, transparent);
+  font-size: 0.85rem;
+}
+
+.circle-scale-chip small {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.circle-scale-chip.is-diff {
+  border-color: #f43f5e;
+  background: rgba(244, 63, 94, 0.16);
+}
+
+.circle-diff-banner {
+  font-size: 0.85rem;
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+}
+
+.circle-wedge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 0.5rem;
+}
+
+.circle-wedge-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: 10px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.circle-wedge-btn:hover {
+  border-color: var(--accent);
+}
+
+.circle-wedge-btn.active {
+  border-color: var(--accent);
+  background: rgba(78, 205, 196, 0.16);
+}
+
+.wedge-roman {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.wedge-name {
+  font-size: 0.95rem;
+}
+
+.circle-sync-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.circle-fretboard-wrap {
+  margin-top: 0.25rem;
+}
+
+.circle-key-sig-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  font-size: 0.84rem;
+}
+
+.circle-key-sig-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.circle-key-sig-none {
+  color: var(--text-muted);
+}
+
+.circle-key-sig-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.circle-key-sig-chip {
+  padding: 0.14rem 0.48rem;
+  border-radius: 6px;
+  background: rgba(100, 108, 255, 0.16);
+  border: 1px solid rgba(100, 108, 255, 0.4);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.circle-prog-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color-alt);
+}
+
+.circle-prog-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.circle-prog-step {
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.circle-prog-step:hover {
+  border-color: var(--accent);
+}
+
+.circle-prog-step.active {
+  border-color: var(--accent);
+  background: rgba(78, 205, 196, 0.18);
+  color: var(--text-primary);
+}

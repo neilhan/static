@@ -1,0 +1,159 @@
+.circle-wheel-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.circle-wheel-svg {
+  width: min(420px, 100%);
+  height: auto;
+  display: block;
+  user-select: none;
+}
+
+.circle-slice {
+  cursor: pointer;
+  outline: none;
+}
+
+.circle-slice path {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke: #2a2a2a;
+  stroke-width: 1.5;
+  transition: fill 0.16s ease, stroke 0.16s ease, stroke-width 0.16s ease;
+}
+
+.circle-slice--inner path {
+  fill: rgba(255, 255, 255, 0.02);
+}
+
+.circle-slice:hover path,
+.circle-slice:focus-visible path {
+  fill: color-mix(in srgb, var(--slice-accent, #4ecdc4) 22%, transparent);
+  stroke: var(--slice-accent, #4ecdc4);
+}
+
+.circle-slice.in-wedge path {
+  fill: color-mix(in srgb, var(--slice-accent, #4ecdc4) 16%, rgba(255, 255, 255, 0.03));
+  stroke: rgba(78, 205, 196, 0.45);
+}
+
+.circle-slice.is-center path {
+  fill: color-mix(in srgb, var(--slice-accent, #4ecdc4) 30%, rgba(18, 18, 18, 0.9));
+  stroke: var(--slice-accent, #4ecdc4);
+  stroke-width: 2.2;
+}
+
+.circle-slice.is-active-chord path {
+  fill: color-mix(in srgb, var(--slice-accent, #4ecdc4) 38%, rgba(18, 18, 18, 0.9));
+  stroke: #ffffff;
+  stroke-width: 2.4;
+}
+
+.circle-slice.is-fret-highlighted path {
+  stroke: #f59e0b;
+  stroke-width: 2.2;
+}
+
+.circle-slice.is-changed-note path {
+  stroke: #f43f5e;
+  stroke-dasharray: 4 2;
+  stroke-width: 2.4;
+}
+
+.circle-slice.is-diatonic-slice:not(.is-center):not(.is-active-chord) path {
+  fill: rgba(56, 189, 248, 0.14);
+  stroke: rgba(56, 189, 248, 0.55);
+}
+
+.circle-slice.is-pentatonic-slice:not(.is-center):not(.is-active-chord) path {
+  fill: rgba(16, 185, 129, 0.2);
+  stroke: rgba(16, 185, 129, 0.75);
+}
+
+.circle-span-arc {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.circle-span-arc--diatonic {
+  stroke: #38bdf8;
+}
+
+.circle-span-arc--pentatonic {
+  stroke: #10b981;
+}
+
+.circle-major-label {
+  fill: #f2f2f7;
+  font-size: 14px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.circle-minor-label {
+  fill: #c7c7d1;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.circle-sig-label {
+  fill: #888;
+  font-size: 9px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.circle-roman-label {
+  fill: #4ecdc4;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.circle-roman-label--inner {
+  font-size: 8.5px;
+}
+
+.circle-center-hub {
+  fill: rgba(14, 14, 18, 0.96);
+  stroke: #333;
+  stroke-width: 1.5;
+}
+
+.circle-hub-eyebrow {
+  fill: #888;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.circle-hub-title {
+  fill: #f2f2f7;
+  font-size: 15px;
+  font-weight: 700;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.circle-hub-sub {
+  fill: #4ecdc4;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+}
