@@ -18,6 +18,7 @@ import {
 import { getFretMidi, playFretNote, playSequence } from '../utils/guitarAudio';
 import { Fretboard, FretMarker } from './Fretboard';
 import { MiniFretboard, MiniFretNote } from './MiniFretboard';
+import { PitchClassSelector } from './PitchClassSelector';
 import { SectionHeader } from './SectionHeader';
 import './ChordStudyBoard.css';
 
@@ -29,7 +30,6 @@ interface ScaleStudyBoardProps {
 
 type LabelDisplayMode = 'notes' | 'intervals';
 
-const ALL_PITCH_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const EMPTY_FRETS = new Set<string>();
 
 export const ScaleStudyBoard: React.FC<ScaleStudyBoardProps> = ({
@@ -285,31 +285,11 @@ export const ScaleStudyBoard: React.FC<ScaleStudyBoardProps> = ({
       <div className="chord-study-controls-grid">
         <div className="chord-study-control-group">
           <span className="chord-study-control-label">Root Note & Mode</span>
-          <div className="chord-study-pill-row">
-            {ALL_PITCH_CLASSES.map((pc) => {
-              const label = formatPitchClass(pc, accidentals);
-              const isActive = rootPc === pc;
-              return (
-                <button
-                  key={pc}
-                  type="button"
-                  className={`toggle-btn ${isActive ? 'active' : ''}`}
-                  style={
-                    isActive
-                      ? {
-                          backgroundColor: PITCH_CLASS_COLORS[pc],
-                          borderColor: PITCH_CLASS_COLORS[pc],
-                          color: '#ffffff',
-                        }
-                      : undefined
-                  }
-                  onClick={() => setRootPc(pc)}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <PitchClassSelector
+            value={rootPc}
+            onChange={setRootPc}
+            accidentals={accidentals}
+          />
           <div className="chord-study-pill-row" style={{ marginTop: '0.25rem' }}>
             {DIATONIC_SCALE_ORDER.map((m) => (
               <button
