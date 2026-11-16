@@ -51,26 +51,33 @@ export const useMorseSender = (
 ) => {
   const audio = useAudioEngine(frequency);
 
-  // Add useEffect to handle audio context resume on first user interaction
+  // Unlock AudioContext on first valid user gesture (click / touchend for iOS)
   useEffect(() => {
     const resumeAudioContext = () => {
-      // Calling unsuspend from useAudioEngine
-      audio.unsuspend();
-      // Remove listeners after the first interaction
-      document.removeEventListener('click', resumeAudioContext);
-      document.removeEventListener('touchstart', resumeAudioContext);
+      const result = audio.unsuspend();
+      if (result && typeof (result as Promise<void>).then === 'function') {
+        (result as Promise<void>)
+          .then(() => {
+            document.removeEventListener('click', resumeAudioContext);
+            document.removeEventListener('touchend', resumeAudioContext);
+          })
+          .catch(() => {
+            // Keep listeners active so a subsequent gesture can retry
+          });
+      } else {
+        document.removeEventListener('click', resumeAudioContext);
+        document.removeEventListener('touchend', resumeAudioContext);
+      }
     };
 
-    // Attach event listeners to resume context on first user interaction
-    document.addEventListener('click', resumeAudioContext, { once: true });
-    document.addEventListener('touchstart', resumeAudioContext, { once: true });
+    document.addEventListener('click', resumeAudioContext);
+    document.addEventListener('touchend', resumeAudioContext);
 
-    // Cleanup function to ensure listeners are removed if component unmounts early
     return () => {
       document.removeEventListener('click', resumeAudioContext);
-      document.removeEventListener('touchstart', resumeAudioContext);
+      document.removeEventListener('touchend', resumeAudioContext);
     };
-  }, [audio]); // Depend on 'audio' to ensure we have the unsuspend function
+  }, [audio]);
   const [status, setStatus] = useState<SenderPlayState>("idle");
   const [senderProgress, setSenderProgress] = useState<SenderProgress>(
     INITIAL_SENDER_PROGRESS

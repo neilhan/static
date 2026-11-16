@@ -143,5 +143,71 @@ describe("createMorseSender", () => {
       remainingText: " TEST",
     });
   });
+
+  it("waits for async unsuspend before scheduling and starting playback", async () => {
+    const { sender, callbacks, statusChanges, audioHarness } = createSender();
+    let resolveResume!: () => void;
+    audioHarness.driver.unsuspend = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveResume = resolve;
+        })
+    );
+
+    sender.loadMessages(["E"]);
+    sender.play();
+
+    expect(sender.getStatus()).toBe("idle");
+    expect(audioHarness.driver.scheduleTone).not.toHaveBeenCalled();
+
+    resolveResume();
+    await Promise.resolve();
+
+    expect(sender.getStatus()).toBe("playing");
+    expect(statusChanges).toHaveBeenLastCalledWith("playing");
+    expect(audioHarness.driver.scheduleTone).toHaveBeenCalled();
+
+    vi.runAllTimers();
+    expect(callbacks.onFinish).toHaveBeenCalledTimes(1);
+    expect(sender.getStatus()).toBe("idle");
+  });
+
+  it("does not enter playing state if async unsuspend rejects", async () => {
+    const { sender, statusChanges, audioHarness } = createSender();
+    audioHarness.driver.unsuspend = vi.fn(() =>
+      Promise.reject(new Error("blocked"))
+    );
+
+    sender.loadMessages(["E"]);
+    sender.play();
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(sender.getStatus()).toBe("idle");
+    expect(statusChanges).not.toHaveBeenCalledWith("playing");
+    expect(audioHarness.driver.scheduleTone).not.toHaveBeenCalled();
+  });
+
+  it("cancels pending playback if stop is called before unsuspend resolves", async () => {
+    const { sender, audioHarness } = createSender();
+    let resolveResume!: () => void;
+    audioHarness.driver.unsuspend = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveResume = resolve;
+        })
+    );
+
+    sender.loadMessages(["E"]);
+    sender.play();
+    sender.stop();
+
+    resolveResume();
+    await Promise.resolve();
+
+    expect(sender.getStatus()).toBe("idle");
+    expect(audioHarness.driver.scheduleTone).not.toHaveBeenCalled();
+  });
 });
 

@@ -306,7 +306,7 @@ export type AudioDriver = {
   scheduleTone: (startTime: number, duration: number) => void;
   cancelScheduledValues: (time: number) => void;
   getCurrentTime: () => number;
-  unsuspend: () => void;
+  unsuspend: () => Promise<void> | void;
 };
 
 type TimingAccessor = () => Timing;
@@ -364,6 +364,7 @@ export const createMorseSender = ({
   let planAnchorTime: number | null = null;
   let nextEventIndex = 0;
   let intervalId: number | null = null;
+  let playGeneration = 0;
 
   const updateStatus = (next: SenderPlayState) => {
     status = next;
@@ -540,6 +541,7 @@ export const createMorseSender = ({
   };
 
   const loadMessages = (messages: string[], startMessageIndex = 0) => {
+    playGeneration += 1;
     clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
 
@@ -568,29 +570,48 @@ export const createMorseSender = ({
     updateStatus("idle");
   };
 
+  const startAfterUnsuspend = () => {
+    const gen = ++playGeneration;
+    clearPlaybackPlan();
+    audio.cancelScheduledValues(audio.getCurrentTime());
+
+    const maybePromise = audio.unsuspend();
+    if (maybePromise && typeof (maybePromise as Promise<void>).then === "function") {
+      (maybePromise as Promise<void>).then(
+        () => {
+          if (gen !== playGeneration) {
+            return;
+          }
+          clearPlaybackPlan();
+          audio.cancelScheduledValues(audio.getCurrentTime());
+          startPlayback();
+        },
+        () => {
+          // Leave status unchanged if AudioContext failed to resume
+        }
+      );
+    } else {
+      startPlayback();
+    }
+  };
+
   const play = () => {
     if (!tokens || tokens.length === 0) {
       return;
     }
 
-    audio.unsuspend();
-    clearPlaybackPlan();
-    audio.cancelScheduledValues(audio.getCurrentTime());
-
-    startPlayback();
+    startAfterUnsuspend();
   };
 
   const resume = () => {
     if (status !== "paused") {
       return;
     }
-    audio.unsuspend();
-    clearPlaybackPlan();
-    audio.cancelScheduledValues(audio.getCurrentTime());
-    startPlayback();
+    startAfterUnsuspend();
   };
 
   const pause = () => {
+    playGeneration += 1;
     if (status !== "playing") {
       return;
     }
@@ -602,6 +623,7 @@ export const createMorseSender = ({
   };
 
   const stop = () => {
+    playGeneration += 1;
     clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
     tokens = [];
@@ -616,6 +638,7 @@ export const createMorseSender = ({
     if (tokens.length === 0) {
       return;
     }
+    playGeneration += 1;
     syncToCurrentTime();
     clearPlaybackPlan();
     seekToMessage(messageIndex);
@@ -626,6 +649,7 @@ export const createMorseSender = ({
   };
 
   const rewind = () => {
+    playGeneration += 1;
     syncToCurrentTime();
     clearPlaybackPlan();
     audio.cancelScheduledValues(audio.getCurrentTime());
@@ -636,6 +660,7 @@ export const createMorseSender = ({
   };
 
   const cleanup = () => {
+    playGeneration += 1;
     clearPlaybackPlan();
   };
 
