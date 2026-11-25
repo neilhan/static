@@ -356,11 +356,10 @@ export const ProgramList = ({
               {type === 'tracker' && (
                 <div className="tracker-card-actions">
                   <button 
-                    className="btn-run btn-start-tracker btn-with-icon"
+                    className="btn-run btn-start-tracker"
                     onClick={() => onRunTracker(data as Tracker)}
                   >
-                    <IconGraphic svgMarkup={playIcon} />
-                    <span>Start Tracker</span>
+                    <span>Open</span>
                   </button>
                   <button 
                     className="btn-reset-tracker"

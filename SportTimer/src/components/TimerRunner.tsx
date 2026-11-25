@@ -17,7 +17,7 @@ type TimerRunnerProps = {
 };
 
 export const TimerRunner = ({ program, onExit, onToggleSound }: TimerRunnerProps) => {
-  const { timerState, togglePause, reset, skip } = useTimer(program);
+  const { timerState, togglePause, reset, skip } = useTimer(program, true);
   const currentSegment = program.segments[timerState.currentSegmentIndex];
   const totalDuration = calculateTotalDuration(program.segments);
   const isTimerActive = !timerState.isPaused && !timerState.isComplete;

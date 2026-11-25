@@ -227,17 +227,20 @@ const createAudioContext = (): AudioContext | null => {
   return AudioContextClass ? new AudioContextClass() : null;
 };
 
-const createInitialTimerState = (program: Program | null): TimerState => ({
-  currentSegmentIndex: 0,
-  remainingTime: program?.segments[0]?.duration || 0,
-  isPaused: true,
-  isComplete: false,
-  currentRound: 1,
-  totalRounds: program?.rounds || 1,
-});
+const createInitialTimerState = (program: Program | null, autoStart = false): TimerState => {
+  const hasSegments = (program?.segments.length ?? 0) > 0;
+  return {
+    currentSegmentIndex: 0,
+    remainingTime: program?.segments[0]?.duration || 0,
+    isPaused: !(autoStart && hasSegments),
+    isComplete: false,
+    currentRound: 1,
+    totalRounds: program?.rounds || 1,
+  };
+};
 
-export const useTimer = (program: Program | null): UseTimerResult => {
-  const [timerState, setTimerState] = useState<TimerState>(() => createInitialTimerState(program));
+export const useTimer = (program: Program | null, autoStart = false): UseTimerResult => {
+  const [timerState, setTimerState] = useState<TimerState>(() => createInitialTimerState(program, autoStart));
 
   const stateRef = useRef<TimerState>(timerState);
   const deadlineMsRef = useRef<number | null>(null);
@@ -282,6 +285,16 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       document.removeEventListener('touchstart', resumeContext);
     };
   }, []); // Empty dependency array means this runs once on mount
+
+  useEffect(() => {
+    if (!autoStart || !program || program.segments.length === 0) {
+      return;
+    }
+    playBeep();
+    speakText(program.segments[0].name);
+    // Only run on initial mount when autoStart is requested
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Helper function to create and play the oscillator
   const _createAndPlayOscillator = useCallback((audioContext: AudioContext) => {
