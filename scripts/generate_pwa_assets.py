@@ -93,6 +93,17 @@ APPS = [
         "theme": "#0f172a",
         "padding": 0.16,
     },
+    {
+        "dir": "notes",
+        "name": "Daily Notes",
+        "short_name": "Notes",
+        "description": "Offline-first daily journal & outline synced to GitHub.",
+        "svg": "notes/public/notes.svg",
+        "svg_href": "./notes.svg",
+        "bg": "#0f172a",
+        "theme": "#0f172a",
+        "padding": 0.14,
+    },
 ]
 
 SW_TEMPLATE = """const CACHE_NAME = '{cache_name}';

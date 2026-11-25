@@ -6,5 +6,6 @@ packages:
   - LearnForeignLanguage
   - LuckyNumberLookup
   - RRSPCalculator
+  - notes
   - packages/*
 

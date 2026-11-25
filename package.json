@@ -14,7 +14,8 @@
     "dev:lookup": "pnpm --filter lucky-number-lookup dev",
     "dev:lucky": "pnpm --filter lucky-number-lookup dev",
     "dev:rrsp": "pnpm --filter rrsp-calculator dev",
-    "dev:all": "concurrently \"pnpm --filter farnsworth-cw-trainer dev\" \"pnpm --filter guitar dev\" \"pnpm --filter sporttimer dev\" \"pnpm --filter life dev\" \"pnpm --filter learn-foreign-language dev\" \"pnpm --filter lucky-number-lookup dev\" \"pnpm --filter rrsp-calculator dev\"",
+    "dev:notes": "pnpm --filter notes dev",
+    "dev:all": "concurrently \"pnpm --filter farnsworth-cw-trainer dev\" \"pnpm --filter guitar dev\" \"pnpm --filter sporttimer dev\" \"pnpm --filter life dev\" \"pnpm --filter learn-foreign-language dev\" \"pnpm --filter lucky-number-lookup dev\" \"pnpm --filter rrsp-calculator dev\" \"pnpm --filter notes dev\"",
     "lint": "pnpm run -r lint",
     "test": "pnpm run -r test"
   },

@@ -14,6 +14,8 @@
 
 [<img src="./Guitar/public/guitar.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Guitar Fretboard Lookup](./Guitar/dist/index.html) — Interactive guitar fretboard with tunings, sharp/flat toggles, note selection, and same-note octave connections.
 
+[<img src="./notes/public/notes.svg" width="24" height="24" style="vertical-align: middle; margin-right: 8px;" /> Daily Notes](./notes/dist/index.html) — Offline-first daily journal & outline synced to GitHub.
+
 <iframe src="./Life/dist/index.html" width="100%" height="2400px" style="border: 1px solid #333; border-radius: 8px;" scrolling="no"></iframe>
 
 ## Development
@@ -30,7 +32,7 @@ This repo is a pnpm workspace. To work on any app:
 2. Use Node 26+ (run `nvm use` to respect `.nvmrc`, Vite 7 requires 20.19+)
 3. Install everything from the repo root: `pnpm install`
 4. Dev servers:
-   - Single app: `pnpm dev:farnsworth`, `pnpm dev:guitar`, `pnpm dev:sporttimer`, `pnpm dev:life`, `pnpm dev:language`, `pnpm dev:lookup`, or `pnpm dev:rrsp` (RRSP Calculator)
+   - Single app: `pnpm dev:farnsworth`, `pnpm dev:guitar`, `pnpm dev:sporttimer`, `pnpm dev:life`, `pnpm dev:language`, `pnpm dev:lookup`, `pnpm dev:rrsp` (RRSP Calculator), or `pnpm dev:notes` (Daily Notes)
    - All apps together: `pnpm dev:all`
 5. Build every app at once: `pnpm run -r build` (or `./build_all.sh`)
 
@@ -54,4 +56,4 @@ This will serve the built files over HTTP at `http://localhost:3000` (or another
 
 ---
 
-_Last updated: 2026-11-15 18:37 PT_
+_Last updated: 2026-11-24 21:09 PT_

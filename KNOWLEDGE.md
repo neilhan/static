@@ -22,7 +22,7 @@ A `pnpm` workspace monorepo of 7 standalone, 100% client-side static web apps pl
 - **Package Manager:** `pnpm@10.24.0` configured via `pnpm-workspace.yaml` to include all 7 app directories plus `packages/*`.
 - **Internal Linking (`@static/shared`):** Every subproject depends on `"@static/shared": "workspace:*"`.
 - **Pre-compiled Library Pattern:** `packages/shared` compiles TypeScript from `src/` into `dist/` via `tsc -p tsconfig.json` and exposes `dist/index.js`, `dist/audio.js`, `dist/react/index.js`, and `dist/react/useScreenWakeLock.js` through `package.json` `exports`, alongside static assets (`./styles.css`, `./assets/*.svg`). Because `exports` points to `dist/`, `@static/shared` must be built before consumers run `tsc` or `vite build`.
-- **Port Allocation in Dev:** Each app binds a distinct Vite dev port (`3000` SportTimer, `3001` FarnsworthCWTrainer, `3002` Life, `3003` LearnForeignLanguage, `3005` LuckyNumberLookup, `3006` RRSPCalculator, `3007` Guitar) so `pnpm dev:all` can run all 7 concurrently.
+- **Port Allocation in Dev:** Each app binds a distinct Vite dev port (`3004` SportTimer, `3001` FarnsworthCWTrainer, `3002` Life, `3003` LearnForeignLanguage, `3005` LuckyNumberLookup, `3006` RRSPCalculator, `3007` Guitar, `3008` notes) so `pnpm dev:all` can run all 8 concurrently.
 
 ### 2. Static Deployment & Build Pipeline
 - **Zero-Backend Static Apps:** Every subproject runs entirely in the browser (`localStorage` for user state, Web Audio API / browser Speech Synthesis for audio, no API server) and uses `base: "./"` in Vite so `dist/` bundles are portable.
