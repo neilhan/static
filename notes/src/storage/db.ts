@@ -18,6 +18,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   githubOwner: '',
   githubRepo: '',
   autoSync: true,
+  timeZone: '',
   geminiApiKey: '',
   geminiModel: 'gemini-4-hydrogen',
   googleClientId: '',

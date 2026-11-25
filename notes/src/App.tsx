@@ -40,7 +40,8 @@ import { fetchPrimaryCalendarEvents, requestCalendarToken } from './sync/gcal';
 import { pullFromGitHub, pushToGitHub } from './sync/github';
 
 export default function App() {
-  const todayStr = getTodayDateStr();
+  const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
+  const todayStr = getTodayDateStr(settings.timeZone);
 
   const [items, setItems] = useState<JournalItem[]>([]);
   const [pendingDeletes, setPendingDeletes] = useState<string[]>([]);
@@ -52,7 +53,6 @@ export default function App() {
     conflicts: [],
     showDone: true,
   });
-  const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
   const [loaded, setLoaded] = useState(false);
 
   const [selectedDay, setSelectedDay] = useState(todayStr);
@@ -187,14 +187,22 @@ export default function App() {
   };
 
   const runCalendarSync = async (
-    currentItems: JournalItem[]
+    currentItems: JournalItem[],
+    allowPopup = false
   ): Promise<{ items: JournalItem[]; deletedPaths: string[] }> => {
-    if (!settings.googleClientId.trim()) {
+    if (!settingsRef.current.googleClientId.trim()) {
       return { items: currentItems, deletedPaths: [] };
     }
     try {
-      const token = await requestCalendarToken(settings.googleClientId);
-      const events = await fetchPrimaryCalendarEvents(token, todayStr);
+      const token = await requestCalendarToken(
+        settingsRef.current.googleClientId,
+        allowPopup
+      );
+      const events = await fetchPrimaryCalendarEvents(
+        token,
+        todayStr,
+        settingsRef.current.timeZone
+      );
       const res = reconcileCalendarEvents(currentItems, events, todayStr);
       const deletedSet = new Set(res.deletedIds);
       const upsertedMap = new Map(res.upserted.map((u) => [u.id, u]));
@@ -210,6 +218,37 @@ export default function App() {
     } catch {
       // Calendar failure never blocks pull or push
       return { items: currentItems, deletedPaths: [] };
+    }
+  };
+
+  const handleConnectCalendar = async () => {
+    if (!settingsRef.current.googleClientId.trim() || !navigator.onLine) return;
+    setSyncStatus('Connecting Google Calendar…');
+    try {
+      const token = await requestCalendarToken(
+        settingsRef.current.googleClientId,
+        true
+      );
+      const events = await fetchPrimaryCalendarEvents(
+        token,
+        todayStr,
+        settingsRef.current.timeZone
+      );
+      const res = reconcileCalendarEvents(itemsRef.current, events, todayStr);
+      const deletedSet = new Set(res.deletedIds);
+      const upsertedMap = new Map(res.upserted.map((u) => [u.id, u]));
+      const merged = itemsRef.current
+        .filter((i) => !deletedSet.has(i.id))
+        .map((i) => upsertedMap.get(i.id) ?? i);
+      for (const u of res.upserted) {
+        if (!itemsRef.current.some((i) => i.id === u.id)) {
+          merged.push(u);
+        }
+      }
+      await persistItems(merged, res.deletedPaths);
+      setSyncStatus(`Calendar synced (${events.length} events)`);
+    } catch (err) {
+      setSyncStatus(err instanceof Error ? err.message : 'Calendar auth failed');
     }
   };
 
@@ -954,6 +993,16 @@ export default function App() {
           >
             Push {dirtyCount > 0 ? `(${dirtyCount})` : ''}
           </button>
+          {settings.googleClientId.trim() && (
+            <button
+              type="button"
+              className="btn-sm"
+              disabled={syncing || !isOnline}
+              onClick={() => void handleConnectCalendar()}
+            >
+              📅 Sync Calendar
+            </button>
+          )}
           <span className="sync-status-text">
             {syncStatus ||
               (meta.lastPulledAt

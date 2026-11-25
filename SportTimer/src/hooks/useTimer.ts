@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Program, TimerState } from '../types.ts';
 import { formatSpokenRemainingTime } from '../utils/helpers';
-import { createSilentAudioKeepAlive, SilentAudioKeepAlive } from '../utils/silentAudio';
 
 type UseTimerResult = {
   timerState: TimerState;
@@ -201,10 +200,26 @@ export const advanceTimerByTimestamp = ({
   };
 };
 
+const configureAmbientAudioSession = (): void => {
+  if (typeof navigator === 'undefined') return;
+  // iOS Safari 16.4+ Audio Session API: 'ambient' mixes timer beeps with other playing media
+  // instead of pausing background music/podcasts.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const audioSession = (navigator as any).audioSession;
+  if (audioSession && 'type' in audioSession && audioSession.type !== 'ambient') {
+    try {
+      audioSession.type = 'ambient';
+    } catch {
+      // Ignore if unsupported or read-only
+    }
+  }
+};
+
 const createAudioContext = (): AudioContext | null => {
   if (typeof window === 'undefined') {
     return null;
   }
+  configureAmbientAudioSession();
   const AudioContextClass =
     window.AudioContext ||
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,7 +245,6 @@ export const useTimer = (program: Program | null): UseTimerResult => {
   const intervalRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null); // New ref for AudioContext
   const isAudioContextResumed = useRef(false); // To track if audio context has been resumed
-  const silentAudioRef = useRef<SilentAudioKeepAlive | null>(null);
 
   // useEffect to initialize audio context and handle resume on user interaction
   useEffect(() => {
@@ -266,8 +280,6 @@ export const useTimer = (program: Program | null): UseTimerResult => {
     return () => {
       document.removeEventListener('click', resumeContext);
       document.removeEventListener('touchstart', resumeContext);
-      silentAudioRef.current?.dispose();
-      silentAudioRef.current = null;
     };
   }, []); // Empty dependency array means this runs once on mount
 
@@ -296,6 +308,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
   const playBeep = useCallback((): void => {
     if (!program?.beepEnabled || !audioContextRef.current) return;
 
+    configureAmbientAudioSession();
     const currentAudioContext = audioContextRef.current; // Extract to a non-nullable local variable
 
     // Ensure context is running, attempt to resume if suspended
@@ -344,21 +357,8 @@ export const useTimer = (program: Program | null): UseTimerResult => {
     speakText(formatSpokenRemainingTime(seconds));
   }, [speakText]);
 
-  const startSilentKeepAlive = useCallback((): void => {
-    if (!program?.beepEnabled) return;
-    if (!silentAudioRef.current) {
-      silentAudioRef.current = createSilentAudioKeepAlive();
-    }
-    silentAudioRef.current.start();
-  }, [program?.beepEnabled]);
-
-  const stopSilentKeepAlive = useCallback((): void => {
-    silentAudioRef.current?.stop();
-  }, []);
-
   const reset = useCallback((): void => {
     cancelSpeech();
-    stopSilentKeepAlive();
     const nextState = createInitialTimerState(program);
     stateRef.current = nextState;
     deadlineMsRef.current = null;
@@ -368,7 +368,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-  }, [program, cancelSpeech, stopSilentKeepAlive]);
+  }, [program, cancelSpeech]);
 
   const togglePause = useCallback((): void => {
     const current = stateRef.current;
@@ -386,7 +386,6 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       const nextState = { ...current, isPaused: false };
       stateRef.current = nextState;
       setTimerState(nextState);
-      startSilentKeepAlive();
       playBeep();
       if (isAtSegmentStart) {
         speakText(currentSegment.name);
@@ -403,7 +402,6 @@ export const useTimer = (program: Program | null): UseTimerResult => {
     });
 
     cancelSpeech();
-    stopSilentKeepAlive();
 
     if (shouldBeep) {
       playBeep();
@@ -421,7 +419,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = pausedState;
       setTimerState(pausedState);
     }
-  }, [program, playBeep, speakText, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
+  }, [program, playBeep, speakText, cancelSpeech]);
 
   const skip = useCallback((): void => {
     if (!program || program.segments.length === 0) return;
@@ -474,20 +472,15 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = nextState;
       setTimerState(nextState);
     }
-  }, [program, playBeep, speakText, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
+  }, [program, playBeep, speakText, cancelSpeech]);
 
   useEffect(() => {
     if (!program || timerState.isPaused || timerState.isComplete) {
-      stopSilentKeepAlive();
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
       return;
-    }
-
-    if (!program.beepEnabled) {
-      stopSilentKeepAlive();
     }
 
     if (deadlineMsRef.current === null) {
@@ -546,7 +539,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       cancelSpeech();
     };
-  }, [program, timerState.isPaused, timerState.isComplete, playBeep, speakText, announceRemaining, cancelSpeech, stopSilentKeepAlive]);
+  }, [program, timerState.isPaused, timerState.isComplete, playBeep, speakText, announceRemaining, cancelSpeech]);
 
   return {
     timerState,

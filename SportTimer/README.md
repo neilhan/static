@@ -5,44 +5,46 @@ A modern interval timer app for creating and running sequential timer programs. 
 ## ✨ Features
 
 ### Program Management
-- 📝 **Create Programs** - Build custom timer sequences with multiple segments
-- ✏️ **Edit Programs** - Modify existing programs anytime
+- 📝 **Create & Edit Programs** - Build custom timer sequences with multiple segments and edit anytime
 - 🗑️ **Delete Programs** - Remove programs you no longer need
-- 💾 **Auto-Save** - All programs are automatically saved to local storage
-- 🔄 **Cycles** - Repeat programs multiple times or infinitely
+- 💾 **Auto-Save** - All programs and trackers are automatically saved to `localStorage`
+- 🔄 **Rounds / Cycles** - Repeat programs `1×`, `3×`, `5×`, custom counts, or infinitely (`∞`)
+- 📋 **Counter Trackers** - Create and run custom multi-item counter trackers alongside interval timers
 
 ### Timer Segments
-- 🎨 **Color-Coded** - Each segment gets a unique color for easy identification
-- ⏱️ **Flexible Duration** - Set minutes and seconds for each segment
-- 📝 **Named Segments** - Label each interval (Warm Up, Sprint, Rest, etc.)
-- 🔄 **Reorderable** - Drag segments up/down to rearrange
+- 🎨 **Color-Coded** - Each segment gets a distinct color for easy identification
+- ⏱️ **Flexible Duration** - Set minutes and seconds for each segment (with inline editing)
+- 📝 **Named Segments** - Label each interval (`Warm Up`, `Sprint`, `Rest`, etc.)
+- ↕️ **Reorderable** - Move segments up/down to rearrange
 
-### Timer Runner
+### Timer Runner & Audio
 - 🎯 **Visual Feedback** - Background color changes for each segment
-- 📊 **Progress Tracking** - See progress within segment and overall
+- 📊 **Progress Tracking** - See progress within the current segment, round, and overall program
 - 👀 **Next Up Preview** - Know what's coming next
 - ⏯️ **Playback Controls** - Play, pause, reset, and skip
-- 🔊 **Audio Alerts** - Sound notification when segments change
+- ⏱️ **Drift-Free Countdown** - Wall-clock (`Date.now()`) timing with `visibilitychange` catch-up when returning to the tab
+- 🔊 **Audio Alerts** - Web Audio beep when segments start/change (toggleable via Sound Alert)
+- 🗣️ **Voice Announcements** - Speaks section names when each segment starts, plus optional remaining-time announcements (`Off`, `10s`, `15s`, `30s`, `60s`, or custom seconds)
+- 🎵 **Background Media Friendly (iPhone / iOS 16.4+)** - Uses `navigator.audioSession.type = 'ambient'` so timer beeps mix with other playing media (Spotify, Apple Music, Podcasts) instead of pausing it
+- 🔒 **Screen-Off & Audio Trade-off (iPhone / iOS WebKit Limitation)** - In a web app/PWA on iOS, background media mixing (`ambient`) and screen-off audio (`playback` + silent `<audio>` keep-alive) are mutually exclusive because WebKit does not expose `mixWithOthers` for `playback` sessions. Currently configured for **other media playback** (with Screen Wake Lock while open and `Date.now()` catch-up on unlock); running audio/announcements while the screen is off *and* keeping other media playing requires a native iOS app.
+- 🔆 **Screen Wake Lock** - Keeps the screen awake while the timer is active
 - 🎉 **Completion Screen** - Celebratory finish screen
 
 ### Technical Features
-- ⚡️ **Vite** - Lightning fast development and builds
-- ⚛️ **React 18** - Latest React with hooks and concurrent features
-- 🔷 **TypeScript** - Full type safety
+- ⚡️ **Vite 7** - Fast development and builds
+- ⚛️ **React 19** - React with hooks
+- 🔷 **TypeScript 5.9** - Full type safety
+- 🧪 **Vitest 4** - Unit tests for timer state, catch-up, and announcements
 - 🎨 **Modern CSS** - Clean, responsive design
-- 📱 **Mobile-Optimized** - Touch-friendly, adaptive layouts
-- 🪝 **Custom Hooks** - Reusable timer and storage logic
-- 🎯 **Functional Programming** - Pure functions and immutable state
+- 🪝 **Custom Hooks** - Reusable timer, wake-lock, and storage logic
 
 ### Mobile Features
 - 📱 **Responsive Design** - Adapts to all screen sizes
-- 👆 **Touch-Optimized** - Large touch targets (44px minimum)
+- 👆 **Touch-Optimized** - Large touch targets and iPhone-friendly editor modals (`100dvh` flex layout with pinned header and `Done` footer)
 - 🔄 **Orientation Support** - Works in portrait and landscape
-- 🎯 **Safe Areas** - Respects notches and device curves
-- ⚡ **Performance** - Smooth animations and transitions
-- 🚫 **No Zoom** - Prevents accidental zooming on input
-- 📍 **Sticky Controls** - Keep important buttons accessible
-- 📐 **Dynamic Viewport** - Adapts to browser chrome hiding
+- 🎯 **Safe Areas** - Respects notches, home indicator, and device curves
+- 🚫 **No Zoom** - Prevents accidental zooming on inputs (`16px` font size)
+- 📐 **Dynamic Viewport** - Adapts to mobile browser chrome (`dvh`)
 
 ## Getting Started
 
@@ -67,7 +69,7 @@ Start the development server:
 npm run dev
 ```
 
-The app will open at [http://localhost:3000](http://localhost:3000)
+The app will open at [http://localhost:3004](http://localhost:3004)
 
 ### Build
 
@@ -85,12 +87,12 @@ Preview the production build locally:
 npm run preview
 ```
 
-### Lint
+### Test
 
-Run ESLint to check code quality:
+Run unit tests:
 
 ```bash
-npm run lint
+npm test
 ```
 
 ## 🎮 How to Use
@@ -155,10 +157,10 @@ The app follows functional programming principles:
 
 ## Tech Stack
 
-- **React 18.3.1** - UI library
-- **TypeScript 5.6** - Programming language
-- **Vite 5.4** - Build tool and dev server
-- **ESLint** - Linting
+- **React 19** - UI library
+- **TypeScript 5.9** - Programming language
+- **Vite 7** - Build tool and dev server
+- **Vitest 4** - Unit testing
 
 ## License
 

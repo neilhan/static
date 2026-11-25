@@ -67,6 +67,7 @@ export type AppSettings = {
   githubOwner: string;
   githubRepo: string;
   autoSync: boolean;
+  timeZone: string; // IANA timezone (e.g. 'America/Vancouver') or '' for browser default
   geminiApiKey: string;
   geminiModel: string;
   googleClientId: string;
