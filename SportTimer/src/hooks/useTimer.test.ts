@@ -188,4 +188,58 @@ describe('advanceTimerByTimestamp', () => {
     expect(res.nextState.isPaused).toBe(true);
     expect(res.shouldBeep).toBe(true);
   });
+
+  it('triggers remaining time announcements at configured intervals', () => {
+    const program = makeProgram({
+      segments: [{ id: 's1', name: 'Work', duration: 60, color: '#FF6B6B' }],
+      announceInterval: 15,
+    });
+
+    // 60 -> 59: not a multiple of 15
+    const tick59 = advanceTimerByTimestamp({
+      state: makeState({ remainingTime: 60 }),
+      program,
+      deadlineMs: 60_000,
+      nowMs: 1_000,
+    });
+    expect(tick59.nextState.remainingTime).toBe(59);
+    expect(tick59.announceRemainingSeconds).toBeNull();
+
+    // 46 -> 45: multiple of 15
+    const tick45 = advanceTimerByTimestamp({
+      state: makeState({ remainingTime: 46 }),
+      program,
+      deadlineMs: 60_000,
+      nowMs: 15_000,
+    });
+    expect(tick45.nextState.remainingTime).toBe(45);
+    expect(tick45.announceRemainingSeconds).toBe(45);
+
+    // Same second (no change) does not repeat announcement
+    const tick45Repeat = advanceTimerByTimestamp({
+      state: tick45.nextState,
+      program,
+      deadlineMs: 60_000,
+      nowMs: 15_200,
+    });
+    expect(tick45Repeat.announceRemainingSeconds).toBeNull();
+
+    // Segment transition does not announce at the very start of the next segment
+    const transitionProgram = makeProgram({
+      segments: [
+        { id: 's1', name: 'Work', duration: 10, color: '#FF6B6B' },
+        { id: 's2', name: 'Rest', duration: 30, color: '#4ECDC4' },
+      ],
+      announceInterval: 15,
+    });
+    const transition = advanceTimerByTimestamp({
+      state: makeState({ remainingTime: 1 }),
+      program: transitionProgram,
+      deadlineMs: 10_000,
+      nowMs: 10_010,
+    });
+    expect(transition.nextState.currentSegmentIndex).toBe(1);
+    expect(transition.nextState.remainingTime).toBe(30);
+    expect(transition.announceRemainingSeconds).toBeNull();
+  });
 });

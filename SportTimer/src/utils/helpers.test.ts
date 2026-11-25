@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateTotalDuration,
+  formatSpokenRemainingTime,
   formatTime,
   generateId,
   getRandomColor,
@@ -33,5 +34,13 @@ describe('helpers', () => {
     expect(
       calculateTotalDuration([{ duration: 30 }, { duration: 15 }, { duration: 45 }])
     ).toBe(90);
+  });
+
+  it('formats spoken remaining time naturally', () => {
+    expect(formatSpokenRemainingTime(1)).toBe('1 second remaining');
+    expect(formatSpokenRemainingTime(15)).toBe('15 seconds remaining');
+    expect(formatSpokenRemainingTime(60)).toBe('1 minute remaining');
+    expect(formatSpokenRemainingTime(90)).toBe('1 minute 30 seconds remaining');
+    expect(formatSpokenRemainingTime(125)).toBe('2 minutes 5 seconds remaining');
   });
 });

@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Program, TimerState } from '../types.ts';
+import { formatSpokenRemainingTime } from '../utils/helpers';
+import { createSilentAudioKeepAlive, SilentAudioKeepAlive } from '../utils/silentAudio';
 
 type UseTimerResult = {
   timerState: TimerState;
@@ -19,9 +21,35 @@ export type TimerAdvanceResult = {
   nextState: TimerState;
   nextDeadlineMs: number;
   shouldBeep: boolean;
+  announceRemainingSeconds: number | null;
 };
 
 const TICK_INTERVAL_MS = 200;
+
+const getRemainingTimeAnnouncement = (
+  prevState: TimerState,
+  nextState: TimerState,
+  program: Program
+): number | null => {
+  const interval = program.announceInterval ?? 0;
+  if (interval <= 0 || nextState.isPaused || nextState.isComplete) {
+    return null;
+  }
+  if (
+    nextState.currentSegmentIndex !== prevState.currentSegmentIndex ||
+    nextState.currentRound !== prevState.currentRound
+  ) {
+    return null;
+  }
+  if (nextState.remainingTime === prevState.remainingTime || nextState.remainingTime <= 0) {
+    return null;
+  }
+  const segmentDuration = program.segments[nextState.currentSegmentIndex]?.duration ?? 0;
+  if (nextState.remainingTime >= segmentDuration) {
+    return null;
+  }
+  return nextState.remainingTime % interval === 0 ? nextState.remainingTime : null;
+};
 
 /**
  * Advances timer state using wall-clock timestamps (`Date.now()`) so backgrounded
@@ -34,7 +62,7 @@ export const advanceTimerByTimestamp = ({
   nowMs,
 }: TimerAdvanceInput): TimerAdvanceResult => {
   if (state.isPaused || state.isComplete || program.segments.length === 0) {
-    return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false };
+    return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false, announceRemainingSeconds: null };
   }
 
   const currentSegment = program.segments[state.currentSegmentIndex];
@@ -43,6 +71,7 @@ export const advanceTimerByTimestamp = ({
       nextState: { ...state, remainingTime: 0, isPaused: true, isComplete: true },
       nextDeadlineMs: deadlineMs,
       shouldBeep: false,
+      announceRemainingSeconds: null,
     };
   }
 
@@ -53,12 +82,14 @@ export const advanceTimerByTimestamp = ({
       Math.max(0, Math.ceil(remainingMs / 1000))
     );
     if (nextRemainingTime === state.remainingTime) {
-      return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false };
+      return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false, announceRemainingSeconds: null };
     }
+    const nextState = { ...state, remainingTime: nextRemainingTime };
     return {
-      nextState: { ...state, remainingTime: nextRemainingTime },
+      nextState,
       nextDeadlineMs: deadlineMs,
       shouldBeep: false,
+      announceRemainingSeconds: getRemainingTimeAnnouncement(state, nextState, program),
     };
   }
 
@@ -78,6 +109,7 @@ export const advanceTimerByTimestamp = ({
       },
       nextDeadlineMs: deadlineMs,
       shouldBeep: true,
+      announceRemainingSeconds: null,
     };
   }
 
@@ -109,6 +141,7 @@ export const advanceTimerByTimestamp = ({
         },
         nextDeadlineMs: currentDeadline,
         shouldBeep: true,
+        announceRemainingSeconds: null,
       };
     }
 
@@ -128,6 +161,7 @@ export const advanceTimerByTimestamp = ({
           },
           nextDeadlineMs: currentDeadline + (program.rounds - currentRound) * totalRoundDurationMs,
           shouldBeep: true,
+          announceRemainingSeconds: null,
         };
       }
       currentRound += fullRoundsElapsed;
@@ -156,6 +190,7 @@ export const advanceTimerByTimestamp = ({
     },
     nextDeadlineMs: currentDeadline,
     shouldBeep,
+    announceRemainingSeconds: null,
   };
 };
 
@@ -188,6 +223,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
   const intervalRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null); // New ref for AudioContext
   const isAudioContextResumed = useRef(false); // To track if audio context has been resumed
+  const silentAudioRef = useRef<SilentAudioKeepAlive | null>(null);
 
   // useEffect to initialize audio context and handle resume on user interaction
   useEffect(() => {
@@ -223,6 +259,8 @@ export const useTimer = (program: Program | null): UseTimerResult => {
     return () => {
       document.removeEventListener('click', resumeContext);
       document.removeEventListener('touchstart', resumeContext);
+      silentAudioRef.current?.dispose();
+      silentAudioRef.current = null;
     };
   }, []); // Empty dependency array means this runs once on mount
 
@@ -267,7 +305,47 @@ export const useTimer = (program: Program | null): UseTimerResult => {
     }
   }, [program?.beepEnabled, _createAndPlayOscillator]);
 
+  const cancelSpeech = useCallback((): void => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  }, []);
+
+  const announceRemaining = useCallback((seconds: number): void => {
+    if (
+      !program?.beepEnabled ||
+      typeof window === 'undefined' ||
+      !('speechSynthesis' in window) ||
+      typeof SpeechSynthesisUtterance === 'undefined'
+    ) {
+      return;
+    }
+
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(formatSpokenRemainingTime(seconds));
+      utterance.rate = 1.05;
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error('Error speaking remaining time:', error);
+    }
+  }, [program?.beepEnabled]);
+
+  const startSilentKeepAlive = useCallback((): void => {
+    if (!program?.beepEnabled) return;
+    if (!silentAudioRef.current) {
+      silentAudioRef.current = createSilentAudioKeepAlive();
+    }
+    silentAudioRef.current.start();
+  }, [program?.beepEnabled]);
+
+  const stopSilentKeepAlive = useCallback((): void => {
+    silentAudioRef.current?.stop();
+  }, []);
+
   const reset = useCallback((): void => {
+    cancelSpeech();
+    stopSilentKeepAlive();
     const nextState = createInitialTimerState(program);
     stateRef.current = nextState;
     deadlineMsRef.current = null;
@@ -277,7 +355,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-  }, [program]);
+  }, [program, cancelSpeech, stopSilentKeepAlive]);
 
   const togglePause = useCallback((): void => {
     const current = stateRef.current;
@@ -291,6 +369,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       const nextState = { ...current, isPaused: false };
       stateRef.current = nextState;
       setTimerState(nextState);
+      startSilentKeepAlive();
       playBeep();
       return;
     }
@@ -302,6 +381,9 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       deadlineMs: deadline,
       nowMs: now,
     });
+
+    cancelSpeech();
+    stopSilentKeepAlive();
 
     if (shouldBeep) {
       playBeep();
@@ -319,7 +401,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = pausedState;
       setTimerState(pausedState);
     }
-  }, [program, playBeep]);
+  }, [program, playBeep, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
 
   const skip = useCallback((): void => {
     if (!program || program.segments.length === 0) return;
@@ -370,15 +452,20 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = nextState;
       setTimerState(nextState);
     }
-  }, [program, playBeep]);
+  }, [program, playBeep, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
 
   useEffect(() => {
     if (!program || timerState.isPaused || timerState.isComplete) {
+      stopSilentKeepAlive();
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
       return;
+    }
+
+    if (!program.beepEnabled) {
+      stopSilentKeepAlive();
     }
 
     if (deadlineMsRef.current === null) {
@@ -390,7 +477,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       if (deadline === null) return;
 
       const now = Date.now();
-      const { nextState, nextDeadlineMs, shouldBeep } = advanceTimerByTimestamp({
+      const { nextState, nextDeadlineMs, shouldBeep, announceRemainingSeconds } = advanceTimerByTimestamp({
         state: stateRef.current,
         program,
         deadlineMs: deadline,
@@ -412,6 +499,8 @@ export const useTimer = (program: Program | null): UseTimerResult => {
 
       if (shouldBeep) {
         playBeep();
+      } else if (announceRemainingSeconds !== null) {
+        announceRemaining(announceRemainingSeconds);
       }
     };
 
@@ -430,8 +519,9 @@ export const useTimer = (program: Program | null): UseTimerResult => {
         intervalRef.current = null;
       }
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      cancelSpeech();
     };
-  }, [program, timerState.isPaused, timerState.isComplete, playBeep]);
+  }, [program, timerState.isPaused, timerState.isComplete, playBeep, announceRemaining, cancelSpeech, stopSilentKeepAlive]);
 
   return {
     timerState,

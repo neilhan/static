@@ -18,6 +18,8 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
   const [rounds, setRounds] = useState<number>(program?.rounds ?? 1);
   const [roundsInput, setRoundsInput] = useState<string>((program?.rounds ?? 1).toString());
   const [beepEnabled, setBeepEnabled] = useState<boolean>(program?.beepEnabled ?? true);
+  const [announceInterval, setAnnounceInterval] = useState<number>(program?.announceInterval ?? 0);
+  const [announceInput, setAnnounceInput] = useState<string>((program?.announceInterval ?? 0).toString());
 
   const [editingSegment, setEditingSegment] = useState<{
     name: string;
@@ -62,12 +64,19 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
       setRounds(program.rounds);
       setRoundsInput(program.rounds.toString());
       setBeepEnabled(program.beepEnabled);
+      const nextAnnounce = program.announceInterval ?? 0;
+      setAnnounceInterval(nextAnnounce);
+      setAnnounceInput(nextAnnounce.toString());
     }
   }, [program]);
 
   useEffect(() => {
     setRoundsInput(rounds.toString());
   }, [rounds]);
+
+  useEffect(() => {
+    setAnnounceInput(announceInterval.toString());
+  }, [announceInterval]);
 
   // Centralized data change handler - watches all state and saves immediately
   useEffect(() => {
@@ -85,6 +94,7 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
       programName.trim() !== program.name ||
       rounds !== program.rounds ||
       beepEnabled !== program.beepEnabled ||
+      announceInterval !== (program.announceInterval ?? 0) ||
       JSON.stringify(segments) !== JSON.stringify(program.segments);
 
     if (!hasChanges) return;
@@ -95,11 +105,12 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
       segments,
       rounds,
       beepEnabled,
+      announceInterval,
       createdAt: program.createdAt,
     };
     
     onSave(updatedProgram);
-  }, [programName, rounds, beepEnabled, segments, program, onSave]); // Watch all data fields and program
+  }, [programName, rounds, beepEnabled, announceInterval, segments, program, onSave]); // Watch all data fields and program
 
   const addSegment = () => {
     const minutes = parseInt(editingSegment.minutes) || 0;
@@ -278,6 +289,7 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
         segments,
         rounds,
         beepEnabled,
+        announceInterval,
         createdAt: program.createdAt,
       };
       onSave(updatedProgram);
@@ -315,6 +327,29 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
       return;
     }
     setRounds(parsed);
+  };
+
+  const handleAnnounceInputChange = (value: string) => {
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
+    setAnnounceInput(value);
+    if (value !== '') {
+      setAnnounceInterval(parseInt(value, 10));
+    }
+  };
+
+  const handleAnnounceInputBlur = () => {
+    if (announceInput === '') {
+      setAnnounceInput(announceInterval.toString());
+      return;
+    }
+    const parsed = parseInt(announceInput, 10);
+    if (Number.isNaN(parsed)) {
+      setAnnounceInput(announceInterval.toString());
+      return;
+    }
+    setAnnounceInterval(parsed);
   };
 
   const totalDuration = calculateTotalDuration(segments);
@@ -445,6 +480,52 @@ export const TimerEditor = ({ program, onSave, onCancel }: TimerEditorProps) => 
             <p className="toggle-description">
               Play sound at end of each segment
             </p>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="announce-interval">
+            Time Announcements
+            <span className="label-hint">
+              {announceInterval <= 0
+                ? ' (Off)'
+                : ` (Every ${announceInterval}s${!beepEnabled ? ' — muted' : ''})`}
+            </span>
+          </label>
+          <div className="cycle-controls">
+            <div className="cycle-buttons">
+              {[
+                { label: 'Off', value: 0 },
+                { label: '10s', value: 10 },
+                { label: '15s', value: 15 },
+                { label: '30s', value: 30 },
+                { label: '60s', value: 60 },
+              ].map(preset => (
+                <button
+                  key={preset.value}
+                  type="button"
+                  className={`btn-cycle ${announceInterval === preset.value ? 'active' : ''}`}
+                  onClick={() => setAnnounceInterval(preset.value)}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+            <div className="rounds-input-row">
+              <input
+                id="announce-interval"
+                type="text"
+                inputMode="numeric"
+                pattern="\d*"
+                className="input-text rounds-input"
+                value={announceInput}
+                onChange={e => handleAnnounceInputChange(e.target.value)}
+                onBlur={handleAnnounceInputBlur}
+                aria-label="Announce remaining time every N seconds"
+                placeholder="Seconds"
+              />
+              <span className="rounds-input-hint">Seconds (0 = Off)</span>
+            </div>
           </div>
         </div>
 

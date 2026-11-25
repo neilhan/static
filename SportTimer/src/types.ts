@@ -11,6 +11,7 @@ export type Program = {
   segments: TimerSegment[];
   rounds: number; // 1 = no repeat, 2+ = repeat that many times, 0 = infinite
   beepEnabled: boolean; // Play sound at end of each segment
+  announceInterval?: number; // Announce remaining time every N seconds (0 or undefined = off)
   createdAt: number;
 };
 

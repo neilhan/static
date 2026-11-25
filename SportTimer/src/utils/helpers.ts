@@ -21,3 +21,19 @@ export const calculateTotalDuration = (segments: { duration: number }[]): number
   return segments.reduce((total, segment) => total + segment.duration, 0);
 };
 
+export const formatSpokenRemainingTime = (seconds: number): string => {
+  const wholeSeconds = Math.max(0, Math.floor(seconds));
+  const mins = Math.floor(wholeSeconds / 60);
+  const secs = wholeSeconds % 60;
+  const parts: string[] = [];
+
+  if (mins > 0) {
+    parts.push(`${mins} ${mins === 1 ? 'minute' : 'minutes'}`);
+  }
+  if (secs > 0 || mins === 0) {
+    parts.push(`${secs} ${secs === 1 ? 'second' : 'seconds'}`);
+  }
+
+  return `${parts.join(' ')} remaining`;
+};
+
