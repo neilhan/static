@@ -5,7 +5,9 @@
     "band": "1-100",
     "target": "el",
     "native": "the (masculine singular)",
-    "pos": "article"
+    "pos": "article",
+    "exampleTarget": "El libro está sobre la mesa.",
+    "exampleNative": "The book is on the table."
   },
   {
     "id": "es-w-0002",
@@ -13,7 +15,9 @@
     "band": "1-100",
     "target": "la",
     "native": "the (feminine singular)",
-    "pos": "article"
+    "pos": "article",
+    "exampleTarget": "La casa tiene un jardín grande.",
+    "exampleNative": "The house has a big garden."
   },
   {
     "id": "es-w-0003",
@@ -21,7 +25,9 @@
     "band": "1-100",
     "target": "los",
     "native": "the (masculine plural)",
-    "pos": "article"
+    "pos": "article",
+    "exampleTarget": "Los niños juegan en el parque.",
+    "exampleNative": "The children are playing in the park."
   },
   {
     "id": "es-w-0004",
@@ -29,7 +35,9 @@
     "band": "1-100",
     "target": "las",
     "native": "the (feminine plural)",
-    "pos": "article"
+    "pos": "article",
+    "exampleTarget": "Las llaves están en mi bolso.",
+    "exampleNative": "The keys are in my bag."
   },
   {
     "id": "es-w-0005",
@@ -37,7 +45,9 @@
     "band": "1-100",
     "target": "un",
     "native": "a / an (masculine)",
-    "pos": "article"
+    "pos": "article",
+    "exampleTarget": "Quiero tomar un café contigo.",
+    "exampleNative": "I want to have a coffee with you."
   },
   {
     "id": "es-w-0006",
@@ -45,7 +55,9 @@
     "band": "1-100",
     "target": "una",
     "native": "a / an (feminine)",
-    "pos": "article"
+    "pos": "article",
+    "exampleTarget": "Tengo una idea muy buena.",
+    "exampleNative": "I have a very good idea."
   },
   {
     "id": "es-w-0007",
@@ -53,7 +65,9 @@
     "band": "1-100",
     "target": "de",
     "native": "of / from",
-    "pos": "preposition"
+    "pos": "preposition",
+    "exampleTarget": "El vaso es de vidrio.",
+    "exampleNative": "The glass is made of glass."
   },
   {
     "id": "es-w-0008",
@@ -61,7 +75,9 @@
     "band": "1-100",
     "target": "en",
     "native": "in / on / at",
-    "pos": "preposition"
+    "pos": "preposition",
+    "exampleTarget": "Vivo en una ciudad tranquila.",
+    "exampleNative": "I live in a quiet city."
   },
   {
     "id": "es-w-0009",
@@ -69,7 +85,9 @@
     "band": "1-100",
     "target": "a",
     "native": "to / at",
-    "pos": "preposition"
+    "pos": "preposition",
+    "exampleTarget": "Vamos a la playa mañana.",
+    "exampleNative": "We are going to the beach tomorrow."
   },
   {
     "id": "es-w-0010",
@@ -77,7 +95,9 @@
     "band": "1-100",
     "target": "y",
     "native": "and",
-    "pos": "conjunction"
+    "pos": "conjunction",
+    "exampleTarget": "Compré pan y leche.",
+    "exampleNative": "I bought bread and milk."
   },
   {
     "id": "es-w-0011",
@@ -85,7 +105,9 @@
     "band": "1-100",
     "target": "o",
     "native": "or",
-    "pos": "conjunction"
+    "pos": "conjunction",
+    "exampleTarget": "¿Prefieres té o café?",
+    "exampleNative": "Do you prefer tea or coffee?"
   },
   {
     "id": "es-w-0012",
@@ -93,7 +115,9 @@
     "band": "1-100",
     "target": "que",
     "native": "that / which / who",
-    "pos": "conjunction"
+    "pos": "conjunction",
+    "exampleTarget": "Creo que va a llover hoy.",
+    "exampleNative": "I think it is going to rain today."
   },
   {
     "id": "es-w-0013",
@@ -101,7 +125,9 @@
     "band": "1-100",
     "target": "qué",
     "native": "what",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "¿Qué quieres hacer esta tarde?",
+    "exampleNative": "What do you want to do this afternoon?"
   },
   {
     "id": "es-w-0014",
@@ -109,7 +135,9 @@
     "band": "1-100",
     "target": "no",
     "native": "no / not",
-    "pos": "adverb"
+    "pos": "adverb",
+    "exampleTarget": "No tengo tiempo ahora mismo.",
+    "exampleNative": "I don't have time right now."
   },
   {
     "id": "es-w-0015",
@@ -117,7 +145,9 @@
     "band": "1-100",
     "target": "sí",
     "native": "yes",
-    "pos": "adverb"
+    "pos": "adverb",
+    "exampleTarget": "Sí, claro que puedo ayudarte.",
+    "exampleNative": "Yes, of course I can help you."
   },
   {
     "id": "es-w-0016",
@@ -125,7 +155,9 @@
     "band": "1-100",
     "target": "yo",
     "native": "I",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Yo estudio español todos los días.",
+    "exampleNative": "I study Spanish every day."
   },
   {
     "id": "es-w-0017",
@@ -133,7 +165,9 @@
     "band": "1-100",
     "target": "tú",
     "native": "you (informal singular)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "¿Tú vienes con nosotros?",
+    "exampleNative": "Are you coming with us?"
   },
   {
     "id": "es-w-0018",
@@ -141,7 +175,9 @@
     "band": "1-100",
     "target": "él",
     "native": "he",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Él trabaja en un hospital.",
+    "exampleNative": "He works in a hospital."
   },
   {
     "id": "es-w-0019",
@@ -149,7 +185,9 @@
     "band": "1-100",
     "target": "ella",
     "native": "she",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Ella habla tres idiomas.",
+    "exampleNative": "She speaks three languages."
   },
   {
     "id": "es-w-0020",
@@ -157,7 +195,9 @@
     "band": "1-100",
     "target": "usted",
     "native": "you (formal singular)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "¿Cómo está usted hoy?",
+    "exampleNative": "How are you today?"
   },
   {
     "id": "es-w-0021",
@@ -165,7 +205,9 @@
     "band": "1-100",
     "target": "nosotros",
     "native": "we",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Nosotros cenamos juntos los viernes.",
+    "exampleNative": "We have dinner together on Fridays."
   },
   {
     "id": "es-w-0022",
@@ -173,7 +215,9 @@
     "band": "1-100",
     "target": "ellos",
     "native": "they (masculine/mixed)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Ellos viven cerca de aquí.",
+    "exampleNative": "They live near here."
   },
   {
     "id": "es-w-0023",
@@ -181,7 +225,9 @@
     "band": "1-100",
     "target": "ellas",
     "native": "they (feminine)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Ellas salieron temprano de casa.",
+    "exampleNative": "They left home early."
   },
   {
     "id": "es-w-0024",
@@ -189,7 +235,9 @@
     "band": "1-100",
     "target": "ustedes",
     "native": "you (plural)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Ustedes pueden pasar por aquí.",
+    "exampleNative": "You all can come through here."
   },
   {
     "id": "es-w-0025",
@@ -197,7 +245,9 @@
     "band": "1-100",
     "target": "me",
     "native": "me / myself",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "¿Me puedes pasar la sal?",
+    "exampleNative": "Can you pass me the salt?"
   },
   {
     "id": "es-w-0026",
@@ -205,7 +255,9 @@
     "band": "1-100",
     "target": "te",
     "native": "you / yourself",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Te llamo cuando llegue a casa.",
+    "exampleNative": "I'll call you when I get home."
   },
   {
     "id": "es-w-0027",
@@ -213,7 +265,9 @@
     "band": "1-100",
     "target": "se",
     "native": "oneself / himself / herself",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Él se levanta muy temprano.",
+    "exampleNative": "He gets up very early."
   },
   {
     "id": "es-w-0028",
@@ -221,7 +275,9 @@
     "band": "1-100",
     "target": "nos",
     "native": "us / ourselves",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Nos vemos mañana por la mañana.",
+    "exampleNative": "See you tomorrow morning."
   },
   {
     "id": "es-w-0029",
@@ -229,7 +285,9 @@
     "band": "1-100",
     "target": "lo",
     "native": "it / him (direct object)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Ya lo leí la semana pasada.",
+    "exampleNative": "I already read it last week."
   },
   {
     "id": "es-w-0030",
@@ -237,7 +295,9 @@
     "band": "1-100",
     "target": "le",
     "native": "him / her / you (indirect object)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Le di el regalo a mi madre.",
+    "exampleNative": "I gave the gift to my mother."
   },
   {
     "id": "es-w-0031",
@@ -245,7 +305,9 @@
     "band": "1-100",
     "target": "mi",
     "native": "my",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "Mi hermano llega esta noche.",
+    "exampleNative": "My brother arrives tonight."
   },
   {
     "id": "es-w-0032",
@@ -253,7 +315,9 @@
     "band": "1-100",
     "target": "tu",
     "native": "your (informal)",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "¿Dónde dejaste tu mochila?",
+    "exampleNative": "Where did you leave your backpack?"
   },
   {
     "id": "es-w-0033",
@@ -261,7 +325,9 @@
     "band": "1-100",
     "target": "su",
     "native": "his / her / their / your (formal)",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "Su oficina está en el centro.",
+    "exampleNative": "His/her office is downtown."
   },
   {
     "id": "es-w-0034",
@@ -269,7 +335,9 @@
     "band": "1-100",
     "target": "nuestro",
     "native": "our",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "Nuestro tren sale a las ocho.",
+    "exampleNative": "Our train leaves at eight."
   },
   {
     "id": "es-w-0035",
@@ -277,7 +345,9 @@
     "band": "1-100",
     "target": "este",
     "native": "this (masculine)",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "Este restaurante es mi favorito.",
+    "exampleNative": "This restaurant is my favorite."
   },
   {
     "id": "es-w-0036",
@@ -285,7 +355,9 @@
     "band": "1-100",
     "target": "esta",
     "native": "this (feminine)",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "Esta película es muy divertida.",
+    "exampleNative": "This movie is very funny."
   },
   {
     "id": "es-w-0037",
@@ -293,7 +365,9 @@
     "band": "1-100",
     "target": "ese",
     "native": "that (masculine)",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "Ese coche azul es nuevo.",
+    "exampleNative": "That blue car is new."
   },
   {
     "id": "es-w-0038",
@@ -301,7 +375,9 @@
     "band": "1-100",
     "target": "esa",
     "native": "that (feminine)",
-    "pos": "determiner"
+    "pos": "determiner",
+    "exampleTarget": "Esa tienda cierra a las nueve.",
+    "exampleNative": "That store closes at nine."
   },
   {
     "id": "es-w-0039",
@@ -309,7 +385,9 @@
     "band": "1-100",
     "target": "eso",
     "native": "that (neuter)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Eso me parece muy bien.",
+    "exampleNative": "That sounds very good to me."
   },
   {
     "id": "es-w-0040",
@@ -317,7 +395,9 @@
     "band": "1-100",
     "target": "esto",
     "native": "this (neuter)",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "¿Qué significa esto?",
+    "exampleNative": "What does this mean?"
   },
   {
     "id": "es-w-0041",
@@ -325,7 +405,9 @@
     "band": "1-100",
     "target": "todo",
     "native": "all / everything",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Todo salió mejor de lo esperado.",
+    "exampleNative": "Everything turned out better than expected."
   },
   {
     "id": "es-w-0042",
@@ -333,7 +415,9 @@
     "band": "1-100",
     "target": "nada",
     "native": "nothing",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "No hay nada en la nevera.",
+    "exampleNative": "There is nothing in the fridge."
   },
   {
     "id": "es-w-0043",
@@ -341,7 +425,9 @@
     "band": "1-100",
     "target": "algo",
     "native": "something",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "¿Quieres comer algo ligero?",
+    "exampleNative": "Do you want to eat something light?"
   },
   {
     "id": "es-w-0044",
@@ -349,7 +435,9 @@
     "band": "1-100",
     "target": "alguien",
     "native": "someone",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "Alguien tocó a la puerta.",
+    "exampleNative": "Someone knocked on the door."
   },
   {
     "id": "es-w-0045",
@@ -357,7 +445,9 @@
     "band": "1-100",
     "target": "nadie",
     "native": "nobody",
-    "pos": "pronoun"
+    "pos": "pronoun",
+    "exampleTarget": "No había nadie en la calle.",
+    "exampleNative": "There was nobody on the street."
   },
   {
     "id": "es-w-0046",
@@ -372,7 +462,9 @@
       "el": "es",
       "nosotros": "somos",
       "ellos": "son"
-    }
+    },
+    "exampleTarget": "Quiero ser médico en el futuro.",
+    "exampleNative": "I want to be a doctor in the future."
   },
   {
     "id": "es-w-0047",
@@ -387,7 +479,9 @@
       "el": "está",
       "nosotros": "estamos",
       "ellos": "están"
-    }
+    },
+    "exampleTarget": "Estoy muy contento con el resultado.",
+    "exampleNative": "I am very happy with the result."
   },
   {
     "id": "es-w-0048",
@@ -402,7 +496,9 @@
       "el": "tiene",
       "nosotros": "tenemos",
       "ellos": "tienen"
-    }
+    },
+    "exampleTarget": "Tenemos que salir en diez minutos.",
+    "exampleNative": "We have to leave in ten minutes."
   },
   {
     "id": "es-w-0049",
@@ -417,7 +513,9 @@
       "el": "hace",
       "nosotros": "hacemos",
       "ellos": "hacen"
-    }
+    },
+    "exampleTarget": "Voy a hacer la cena ahora.",
+    "exampleNative": "I'm going to make dinner now."
   },
   {
     "id": "es-w-0050",
@@ -432,7 +530,9 @@
       "el": "va",
       "nosotros": "vamos",
       "ellos": "van"
-    }
+    },
+    "exampleTarget": "¿Quieres ir al cine conmigo?",
+    "exampleNative": "Do you want to go to the movies with me?"
   },
   {
     "id": "es-w-0051",
@@ -447,7 +547,9 @@
       "el": "puede",
       "nosotros": "podemos",
       "ellos": "pueden"
-    }
+    },
+    "exampleTarget": "No puedo abrir esta puerta.",
+    "exampleNative": "I can't open this door."
   },
   {
     "id": "es-w-0052",
@@ -462,7 +564,9 @@
       "el": "dice",
       "nosotros": "decimos",
       "ellos": "dicen"
-    }
+    },
+    "exampleTarget": "Siempre dice la verdad.",
+    "exampleNative": "He/she always tells the truth."
   },
   {
     "id": "es-w-0053",
@@ -477,7 +581,9 @@
       "el": "ve",
       "nosotros": "vemos",
       "ellos": "ven"
-    }
+    },
+    "exampleTarget": "Desde aquí puedo ver las montañas.",
+    "exampleNative": "From here I can see the mountains."
   },
   {
     "id": "es-w-0054",
@@ -492,7 +598,9 @@
       "el": "da",
       "nosotros": "damos",
       "ellos": "dan"
-    }
+    },
+    "exampleTarget": "Voy a dar un paseo por el barrio.",
+    "exampleNative": "I'm going to take a walk around the neighborhood."
   },
   {
     "id": "es-w-0055",
@@ -507,7 +615,9 @@
       "el": "sabe",
       "nosotros": "sabemos",
       "ellos": "saben"
-    }
+    },
+    "exampleTarget": "No sé dónde está el museo.",
+    "exampleNative": "I don't know where the museum is."
   },
   {
     "id": "es-w-0056",
@@ -522,7 +632,9 @@
       "el": "conoce",
       "nosotros": "conocemos",
       "ellos": "conocen"
-    }
+    },
+    "exampleTarget": "¿Conoces a alguien en Madrid?",
+    "exampleNative": "Do you know anyone in Madrid?"
   },
   {
     "id": "es-w-0057",
@@ -537,7 +649,9 @@
       "el": "quiere",
       "nosotros": "queremos",
       "ellos": "quieren"
-    }
+    },
+    "exampleTarget": "Quiero aprender a cocinar mejor.",
+    "exampleNative": "I want to learn to cook better."
   },
   {
     "id": "es-w-0058",
@@ -552,7 +666,9 @@
       "el": "llega",
       "nosotros": "llegamos",
       "ellos": "llegan"
-    }
+    },
+    "exampleTarget": "El vuelo va a llegar a tiempo.",
+    "exampleNative": "The flight is going to arrive on time."
   },
   {
     "id": "es-w-0059",
@@ -567,7 +683,9 @@
       "el": "pasa",
       "nosotros": "pasamos",
       "ellos": "pasan"
-    }
+    },
+    "exampleTarget": "¿Qué va a pasar mañana?",
+    "exampleNative": "What is going to happen tomorrow?"
   },
   {
     "id": "es-w-0060",
@@ -582,7 +700,9 @@
       "el": "debe",
       "nosotros": "debemos",
       "ellos": "deben"
-    }
+    },
+    "exampleTarget": "Debes descansar un poco más.",
+    "exampleNative": "You should rest a little more."
   },
   {
     "id": "es-w-0061",
@@ -597,7 +717,9 @@
       "el": "pone",
       "nosotros": "ponemos",
       "ellos": "ponen"
-    }
+    },
+    "exampleTarget": "Voy a poner la mesa para cenar.",
+    "exampleNative": "I'm going to set the table for dinner."
   },
   {
     "id": "es-w-0062",
@@ -612,7 +734,9 @@
       "el": "parece",
       "nosotros": "parecemos",
       "ellos": "parecen"
-    }
+    },
+    "exampleTarget": "Parece que hoy hace menos frío.",
+    "exampleNative": "It seems that today it's less cold."
   },
   {
     "id": "es-w-0063",
@@ -627,7 +751,9 @@
       "el": "queda",
       "nosotros": "quedamos",
       "ellos": "quedan"
-    }
+    },
+    "exampleTarget": "Me voy a quedar en casa hoy.",
+    "exampleNative": "I'm going to stay home today."
   },
   {
     "id": "es-w-0064",
@@ -642,7 +768,9 @@
       "el": "cree",
       "nosotros": "creemos",
       "ellos": "creen"
-    }
+    },
+    "exampleTarget": "Creo que tienes razón.",
+    "exampleNative": "I think you are right."
   },
   {
     "id": "es-w-0065",
@@ -657,7 +785,9 @@
       "el": "habla",
       "nosotros": "hablamos",
       "ellos": "hablan"
-    }
+    },
+    "exampleTarget": "Necesito hablar contigo un momento.",
+    "exampleNative": "I need to talk with you for a moment."
   },
   {
     "id": "es-w-0066",
@@ -672,7 +802,9 @@
       "el": "lleva",
       "nosotros": "llevamos",
       "ellos": "llevan"
-    }
+    },
+    "exampleTarget": "Voy a llevar un abrigo por si acaso.",
+    "exampleNative": "I'm going to bring a coat just in case."
   },
   {
     "id": "es-w-0067",
@@ -687,7 +819,9 @@
       "el": "deja",
       "nosotros": "dejamos",
       "ellos": "dejan"
-    }
+    },
+    "exampleTarget": "No quiero dejar las cosas para después.",
+    "exampleNative": "I don't want to leave things for later."
   },
   {
     "id": "es-w-0068",
@@ -702,7 +836,9 @@
       "el": "sigue",
       "nosotros": "seguimos",
       "ellos": "siguen"
-    }
+    },
+    "exampleTarget": "Tenemos que seguir caminando recto.",
+    "exampleNative": "We have to keep walking straight."
   },
   {
     "id": "es-w-0069",
@@ -717,7 +853,9 @@
       "el": "encuentra",
       "nosotros": "encontramos",
       "ellos": "encuentran"
-    }
+    },
+    "exampleTarget": "No puedo encontrar mis gafas.",
+    "exampleNative": "I can't find my glasses."
   },
   {
     "id": "es-w-0070",
@@ -732,7 +870,9 @@
       "el": "llama",
       "nosotros": "llamamos",
       "ellos": "llaman"
-    }
+    },
+    "exampleTarget": "Voy a llamar a mi hermana luego.",
+    "exampleNative": "I'm going to call my sister later."
   },
   {
     "id": "es-w-0071",
@@ -747,7 +887,9 @@
       "el": "viene",
       "nosotros": "venimos",
       "ellos": "vienen"
-    }
+    },
+    "exampleTarget": "¿Puedes venir a mi casa el sábado?",
+    "exampleNative": "Can you come to my house on Saturday?"
   },
   {
     "id": "es-w-0072",
@@ -762,7 +904,9 @@
       "el": "piensa",
       "nosotros": "pensamos",
       "ellos": "piensan"
-    }
+    },
+    "exampleTarget": "Necesito pensar antes de decidir.",
+    "exampleNative": "I need to think before deciding."
   },
   {
     "id": "es-w-0073",
@@ -777,7 +921,9 @@
       "el": "sale",
       "nosotros": "salimos",
       "ellos": "salen"
-    }
+    },
+    "exampleTarget": "Vamos a salir a comer esta noche.",
+    "exampleNative": "We're going to go out to eat tonight."
   },
   {
     "id": "es-w-0074",
@@ -792,7 +938,9 @@
       "el": "vuelve",
       "nosotros": "volvemos",
       "ellos": "vuelven"
-    }
+    },
+    "exampleTarget": "Prometo volver antes de medianoche.",
+    "exampleNative": "I promise to come back before midnight."
   },
   {
     "id": "es-w-0075",
@@ -807,7 +955,9 @@
       "el": "toma",
       "nosotros": "tomamos",
       "ellos": "toman"
-    }
+    },
+    "exampleTarget": "Prefiero tomar el autobús al trabajo.",
+    "exampleNative": "I prefer to take the bus to work."
   },
   {
     "id": "es-w-0076",
@@ -822,7 +972,9 @@
       "el": "vive",
       "nosotros": "vivimos",
       "ellos": "viven"
-    }
+    },
+    "exampleTarget": "Quiero vivir cerca del mar.",
+    "exampleNative": "I want to live near the sea."
   },
   {
     "id": "es-w-0077",
@@ -837,7 +989,9 @@
       "el": "siente",
       "nosotros": "sentimos",
       "ellos": "sienten"
-    }
+    },
+    "exampleTarget": "Empiezo a sentir mucho sueño.",
+    "exampleNative": "I'm starting to feel very sleepy."
   },
   {
     "id": "es-w-0078",
@@ -852,7 +1006,9 @@
       "el": "trata",
       "nosotros": "tratamos",
       "ellos": "tratan"
-    }
+    },
+    "exampleTarget": "Voy a tratar de llegar más temprano.",
+    "exampleNative": "I'm going to try to arrive earlier."
   },
   {
     "id": "es-w-0079",
@@ -867,7 +1023,9 @@
       "el": "mira",
       "nosotros": "miramos",
       "ellos": "miran"
-    }
+    },
+    "exampleTarget": "Me gusta mirar las estrellas de noche.",
+    "exampleNative": "I like to look at the stars at night."
   },
   {
     "id": "es-w-0080",
@@ -882,7 +1040,9 @@
       "el": "cuenta",
       "nosotros": "contamos",
       "ellos": "cuentan"
-    }
+    },
+    "exampleTarget": "Te voy a contar lo que pasó ayer.",
+    "exampleNative": "I'm going to tell you what happened yesterday."
   },
   {
     "id": "es-w-0081",
@@ -897,7 +1057,9 @@
       "el": "empieza",
       "nosotros": "empezamos",
       "ellos": "empiezan"
-    }
+    },
+    "exampleTarget": "La clase va a empezar en cinco minutos.",
+    "exampleNative": "The class is going to start in five minutes."
   },
   {
     "id": "es-w-0082",
@@ -912,7 +1074,9 @@
       "el": "espera",
       "nosotros": "esperamos",
       "ellos": "esperan"
-    }
+    },
+    "exampleTarget": "Voy a esperar aquí hasta que regreses.",
+    "exampleNative": "I'm going to wait here until you return."
   },
   {
     "id": "es-w-0083",
@@ -927,7 +1091,9 @@
       "el": "busca",
       "nosotros": "buscamos",
       "ellos": "buscan"
-    }
+    },
+    "exampleTarget": "Estoy buscando un apartamento nuevo.",
+    "exampleNative": "I'm looking for a new apartment."
   },
   {
     "id": "es-w-0084",
@@ -942,7 +1108,9 @@
       "el": "existe",
       "nosotros": "existimos",
       "ellos": "existen"
-    }
+    },
+    "exampleTarget": "No sabía que ese lugar existía.",
+    "exampleNative": "I didn't know that place existed."
   },
   {
     "id": "es-w-0085",
@@ -957,7 +1125,9 @@
       "el": "entra",
       "nosotros": "entramos",
       "ellos": "entran"
-    }
+    },
+    "exampleTarget": "Puedes entrar por la puerta principal.",
+    "exampleNative": "You can enter through the main door."
   },
   {
     "id": "es-w-0086",
@@ -972,7 +1142,9 @@
       "el": "trabaja",
       "nosotros": "trabajamos",
       "ellos": "trabajan"
-    }
+    },
+    "exampleTarget": "Me gusta trabajar desde casa los lunes.",
+    "exampleNative": "I like to work from home on Mondays."
   },
   {
     "id": "es-w-0087",
@@ -987,7 +1159,9 @@
       "el": "escribe",
       "nosotros": "escribimos",
       "ellos": "escriben"
-    }
+    },
+    "exampleTarget": "Voy a escribir un correo electrónico.",
+    "exampleNative": "I'm going to write an email."
   },
   {
     "id": "es-w-0088",
@@ -1002,7 +1176,9 @@
       "el": "pierde",
       "nosotros": "perdemos",
       "ellos": "pierden"
-    }
+    },
+    "exampleTarget": "No quiero perder el último tren.",
+    "exampleNative": "I don't want to miss the last train."
   },
   {
     "id": "es-w-0089",
@@ -1017,7 +1193,9 @@
       "el": "entiende",
       "nosotros": "entendemos",
       "ellos": "entienden"
-    }
+    },
+    "exampleTarget": "Ahora empiezo a entender el problema.",
+    "exampleNative": "Now I'm starting to understand the problem."
   },
   {
     "id": "es-w-0090",
@@ -1032,7 +1210,9 @@
       "el": "pide",
       "nosotros": "pedimos",
       "ellos": "piden"
-    }
+    },
+    "exampleTarget": "Voy a pedir la cuenta al camarero.",
+    "exampleNative": "I'm going to ask the waiter for the check."
   },
   {
     "id": "es-w-0091",
@@ -1047,7 +1227,9 @@
       "el": "recibe",
       "nosotros": "recibimos",
       "ellos": "reciben"
-    }
+    },
+    "exampleTarget": "Espero recibir una respuesta pronto.",
+    "exampleNative": "I hope to receive a reply soon."
   },
   {
     "id": "es-w-0092",
@@ -1062,7 +1244,9 @@
       "el": "recuerda",
       "nosotros": "recordamos",
       "ellos": "recuerdan"
-    }
+    },
+    "exampleTarget": "No puedo recordar su nombre.",
+    "exampleNative": "I can't remember his/her name."
   },
   {
     "id": "es-w-0093",
@@ -1077,7 +1261,9 @@
       "el": "termina",
       "nosotros": "terminamos",
       "ellos": "terminan"
-    }
+    },
+    "exampleTarget": "Necesito terminar este proyecto hoy.",
+    "exampleNative": "I need to finish this project today."
   },
   {
     "id": "es-w-0094",
@@ -1092,7 +1278,9 @@
       "el": "necesita",
       "nosotros": "necesitamos",
       "ellos": "necesitan"
-    }
+    },
+    "exampleTarget": "¿Necesitas ayuda con las bolsas?",
+    "exampleNative": "Do you need help with the bags?"
   },
   {
     "id": "es-w-0095",
@@ -1100,7 +1288,9 @@
     "band": "1-100",
     "target": "con",
     "native": "with",
-    "pos": "preposition"
+    "pos": "preposition",
+    "exampleTarget": "Salí a caminar con mi perro.",
+    "exampleNative": "I went out for a walk with my dog."
   },
   {
     "id": "es-w-0096",
@@ -1108,7 +1298,9 @@
     "band": "1-100",
     "target": "sin",
     "native": "without",
-    "pos": "preposition"
+    "pos": "preposition",
+    "exampleTarget": "Tomo el café sin azúcar.",
+    "exampleNative": "I drink coffee without sugar."
   },
   {
     "id": "es-w-0097",
@@ -1116,7 +1308,9 @@
     "band": "1-100",
     "target": "por",
     "native": "for / by / through",
-    "pos": "preposition"
+    "pos": "preposition",
+    "exampleTarget": "Gracias por tu paciencia.",
+    "exampleNative": "Thank you for your patience."
   },
   {
     "id": "es-w-0098",
@@ -1124,7 +1318,9 @@
     "band": "1-100",
     "target": "para",
     "native": "for / in order to",
-    "pos": "preposition"
+    "pos": "preposition",
+    "exampleTarget": "Este regalo es para ti.",
+    "exampleNative": "This gift is for you."
   },
   {
     "id": "es-w-0099",
@@ -1132,7 +1328,9 @@
     "band": "1-100",
     "target": "como",
     "native": "like / as",
-    "pos": "conjunction"
+    "pos": "conjunction",
+    "exampleTarget": "Habla español como un nativo.",
+    "exampleNative": "He/she speaks Spanish like a native."
   },
   {
     "id": "es-w-0100",
@@ -1140,7 +1338,9 @@
     "band": "1-100",
     "target": "pero",
     "native": "but",
-    "pos": "conjunction"
+    "pos": "conjunction",
+    "exampleTarget": "Estoy cansado, pero feliz.",
+    "exampleNative": "I am tired, but happy."
   },
   {
     "id": "es-w-0101",

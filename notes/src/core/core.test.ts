@@ -137,6 +137,28 @@ describe('tree & move', () => {
       'journal/2026/2026-11-25/trip.md',
       'journal/2026/2026-11-25/trip/pack.md',
     ]);
+
+    const toMonth = moveSubtreePaths(
+      updated,
+      'p1',
+      { kind: 'month', key: '2026-12' },
+      null
+    );
+    expect(toMonth.updated.map((u) => u.path)).toEqual([
+      'journal/2026/2026-12/trip.md',
+      'journal/2026/2026-12/trip/pack.md',
+    ]);
+
+    const toYear = moveSubtreePaths(
+      toMonth.updated,
+      'p1',
+      { kind: 'year', key: '2027' },
+      null
+    );
+    expect(toYear.updated.map((u) => u.path)).toEqual([
+      'journal/2027/year/trip.md',
+      'journal/2027/year/trip/pack.md',
+    ]);
   });
 });
 

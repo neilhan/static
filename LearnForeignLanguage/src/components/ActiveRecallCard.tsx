@@ -6,6 +6,9 @@ import {
   buildMixedRecallQueue,
   checkTypedRecall,
   formatFormEntries,
+  getNextCardIndex,
+  getPrevCardIndex,
+  getSessionDisplayIndex,
   RecallFilter,
   RecallMatchResult,
   selectSmartReviewBatch,
@@ -247,17 +250,13 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   };
 
   const handlePrev = () => {
-    if (queue.length === 0) return;
-    setCardIndex((prev) => (prev - 1 + queue.length) % queue.length);
+    if (queue.length <= 1) return;
+    setCardIndex((prev) => getPrevCardIndex(prev, queue.length, filter));
   };
 
   const handleSkip = () => {
-    if (!currentItem) return;
-    if (filter === 'all') {
-      setCardIndex((prev) => (prev + 1) % queue.length);
-      return;
-    }
-    completeSessionItem(currentItem.id);
+    if (!currentItem || queue.length <= 1) return;
+    setCardIndex((prev) => getNextCardIndex(prev, queue.length));
   };
 
   const handleGrade = (grade: number) => {
@@ -315,7 +314,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
         }
       } else if (e.code === 'ArrowLeft') {
         e.preventDefault();
-        setCardIndex((prev) => (prev - 1 + queue.length) % queue.length);
+        handlePrev();
       } else if (e.code === 'ArrowRight') {
         e.preventDefault();
         handleSkip();
@@ -615,10 +614,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
             <span className="recall-queue-count">
               {filter === 'all'
                 ? `${safeIndex + 1} / ${queue.length}`
-                : `${Math.min(
-                    sessionTotal,
-                    Math.max(1, sessionTotal - queue.length + safeIndex + 1)
-                  )} / ${sessionTotal}`}
+                : `${getSessionDisplayIndex(sessionTotal, queue.length, safeIndex)} / ${sessionTotal}`}
             </span>
           </div>
 
@@ -720,6 +716,30 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
                   <p className="recall-note-text">💡 {currentItem.note}</p>
                 )}
 
+                {(currentItem.exampleTarget || currentItem.exampleNative) && (
+                  <div className="recall-example-section">
+                    <div className="recall-example-header">
+                      <span className="recall-forms-label">Example:</span>
+                      {currentItem.exampleTarget && (
+                        <button
+                          type="button"
+                          className="btn-outline btn-sm recall-example-speak"
+                          onClick={() => speakSpanish(currentItem.exampleTarget!)}
+                          title="Listen to example sentence"
+                        >
+                          🔊 Hear Example
+                        </button>
+                      )}
+                    </div>
+                    {currentItem.exampleTarget && (
+                      <p className="recall-example-target">{currentItem.exampleTarget}</p>
+                    )}
+                    {currentItem.exampleNative && (
+                      <p className="recall-example-native">{currentItem.exampleNative}</p>
+                    )}
+                  </div>
+                )}
+
                 {formEntries.length > 0 && (
                   <div className="recall-forms-section">
                     <div className="recall-forms-label">
@@ -766,7 +786,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
               type="button"
               className="btn-outline btn-sm"
               onClick={handlePrev}
-              disabled={queue.length <= 1}
+              disabled={queue.length <= 1 || (filter !== 'all' && safeIndex === 0)}
             >
               ← Prev
             </button>
@@ -774,7 +794,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
               type="button"
               className="btn-outline btn-sm"
               onClick={handleSkip}
-              disabled={filter === 'all' && queue.length <= 1}
+              disabled={queue.length <= 1}
             >
               Skip →
             </button>

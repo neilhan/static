@@ -7,6 +7,9 @@ import {
   checkTypedRecall,
   formatFormEntries,
   getLearnedItemEntries,
+  getNextCardIndex,
+  getPrevCardIndex,
+  getSessionDisplayIndex,
   normalizeSpanish,
   selectSmartReviewBatch,
   shouldUpdateSrsOnGrade,
@@ -236,6 +239,27 @@ describe('recall helpers', () => {
     expect(getLearnedItemEntries(phrases, phraseSrs, vocab, vocabSrs, 'all', 'morning').map((e) => e.item.id)).toEqual([
       'es-p-1',
     ]);
+  });
+
+  it('navigates prev/skip without wrapping past start of active sessions', () => {
+    // In active session modes, Prev clamps at 0 instead of wrapping to the end
+    expect(getPrevCardIndex(0, 14, 'due-and-new')).toBe(0);
+    expect(getPrevCardIndex(0, 14, 'review')).toBe(0);
+    expect(getPrevCardIndex(3, 14, 'due-and-new')).toBe(2);
+
+    // Progress stays at 1/14 instead of jumping to 14/14
+    expect(getSessionDisplayIndex(14, 14, getPrevCardIndex(0, 14, 'due-and-new'))).toBe(1);
+
+    // Skipping forward then going Prev returns cleanly to the skipped card
+    const afterSkip = getNextCardIndex(0, 14);
+    expect(afterSkip).toBe(1);
+    expect(getSessionDisplayIndex(14, 14, afterSkip)).toBe(2);
+    const afterPrev = getPrevCardIndex(afterSkip, 14, 'due-and-new');
+    expect(afterPrev).toBe(0);
+    expect(getSessionDisplayIndex(14, 14, afterPrev)).toBe(1);
+
+    // In 'all' browser mode, Prev still wraps circularly
+    expect(getPrevCardIndex(0, 14, 'all')).toBe(13);
   });
 });
 

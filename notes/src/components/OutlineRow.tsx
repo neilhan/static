@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ContainerRef, ItemStatus, JournalItem } from '../core/types';
+import { MoveForm } from './MoveForm';
 
 type OutlineRowProps = {
   item: JournalItem;
@@ -59,9 +60,31 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
   const [addingSub, setAddingSub] = useState(false);
   const [subTitle, setSubTitle] = useState('');
   const [moveOpen, setMoveOpen] = useState(false);
-  const [moveDate, setMoveDate] = useState(
-    item.container.kind === 'day' ? item.container.key : todayStr
-  );
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+        setConfirmDelete(false);
+      }
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false);
+        setConfirmDelete(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    document.addEventListener('touchstart', handleOutside);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('touchstart', handleOutside);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [menuOpen]);
 
   const isCalendar = Boolean(item.calendar);
   const children = allItems
@@ -166,40 +189,16 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
           )}
 
           {moveOpen && (
-            <div className="inline-move-bar">
-              <input
-                type="date"
-                value={moveDate}
-                onChange={(e) => setMoveDate(e.target.value)}
-              />
-              <button
-                type="button"
-                className="btn-sm"
-                onClick={() => {
-                  onMove(item.id, { kind: 'day', key: moveDate });
-                  setMoveOpen(false);
-                }}
-              >
-                Move to day
-              </button>
-              <button
-                type="button"
-                className="btn-sm"
-                onClick={() => {
-                  onMove(item.id, { kind: 'notes', key: 'notes' });
-                  setMoveOpen(false);
-                }}
-              >
-                Notes
-              </button>
-              <button
-                type="button"
-                className="btn-sm btn-ghost"
-                onClick={() => setMoveOpen(false)}
-              >
-                Cancel
-              </button>
-            </div>
+            <MoveForm
+              currentContainer={item.container}
+              isNested={item.parentId !== null}
+              todayStr={todayStr}
+              onMove={(target) => {
+                onMove(item.id, target);
+                setMoveOpen(false);
+              }}
+              onCancel={() => setMoveOpen(false)}
+            />
           )}
 
           {addingSub && (
@@ -236,7 +235,7 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
           )}
 
           {!isCalendar && (
-            <div className="menu-anchor">
+            <div className="menu-anchor" ref={menuRef}>
               <button
                 type="button"
                 className="icon-btn"
@@ -249,7 +248,7 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
                 ⋯
               </button>
               {menuOpen && (
-                <div className="row-menu" onMouseLeave={() => setMenuOpen(false)}>
+                <div className="row-menu">
                   <button
                     type="button"
                     onClick={() => {

@@ -448,3 +448,45 @@ export function getLearnedItemEntries(
   return filtered.sort((a, b) => a.srs.nextReview - b.srs.nextReview);
 }
 
+/**
+ * Computes the next card index when navigating backward.
+ * In active session modes ('due-and-new', 'review'), clamps at 0 instead of wrapping
+ * to the end of the remaining queue so progress does not jump ahead.
+ */
+export function getPrevCardIndex(
+  currentIndex: number,
+  queueLength: number,
+  filter: RecallFilter
+): number {
+  if (queueLength <= 1) return 0;
+  const clamped = Math.max(0, Math.min(currentIndex, queueLength - 1));
+  if (filter === 'all') {
+    return (clamped - 1 + queueLength) % queueLength;
+  }
+  return Math.max(0, clamped - 1);
+}
+
+/**
+ * Computes the next card index when skipping forward in the current queue.
+ */
+export function getNextCardIndex(currentIndex: number, queueLength: number): number {
+  if (queueLength <= 1) return 0;
+  const clamped = Math.max(0, Math.min(currentIndex, queueLength - 1));
+  return (clamped + 1) % queueLength;
+}
+
+/**
+ * Computes the 1-based session progress position shown to the user.
+ */
+export function getSessionDisplayIndex(
+  sessionTotal: number,
+  queueLength: number,
+  safeIndex: number
+): number {
+  if (sessionTotal <= 0) return 0;
+  return Math.min(
+    sessionTotal,
+    Math.max(1, sessionTotal - queueLength + safeIndex + 1)
+  );
+}
+

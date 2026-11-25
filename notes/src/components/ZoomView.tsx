@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { containerDisplayLabel } from '../core/tree';
 import { ContainerRef, ItemStatus, JournalItem } from '../core/types';
+import { MoveForm } from './MoveForm';
 import { OutlineRow } from './OutlineRow';
 
 type ZoomViewProps = {
@@ -43,11 +44,14 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
   const [historyOpen, setHistoryOpen] = useState(false);
   const [newSub, setNewSub] = useState('');
   const [addingSub, setAddingSub] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     setTitle(item.title);
     setBody(item.body);
     setTime(item.time ?? '');
+    setConfirmDelete(false);
   }, [item.id, item.title, item.body, item.time]);
 
   const isCalendar = Boolean(item.calendar);
@@ -168,6 +172,13 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
               <button
                 type="button"
                 className="btn-sm"
+                onClick={() => setMoveOpen((v) => !v)}
+              >
+                → Move…
+              </button>
+              <button
+                type="button"
+                className="btn-sm"
                 onClick={() =>
                   onSetStatus(
                     item.id,
@@ -177,9 +188,36 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
               >
                 {item.status === 'archived' ? 'Unarchive' : 'Archive'}
               </button>
+              <button
+                type="button"
+                className="btn-sm danger-btn"
+                onClick={() => {
+                  if (!confirmDelete) {
+                    setConfirmDelete(true);
+                  } else {
+                    onDelete(item.id);
+                    onBack();
+                  }
+                }}
+              >
+                {confirmDelete ? 'Confirm delete?' : 'Delete'}
+              </button>
             </div>
           )}
         </div>
+
+        {moveOpen && !isCalendar && (
+          <MoveForm
+            currentContainer={item.container}
+            isNested={item.parentId !== null}
+            todayStr={todayStr}
+            onMove={(target) => {
+              onMove(item.id, target);
+              setMoveOpen(false);
+            }}
+            onCancel={() => setMoveOpen(false)}
+          />
+        )}
 
         <textarea
           className="zoom-details-editor"

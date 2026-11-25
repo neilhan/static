@@ -117,7 +117,7 @@ All sync runs directly against `https://api.github.com/repos/{owner}/{repo}` (co
 
 Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and calendar sync are working.
 
-- **Direct REST call:** Browser calls `generativelanguage.googleapis.com` (`generateContent`) using the user's stored Gemini API key (defaulting to a fast model like Gemini 4 Hydrogen).
+- **Direct REST call:** Browser calls `generativelanguage.googleapis.com` (`generateContent`) using the user's stored Gemini API key and selected model (preset dropdown: `gemini-4-hydrogen` default, `gemini-4-argon`, `gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-2.5-flash`, or custom model ID).
 - **Text & Voice input in one chat box:**
   - **Text:** Multiline input (`Enter` sends, `Shift+Enter` newline).
   - **Voice (tap-to-talk mic button):** Record audio via `MediaRecorder` (`audio/mp4` on iOS Safari, `audio/webm` on Chrome/desktop) and send the audio clip directly as multimodal input to `generateContent`. Avoids `webkitSpeechRecognition` quirks in iPhone standalone PWAs and handles mixed English + Chinese natively without a separate transcription step.
@@ -134,7 +134,7 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
 - Stored in `localStorage` (entered once in Settings, never committed):
   - `github_owner` / `github_repo` (empty by default, entered in Settings)
   - `github_pat` (Fine-Grained PAT scoped only to the journal repo, `Contents: Read & Write`)
-  - `gemini_api_key`
+  - `gemini_api_key` and `gemini_model` (preset dropdown or custom model ID)
   - Optional `google_client_id` for GIS Calendar read
 - No untrusted third-party scripts or CDNs; strict CSP-friendly bundle.
 
@@ -150,9 +150,9 @@ Shared `56rem` centered column on desktop, full-width on phone, minimal UI (no e
   - Circled bullet = has sub-items; plain dot = leaf. Clicking bullet zooms in.
   - `▸`/`▾` collapse toggle at right beside `⋯` menu (only when item has sub-items).
   - Tap title or details for inline edit; list rows clamp details to 3 lines with ellipsis.
-  - Drag grip `⋮⋮` for reorder/move/nest, plus `⋯` menu (Add sub-item, Indent, Outdent, Move up/down, Move, Done/Reopen, Archive, Delete with two-tap confirm).
-- **Zoom view:** Single-item focus with breadcrumb ancestors, `‹ Back` trail, full details editor, time-of-day editor, sub-item outline, and collapsible `## History`.
-- **Header / Controls:** Search input (`≥ 2` chars), `✓ Done` filter toggle (persisted, hides done items + subtrees when off), quick-jump chips, and bottom Sync bar (Pull, Push, dirty count, conflict banner).
+  - Drag grip `⋮⋮` for reorder/move/nest, plus `⋯` menu (Add sub-item, Indent, Outdent, Move up/down, Move to Day/Week/Month/Year/Notes, Done/Reopen, Archive, Delete with two-tap confirm).
+- **Zoom view:** Single-item focus with breadcrumb ancestors, `‹ Back` trail, full details editor, time-of-day editor, `MoveForm` (Day, Week snapping to Monday, Month, Year, Notes), sub-item outline, and collapsible `## History`.
+- **Header / Controls & Jump Navigation:** Search input (`≥ 2` chars), `✓ Done` filter toggle (persisted, hides done items + subtrees when off), bottom Sync bar (Pull, Push, dirty count, conflict banner), and fixed bottom-right jump chips above the Gemini chat button (`办点事儿`, `Notes`, `🔍`).
 
 ---
 
@@ -166,7 +166,7 @@ notes/
 ├── tsconfig.json
 ├── vite.config.ts
 ├── public/
-│   ├── icon.svg
+│   ├── notes.svg
 │   ├── icon-192.png        # generated
 │   ├── icon-512.png        # generated
 │   ├── apple-touch-icon.png# generated
@@ -176,21 +176,24 @@ notes/
     ├── main.tsx
     ├── App.tsx
     ├── core/               # pure TS, unit-tested with Vitest
+    │   ├── types.ts
     │   ├── markdown.ts     # frontmatter + # Title + body + ## History parser/serializer
     │   ├── slug.ts         # NFD + 60-char cap + collision suffix
     │   ├── order.ts        # fractional midpoint + 6-decimal renumber
     │   ├── ulid.ts         # 26-char Crockford base32 ULID generator
-    │   ├── tree.ts         # container detection, sibling folders, legacy layout import
+    │   ├── tree.ts         # container detection, sibling folders, subtree moves
     │   ├── merge.ts        # id-first pull reconciliation & conflict detection
     │   └── calendar.ts     # 2-month window & reschedule/cancel reconciliation
+    ├── state/
+    │   └── journalActions.ts # pure item CRUD, status, move, reorder, delete
     ├── storage/
-    │   └── db.ts           # IndexedDB wrapper (items, pendingDeletes, syncMeta)
+    │   └── db.ts           # IndexedDB wrapper (items, pendingDeletes, syncMeta) + settings
     ├── sync/
     │   ├── github.ts       # Git Data API pull & atomic single-commit push
     │   └── gcal.ts         # GIS + Google Calendar REST fetch
     ├── ai/
-    │   └── gemini.ts       # Gemini REST + function calling tools
-    └── components/         # Outline, Row, ZoomView, Overdue, SyncBar, ChatBubble, Settings
+    │   └── gemini.ts       # Gemini REST + voice/text + function calling tools
+    └── components/         # OutlineRow, ZoomView, MoveForm, ChatBubble, SettingsModal
 ```
 
 - **Unit tests (`pnpm --filter notes test`):** Vitest suite covering `markdown.ts`, `slug.ts`, `order.ts`, `tree.ts`, `merge.ts`, and `calendar.ts` (round-trip fidelity against `journal/` format fixtures).

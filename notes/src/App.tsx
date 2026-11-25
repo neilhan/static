@@ -75,6 +75,9 @@ export default function App() {
   const aiSnapshotRef = useRef<{ items: JournalItem[]; deletes: string[] } | null>(
     null
   );
+  const datedSectionRef = useRef<HTMLElement | null>(null);
+  const notesSectionRef = useRef<HTMLElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const onOnline = () => setIsOnline(true);
@@ -331,6 +334,11 @@ export default function App() {
     [items, selectedDay, meta.showDone]
   );
 
+  const hasOpenNotes = useMemo(
+    () => items.some((i) => i.container.kind === 'notes' && i.status === 'open'),
+    [items]
+  );
+
   const activeZoomId = zoomStack[zoomStack.length - 1] ?? null;
   const activeZoomItem = activeZoomId
     ? items.find((i) => i.id === activeZoomId) ?? null
@@ -380,6 +388,7 @@ export default function App() {
 
         <div className="top-controls">
           <input
+            ref={searchInputRef}
             type="search"
             className="search-input"
             placeholder="Search (2+ chars)…"
@@ -529,7 +538,7 @@ export default function App() {
             </section>
           )}
 
-          <section className="day-section">
+          <section ref={datedSectionRef} className="day-section">
             <div className="day-nav">
               <button
                 type="button"
@@ -668,7 +677,7 @@ export default function App() {
             );
           })}
 
-          <section className="group-section">
+          <section ref={notesSectionRef} className="group-section">
             <div className="group-header">
               <h2>Notes</h2>
             </div>
@@ -804,6 +813,56 @@ export default function App() {
           </span>
         </div>
       </footer>
+
+      {!activeZoomItem && (
+        <nav className="jump-chips" aria-label="Jump navigation">
+          <button
+            type="button"
+            className="jump-chip"
+            onClick={() => {
+              if (searchQuery) setSearchQuery('');
+              setTimeout(() => {
+                datedSectionRef.current?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
+              }, 0);
+            }}
+          >
+            办点事儿
+          </button>
+          <button
+            type="button"
+            className="jump-chip"
+            disabled={!hasOpenNotes}
+            onClick={() => {
+              if (searchQuery) setSearchQuery('');
+              setTimeout(() => {
+                notesSectionRef.current?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
+              }, 0);
+            }}
+          >
+            Notes
+          </button>
+          <button
+            type="button"
+            className="jump-chip"
+            aria-label="Jump to search"
+            onClick={() => {
+              searchInputRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              });
+              searchInputRef.current?.focus();
+            }}
+          >
+            🔍
+          </button>
+        </nav>
+      )}
 
       <ChatBubble
         apiKey={settings.geminiApiKey}

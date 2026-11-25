@@ -73,6 +73,8 @@ body {
 input[type="text"],
 input[type="password"],
 input[type="date"],
+input[type="month"],
+input[type="number"],
 input[type="time"],
 select,
 textarea {
@@ -310,7 +312,8 @@ button:disabled {
   background: var(--surface-hover);
 }
 
-.row-menu button.danger {
+.row-menu button.danger,
+.danger-btn {
   color: var(--danger);
 }
 
@@ -487,6 +490,32 @@ button:disabled {
 .sync-status-text {
   color: var(--muted);
   font-size: 0.82rem;
+}
+
+.jump-chips {
+  position: fixed;
+  right: 16px;
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 58px);
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jump-chip {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.jump-chip:hover:not(:disabled) {
+  border-color: var(--accent);
 }
 
 .chat-widget {
