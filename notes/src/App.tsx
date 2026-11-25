@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createExecutorFromItems } from './ai/gemini';
 import { ChatBubble } from './components/ChatBubble';
 import { OutlineRow } from './components/OutlineRow';
+import { QuickAddModal } from './components/QuickAddModal';
 import { SettingsModal } from './components/SettingsModal';
 import { ZoomView } from './components/ZoomView';
 import { reconcileCalendarEvents } from './core/calendar';
@@ -64,6 +65,7 @@ export default function App() {
   const [notesOpen, setNotesOpen] = useState(true);
   const [archivedOpen, setArchivedOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   const [addingFor, setAddingFor] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
@@ -1115,6 +1117,14 @@ export default function App() {
         <nav className="jump-chips" aria-label="Jump navigation">
           <button
             type="button"
+            className="jump-chip jump-chip-add"
+            aria-label="Quick add item"
+            onClick={() => setQuickAddOpen(true)}
+          >
+            + Add
+          </button>
+          <button
+            type="button"
             className="jump-chip"
             onClick={() => {
               if (searchQuery) setSearchQuery('');
@@ -1184,6 +1194,17 @@ export default function App() {
         }}
         canUndo={aiSnapshotRef.current !== null}
       />
+
+      {quickAddOpen && (
+        <QuickAddModal
+          todayStr={todayStr}
+          selectedDay={selectedDay}
+          onAdd={({ title, body, container, time }) => {
+            handleCreate(container, title, null, body, time);
+          }}
+          onClose={() => setQuickAddOpen(false)}
+        />
+      )}
 
       {settingsOpen && (
         <SettingsModal

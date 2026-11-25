@@ -156,7 +156,7 @@ Shared `56rem` centered column on desktop, full-width on phone, minimal UI (no e
   - Tap title or details for inline edit; list rows clamp details to 3 lines with ellipsis.
   - Drag grip `⋮⋮` for reorder/move/nest, plus `⋯` menu (Add sub-item, Indent, Outdent, Move up/down, Move to Day/Week/Month/Year/Notes, Done/Reopen, Archive, Delete with two-tap confirm).
 - **Zoom view:** Single-item focus with breadcrumb ancestors, `‹ Back` trail, full details editor, time-of-day editor, `MoveForm` (Day, Week snapping to Monday, Month, Year, Notes), sub-item outline, and collapsible `## History`.
-- **Header / Controls & Jump Navigation:** Search input (`≥ 2` chars), `✓ Done` filter toggle (persisted, hides done items + subtrees when off), bottom Sync bar (Pull, Push, dirty count, conflict banner), and fixed bottom-right jump chips above the Gemini chat button (`办点事儿`, `Notes`, `🔍`).
+- **Header / Controls & Jump Navigation:** Search input (`≥ 2` chars), `✓ Done` filter toggle (persisted, hides done items + subtrees when off), bottom Sync bar (smart `Sync` button, dirty count, conflict resolution), and fixed bottom-right chips above the Gemini chat button (`+ Add` Quick Add modal, `办点事儿`, `Notes`, `🔍`).
 
 ---
 

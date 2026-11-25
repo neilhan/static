@@ -498,7 +498,8 @@ button:disabled {
   bottom: calc(max(16px, env(safe-area-inset-bottom)) + 58px);
   z-index: 35;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 6px;
 }
 
@@ -516,6 +517,13 @@ button:disabled {
 
 .jump-chip:hover:not(:disabled) {
   border-color: var(--accent);
+}
+
+.jump-chip-add {
+  background: var(--accent);
+  color: #0f172a;
+  border-color: var(--accent);
+  font-weight: 600;
 }
 
 .chat-widget {
