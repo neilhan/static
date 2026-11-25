@@ -8,7 +8,6 @@ import {
   formatFormEntries,
   getNextCardIndex,
   getPrevCardIndex,
-  getSessionDisplayIndex,
   RecallFilter,
   RecallMatchResult,
   selectSmartReviewBatch,
@@ -169,6 +168,9 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   const [sessionTotal, setSessionTotal] = useState<number>(() =>
     Math.min(SESSION_SIZE, todayPool.length)
   );
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
+
+  const completedSet = useMemo(() => new Set(completedIds), [completedIds]);
 
   const queue = useMemo(() => {
     if (filter === 'all') return allPool;
@@ -179,7 +181,10 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
 
   const totalCount = phraseItems.length + vocabItems.length;
   const safeIndex = queue.length > 0 ? Math.min(cardIndex, queue.length - 1) : 0;
-  const currentItem = queue[safeIndex] ?? null;
+  const isSessionComplete =
+    filter !== 'all' &&
+    (queue.length === 0 || queue.every((item) => completedSet.has(item.id)));
+  const currentItem = isSessionComplete ? null : (queue[safeIndex] ?? null);
 
   const speakSpanish = (text: string) => {
     speakText(text, targetLang, targetVoiceURI, 'es');
@@ -199,6 +204,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
     const nextIds = pool.slice(0, SESSION_SIZE).map((i) => i.id);
     setSessionIds(nextIds);
     setSessionTotal(nextIds.length);
+    setCompletedIds([]);
     setCardIndex(0);
     setFilter('due-and-new');
   };
@@ -217,6 +223,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
     const nextIds = batch.items.map((i) => i.id);
     setSessionIds(nextIds);
     setSessionTotal(nextIds.length);
+    setCompletedIds([]);
     setCardIndex(0);
     setFilter('review');
   };
@@ -244,9 +251,22 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   };
 
   const completeSessionItem = (id: string) => {
-    const nextLen = Math.max(0, sessionIds.length - 1);
-    setSessionIds((prev) => prev.filter((x) => x !== id));
-    setCardIndex((prev) => (nextLen === 0 ? 0 : Math.min(prev, nextLen - 1)));
+    const nextCompleted = new Set(completedIds);
+    nextCompleted.add(id);
+    setCompletedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+
+    if (queue.length === 0) {
+      setCardIndex(0);
+      return;
+    }
+
+    for (let offset = 1; offset < queue.length; offset++) {
+      const idx = (safeIndex + offset) % queue.length;
+      if (!nextCompleted.has(queue[idx].id)) {
+        setCardIndex(idx);
+        return;
+      }
+    }
   };
 
   const handlePrev = () => {
@@ -262,7 +282,9 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
   const handleGrade = (grade: number) => {
     if (!currentItem) return;
     const gradedId = currentItem.id;
-    onGradeItem(gradedId, grade);
+    if (!completedSet.has(gradedId) || grade < 3) {
+      onGradeItem(gradedId, grade);
+    }
 
     if (filter === 'all') {
       setCardIndex((prev) => (prev + 1 < queue.length ? prev + 1 : 0));
@@ -285,7 +307,9 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
       handleGrade(4);
       return;
     }
-    onMarkWellKnown(id);
+    if (!completedSet.has(id)) {
+      onMarkWellKnown(id);
+    }
     if (filter === 'all') {
       setCardIndex((prev) => (prev + 1 < queue.length ? prev + 1 : 0));
       return;
@@ -396,6 +420,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
 
     setSessionIds(addedIds);
     setSessionTotal(addedIds.length);
+    setCompletedIds([]);
     setCardIndex(0);
     setFilter('due-and-new');
   };
@@ -612,9 +637,7 @@ export const ActiveRecallCard: React.FC<ActiveRecallCardProps> = ({
               </button>
             )}
             <span className="recall-queue-count">
-              {filter === 'all'
-                ? `${safeIndex + 1} / ${queue.length}`
-                : `${getSessionDisplayIndex(sessionTotal, queue.length, safeIndex)} / ${sessionTotal}`}
+              {`${safeIndex + 1} / ${queue.length}`}
             </span>
           </div>
 

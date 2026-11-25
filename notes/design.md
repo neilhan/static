@@ -73,6 +73,10 @@ Replaces `localStorage` so the journal isn't capped at ~5 MB and tracks GitHub b
 
 All sync runs directly against `https://api.github.com/repos/{owner}/{repo}` (configured in Settings, starting empty) using a Fine-Grained PAT (`Contents: Read & Write` scoped to that repo).
 
+- **Auto-sync (toggleable in Settings, default ON):**
+  - **Auto-Pull:** Runs on app open, foreground (`visibilitychange`), reconnect (`online`), and every 15 minutes while visible (15-min cooldown).
+  - **Auto-Push:** Debounced 45 seconds after the last local edit, plus immediately on page hide or reconnect when dirty (paused if unresolved pull conflicts exist).
+
 ### Pull (Incremental + Merge-by-`id`)
 1. `GET /git/refs/heads/main` → get `headCommitSha`. If equal to `lastCommitSha`, return immediately (1 API call).
 2. `GET /git/trees/{headCommitSha}?recursive=1` → filter blobs under `journal/` (excluding `journal/README.md`).

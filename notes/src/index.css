@@ -699,6 +699,15 @@ button:disabled {
   color: var(--muted);
 }
 
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
 .repo-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

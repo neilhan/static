@@ -72,6 +72,14 @@ export default function App() {
 
   const itemsRef = useRef<JournalItem[]>(items);
   itemsRef.current = items;
+  const pendingDeletesRef = useRef<string[]>(pendingDeletes);
+  pendingDeletesRef.current = pendingDeletes;
+  const metaRef = useRef<SyncMeta>(meta);
+  metaRef.current = meta;
+  const settingsRef = useRef<AppSettings>(settings);
+  settingsRef.current = settings;
+  const syncingRef = useRef<boolean>(false);
+  const autoPushTimerRef = useRef<number | null>(null);
   const aiSnapshotRef = useRef<{ items: JournalItem[]; deletes: string[] } | null>(
     null
   );
@@ -205,12 +213,20 @@ export default function App() {
     }
   };
 
-  const handlePull = async () => {
-    if (syncing || !isOnline) return;
+  const hasGitHubConfig = (s: AppSettings): boolean =>
+    Boolean(s.githubOwner.trim() && s.githubRepo.trim() && s.githubPat.trim());
+
+  const handlePull = useCallback(async () => {
+    if (syncingRef.current || !navigator.onLine) return;
+    syncingRef.current = true;
     setSyncing(true);
     setSyncStatus('Pulling from GitHub…');
     try {
-      const pulled = await pullFromGitHub(settings, itemsRef.current, meta);
+      const pulled = await pullFromGitHub(
+        settingsRef.current,
+        itemsRef.current,
+        metaRef.current
+      );
       const cal = await runCalendarSync(pulled.items);
       await persistItems(cal.items, cal.deletedPaths);
       await updateMeta(pulled.meta);
@@ -218,25 +234,33 @@ export default function App() {
     } catch (err) {
       setSyncStatus(err instanceof Error ? err.message : 'Pull failed');
     } finally {
+      syncingRef.current = false;
       setSyncing(false);
     }
-  };
+  }, [persistItems, updateMeta]);
 
-  const handlePush = async () => {
-    if (syncing || !isOnline) return;
+  const handlePush = useCallback(async () => {
+    if (syncingRef.current || !navigator.onLine) return;
+    syncingRef.current = true;
     setSyncing(true);
     setSyncStatus('Pushing to GitHub…');
     try {
       const cal = await runCalendarSync(itemsRef.current);
       const allDeletes = Array.from(
-        new Set([...pendingDeletes, ...cal.deletedPaths])
+        new Set([...pendingDeletesRef.current, ...cal.deletedPaths])
       );
-      const pushed = await pushToGitHub(settings, cal.items, allDeletes, meta);
+      const pushed = await pushToGitHub(
+        settingsRef.current,
+        cal.items,
+        allDeletes,
+        metaRef.current
+      );
       await replaceAllItems(pushed.items);
       setItems(pushed.items);
       itemsRef.current = pushed.items;
       await clearPendingDeletes();
       setPendingDeletes([]);
+      pendingDeletesRef.current = [];
       await updateMeta(pushed.meta);
       setSyncStatus(
         pushed.pushedCount === 0 && pushed.deletedCount === 0
@@ -246,14 +270,108 @@ export default function App() {
     } catch (err) {
       setSyncStatus(err instanceof Error ? err.message : 'Push failed');
     } finally {
+      syncingRef.current = false;
       setSyncing(false);
     }
-  };
+  }, [updateMeta]);
+
+  const AUTO_PULL_MS = 15 * 60 * 1000;
+  const AUTO_PUSH_DEBOUNCE_MS = 45 * 1000;
+
+  const maybeAutoPull = useCallback(async () => {
+    const s = settingsRef.current;
+    if (!loaded || !s.autoSync || !hasGitHubConfig(s) || !navigator.onLine) return;
+    if (syncingRef.current) return;
+    const lastPulled = metaRef.current.lastPulledAt
+      ? Date.parse(metaRef.current.lastPulledAt)
+      : 0;
+    if (Date.now() - lastPulled < AUTO_PULL_MS) return;
+    await handlePull();
+  }, [loaded, handlePull]);
+
+  const maybeAutoPushNow = useCallback(async () => {
+    const s = settingsRef.current;
+    if (!loaded || !s.autoSync || !hasGitHubConfig(s) || !navigator.onLine) return;
+    if (syncingRef.current || metaRef.current.conflicts.length > 0) return;
+    const hasDirty =
+      itemsRef.current.some((i) => i.dirty) || pendingDeletesRef.current.length > 0;
+    if (!hasDirty) return;
+    await handlePush();
+  }, [loaded, handlePush]);
 
   const dirtyCount = useMemo(
     () => items.filter((i) => i.dirty).length + pendingDeletes.length,
     [items, pendingDeletes]
   );
+
+  // Auto-pull on load, foreground, online, and every 15 minutes
+  useEffect(() => {
+    if (!loaded) return;
+    void maybeAutoPull();
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        void maybeAutoPull();
+      } else if (document.visibilityState === 'hidden') {
+        if (autoPushTimerRef.current !== null) {
+          window.clearTimeout(autoPushTimerRef.current);
+          autoPushTimerRef.current = null;
+        }
+        void maybeAutoPushNow();
+      }
+    };
+
+    const onReconnect = () => {
+      void (async () => {
+        await maybeAutoPull();
+        await maybeAutoPushNow();
+      })();
+    };
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void maybeAutoPull();
+      }
+    }, AUTO_PULL_MS);
+
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('online', onReconnect);
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('online', onReconnect);
+    };
+  }, [loaded, maybeAutoPull, maybeAutoPushNow]);
+
+  // Debounced auto-push 45s after edits
+  useEffect(() => {
+    if (autoPushTimerRef.current !== null) {
+      window.clearTimeout(autoPushTimerRef.current);
+      autoPushTimerRef.current = null;
+    }
+    if (
+      !loaded ||
+      !isOnline ||
+      !settings.autoSync ||
+      !hasGitHubConfig(settings) ||
+      dirtyCount === 0 ||
+      meta.conflicts.length > 0
+    ) {
+      return;
+    }
+
+    autoPushTimerRef.current = window.setTimeout(() => {
+      autoPushTimerRef.current = null;
+      void maybeAutoPushNow();
+    }, AUTO_PUSH_DEBOUNCE_MS);
+
+    return () => {
+      if (autoPushTimerRef.current !== null) {
+        window.clearTimeout(autoPushTimerRef.current);
+        autoPushTimerRef.current = null;
+      }
+    };
+  }, [loaded, isOnline, settings, dirtyCount, meta.conflicts.length, maybeAutoPushNow]);
 
   const overdueItems = useMemo(
     () =>

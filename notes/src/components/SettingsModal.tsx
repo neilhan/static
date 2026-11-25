@@ -62,6 +62,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           />
         </label>
 
+        <label className="checkbox-field">
+          <input
+            type="checkbox"
+            checked={draft.autoSync}
+            onChange={(e) => setDraft({ ...draft, autoSync: e.target.checked })}
+          />
+          <span>Auto-sync (pull every 15m, push 45s after edits)</span>
+        </label>
+
         <label className="field">
           <span>Gemini API Key (for text &amp; voice chat)</span>
           <input

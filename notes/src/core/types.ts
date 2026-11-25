@@ -65,6 +65,7 @@ export type AppSettings = {
   githubPat: string;
   githubOwner: string;
   githubRepo: string;
+  autoSync: boolean;
   geminiApiKey: string;
   geminiModel: string;
   googleClientId: string;
