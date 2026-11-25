@@ -179,9 +179,40 @@ export const pushToGitHub = async (
 
   const dirtyItems = currentItems.filter((item) => item.dirty);
   const occupiedPaths = new Set(currentItems.map((item) => item.path));
-  const deletesToApply = Array.from(new Set(pendingDeletes)).filter(
+  let deletesToApply = Array.from(new Set(pendingDeletes)).filter(
     (p) => !occupiedPaths.has(p) && !isNonItemJournalFile(p)
   );
+
+  if (dirtyItems.length === 0 && deletesToApply.length === 0) {
+    return {
+      items: currentItems,
+      meta: currentMeta,
+      pushedCount: 0,
+      deletedCount: 0,
+    };
+  }
+
+  let baseTreeSha = currentMeta.lastTreeSha;
+  if (!baseTreeSha) {
+    const headCommit = await apiFetch<{ tree: { sha: string } }>(
+      settings,
+      `/git/commits/${ref.object.sha}`
+    );
+    baseTreeSha = headCommit.tree.sha;
+  }
+
+  // GitHub returns 422 GitRPC::BadObjectState if sha: null is sent for a path
+  // that does not exist in base_tree (e.g. items created & deleted locally).
+  if (deletesToApply.length > 0) {
+    const remoteTree = await apiFetch<{ tree: GitTreeEntry[] }>(
+      settings,
+      `/git/trees/${baseTreeSha}?recursive=1`
+    );
+    const existingRemotePaths = new Set(
+      remoteTree.tree.filter((e) => e.type === 'blob').map((e) => e.path)
+    );
+    deletesToApply = deletesToApply.filter((p) => existingRemotePaths.has(p));
+  }
 
   if (dirtyItems.length === 0 && deletesToApply.length === 0) {
     return {
@@ -226,7 +257,7 @@ export const pushToGitHub = async (
   const newTree = await apiFetch<{ sha: string }>(settings, '/git/trees', {
     method: 'POST',
     body: JSON.stringify({
-      ...(currentMeta.lastTreeSha ? { base_tree: currentMeta.lastTreeSha } : {}),
+      base_tree: baseTreeSha,
       tree: treeEntries,
     }),
   });

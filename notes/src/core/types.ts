@@ -50,6 +50,7 @@ export type ConflictRecord = {
   title: string;
   path: string;
   detectedAt: string;
+  remoteItem?: JournalItem;
 };
 
 export type SyncMeta = {

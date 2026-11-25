@@ -5,7 +5,7 @@ import { OutlineRow } from './components/OutlineRow';
 import { SettingsModal } from './components/SettingsModal';
 import { ZoomView } from './components/ZoomView';
 import { reconcileCalendarEvents } from './core/calendar';
-import { containerDisplayLabel, containerToSortDate } from './core/tree';
+import { containerDisplayLabel, containerToSortDate, resolveTreeParents } from './core/tree';
 import {
   AppSettings,
   ContainerRef,
@@ -892,18 +892,49 @@ export default function App() {
 
       <footer className="sync-bar">
         {meta.conflicts.length > 0 && (
-          <div className="conflict-banner">
-            <span>
-              {meta.conflicts.length} pull conflict(s) kept local:{' '}
-              {meta.conflicts.map((c) => c.title).join(', ')}
-            </span>
-            <button
-              type="button"
-              className="btn-sm"
-              onClick={() => void updateMeta({ ...meta, conflicts: [] })}
-            >
-              Dismiss
-            </button>
+          <div className="conflict-list">
+            {meta.conflicts.map((c) => (
+              <div key={c.id} className="conflict-banner">
+                <span>
+                  Conflict on <strong>{c.title}</strong> (local kept)
+                </span>
+                <div className="bulk-actions">
+                  <button
+                    type="button"
+                    className="btn-sm"
+                    onClick={() =>
+                      void updateMeta({
+                        ...meta,
+                        conflicts: meta.conflicts.filter((x) => x.id !== c.id),
+                      })
+                    }
+                  >
+                    Keep Local
+                  </button>
+                  {c.remoteItem && (
+                    <button
+                      type="button"
+                      className="btn-sm"
+                      onClick={() => {
+                        const remote = c.remoteItem!;
+                        const nextItems = resolveTreeParents(
+                          itemsRef.current.map((item) =>
+                            item.id === c.id ? remote : item
+                          )
+                        );
+                        void persistItems(nextItems);
+                        void updateMeta({
+                          ...meta,
+                          conflicts: meta.conflicts.filter((x) => x.id !== c.id),
+                        });
+                      }}
+                    >
+                      Use Remote
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
         <div className="sync-actions">

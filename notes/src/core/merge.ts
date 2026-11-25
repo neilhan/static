@@ -58,11 +58,21 @@ export const reconcilePull = (
       } else {
         // Dirty local item: keep local edits, check for conflict
         if (local.remoteSha && local.remoteSha !== remote.sha) {
+          const parsedPath = parseJournalPath(remote.path);
           conflicts.push({
             id: local.id,
             title: local.title,
             path: local.path,
             detectedAt: nowIso,
+            remoteItem: {
+              ...remote.parsed,
+              path: remote.path,
+              container: parsedPath.container ?? local.container,
+              parentId: null,
+              remoteSha: remote.sha,
+              dirty: false,
+              updatedAt: Date.now(),
+            },
           });
         }
         nextById.set(local.id, {
