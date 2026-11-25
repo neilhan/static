@@ -59,6 +59,9 @@ export default function App() {
   const [zoomStack, setZoomStack] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [overdueOpen, setOverdueOpen] = useState(false);
+  const [dayOpen, setDayOpen] = useState(true);
+  const [upcomingOpen, setUpcomingOpen] = useState(true);
+  const [notesOpen, setNotesOpen] = useState(true);
   const [archivedOpen, setArchivedOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -221,36 +224,113 @@ export default function App() {
     }
   };
 
-  const handleConnectCalendar = async () => {
-    if (!settingsRef.current.googleClientId.trim() || !navigator.onLine) return;
-    setSyncStatus('Connecting Google Calendar…');
+  const handleSmartSync = useCallback(async () => {
+    if (syncingRef.current || !navigator.onLine) return;
+    const s = settingsRef.current;
+    const hasGh = hasGitHubConfig(s);
+    const hasCal = Boolean(s.googleClientId.trim());
+    if (!hasGh && !hasCal) {
+      setSyncStatus('Configure GitHub or Calendar in Settings');
+      return;
+    }
+
+    syncingRef.current = true;
+    setSyncing(true);
+    setSyncStatus('Syncing…');
+
     try {
-      const token = await requestCalendarToken(
-        settingsRef.current.googleClientId,
-        true
-      );
-      const events = await fetchPrimaryCalendarEvents(
-        token,
-        todayStr,
-        settingsRef.current.timeZone
-      );
-      const res = reconcileCalendarEvents(itemsRef.current, events, todayStr);
-      const deletedSet = new Set(res.deletedIds);
-      const upsertedMap = new Map(res.upserted.map((u) => [u.id, u]));
-      const merged = itemsRef.current
-        .filter((i) => !deletedSet.has(i.id))
-        .map((i) => upsertedMap.get(i.id) ?? i);
-      for (const u of res.upserted) {
-        if (!itemsRef.current.some((i) => i.id === u.id)) {
-          merged.push(u);
+      // Request Calendar token first inside user gesture so browser doesn't block popup
+      let calToken: string | null = null;
+      let calErr: string | null = null;
+      if (hasCal) {
+        try {
+          calToken = await requestCalendarToken(s.googleClientId, true);
+        } catch (err) {
+          calErr = err instanceof Error ? err.message : 'Calendar auth failed';
         }
       }
-      await persistItems(merged, res.deletedPaths);
-      setSyncStatus(`Calendar synced (${events.length} events)`);
+
+      let currentItems = itemsRef.current;
+      let currentMeta = metaRef.current;
+      let allDeletes = [...pendingDeletesRef.current];
+      let pulledCount = 0;
+      let calCount = 0;
+      let pushedCount = 0;
+      let deletedCount = 0;
+
+      if (hasGh) {
+        const pulled = await pullFromGitHub(s, currentItems, currentMeta);
+        currentItems = pulled.items;
+        currentMeta = pulled.meta;
+        pulledCount = pulled.downloadedCount;
+      }
+
+      if (calToken) {
+        try {
+          const events = await fetchPrimaryCalendarEvents(
+            calToken,
+            todayStr,
+            s.timeZone
+          );
+          const res = reconcileCalendarEvents(currentItems, events, todayStr);
+          const deletedSet = new Set(res.deletedIds);
+          const upsertedMap = new Map(res.upserted.map((u) => [u.id, u]));
+          const merged = currentItems
+            .filter((i) => !deletedSet.has(i.id))
+            .map((i) => upsertedMap.get(i.id) ?? i);
+          for (const u of res.upserted) {
+            if (!currentItems.some((i) => i.id === u.id)) {
+              merged.push(u);
+            }
+          }
+          currentItems = merged;
+          allDeletes = Array.from(new Set([...allDeletes, ...res.deletedPaths]));
+          calCount = res.upserted.length + res.deletedIds.length;
+        } catch (err) {
+          calErr = err instanceof Error ? err.message : 'Calendar sync failed';
+        }
+      }
+
+      await persistItems(currentItems, allDeletes);
+      await updateMeta(currentMeta);
+
+      const hasDirty =
+        currentItems.some((i) => i.dirty) || allDeletes.length > 0;
+
+      if (hasGh && hasDirty) {
+        if (currentMeta.conflicts.length > 0) {
+          setSyncStatus(
+            `Pulled · resolve ${currentMeta.conflicts.length} conflict(s) before pushing`
+          );
+          return;
+        }
+        const pushed = await pushToGitHub(s, currentItems, allDeletes, currentMeta);
+        await replaceAllItems(pushed.items);
+        setItems(pushed.items);
+        itemsRef.current = pushed.items;
+        await clearPendingDeletes();
+        setPendingDeletes([]);
+        pendingDeletesRef.current = [];
+        await updateMeta(pushed.meta);
+        pushedCount = pushed.pushedCount;
+        deletedCount = pushed.deletedCount;
+      }
+
+      const parts: string[] = [];
+      if (pulledCount > 0) parts.push(`${pulledCount} pulled`);
+      if (calCount > 0) parts.push(`${calCount} calendar`);
+      if (pushedCount > 0) parts.push(`${pushedCount} pushed`);
+      if (deletedCount > 0) parts.push(`${deletedCount} deleted`);
+      if (calErr) parts.push(`cal: ${calErr}`);
+
+      setSyncStatus(parts.length > 0 ? `Synced · ${parts.join(', ')}` : 'Up to date');
     } catch (err) {
-      setSyncStatus(err instanceof Error ? err.message : 'Calendar auth failed');
+      setSyncStatus(err instanceof Error ? err.message : 'Sync failed');
+    } finally {
+      syncingRef.current = false;
+      setSyncing(false);
     }
-  };
+  }, [persistItems, updateMeta, todayStr]);
 
   const hasGitHubConfig = (s: AppSettings): boolean =>
     Boolean(s.githubOwner.trim() && s.githubRepo.trim() && s.githubPat.trim());
@@ -696,124 +776,47 @@ export default function App() {
           )}
 
           <section ref={datedSectionRef} className="day-section">
-            <div className="day-nav">
+            <div className="section-header-row">
               <button
                 type="button"
-                className="btn-sm"
-                onClick={() => setSelectedDay(addDays(selectedDay, -1))}
+                className="collapse-header"
+                onClick={() => setDayOpen((v) => !v)}
               >
-                ‹
+                {dayOpen ? '▾' : '▸'} {selectedDay === todayStr ? 'Today' : selectedDay} ({dayRoots.length})
               </button>
-              <button
-                type="button"
-                className="btn-sm"
-                onClick={() => setSelectedDay(todayStr)}
-              >
-                Today
-              </button>
-              <button
-                type="button"
-                className="btn-sm"
-                onClick={() => setSelectedDay(addDays(selectedDay, 1))}
-              >
-                ›
-              </button>
-              <input
-                type="date"
-                value={selectedDay}
-                onChange={(e) => e.target.value && setSelectedDay(e.target.value)}
-              />
             </div>
-
-            {dayRoots.map((item) => (
-              <OutlineRow
-                key={item.id}
-                item={item}
-                allItems={items}
-                showDone={meta.showDone}
-                todayStr={todayStr}
-                onZoom={(id) => setZoomStack([id])}
-                onToggleCollapse={handleToggleCollapse}
-                onEditTitle={(id, t) => handleEditContent(id, { title: t })}
-                onSetStatus={handleSetStatus}
-                onAddSubItem={(pid, t) =>
-                  handleCreate({ kind: 'day', key: selectedDay }, t, pid)
-                }
-                onReorder={handleReorder}
-                onMove={handleMove}
-                onDelete={handleDelete}
-              />
-            ))}
-
-            {addingFor === 'day' ? (
-              <div className="inline-add-sub">
-                <input
-                  type="text"
-                  placeholder="New item…"
-                  value={newTitle}
-                  autoFocus
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && newTitle.trim()) {
-                      handleCreate({ kind: 'day', key: selectedDay }, newTitle.trim());
-                      setNewTitle('');
-                      setAddingFor(null);
-                    }
-                    if (e.key === 'Escape') {
-                      setNewTitle('');
-                      setAddingFor(null);
-                    }
-                  }}
-                  onBlur={() => {
-                    if (newTitle.trim()) {
-                      handleCreate({ kind: 'day', key: selectedDay }, newTitle.trim());
-                    }
-                    setNewTitle('');
-                    setAddingFor(null);
-                  }}
-                />
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="add-plus-btn"
-                onClick={() => setAddingFor('day')}
-              >
-                +
-              </button>
-            )}
-          </section>
-
-          {upcomingContainers.map((container) => {
-            const groupItems = items
-              .filter(
-                (i) =>
-                  i.container.kind === container.kind &&
-                  i.container.key === container.key &&
-                  !i.parentId &&
-                  i.status !== 'archived' &&
-                  (meta.showDone || i.status !== 'done')
-              )
-              .sort((a, b) => a.order - b.order);
-
-            return (
-              <section
-                key={`${container.kind}:${container.key}`}
-                className="group-section"
-              >
-                <div className="group-header">
-                  <h2>{containerDisplayLabel(container)}</h2>
-                  {container.kind === 'day' && (
-                    <button
-                      type="button"
-                      className="btn-sm btn-ghost"
-                      onClick={() => setSelectedDay(container.key)}
-                    >
-                      Open day
-                    </button>
-                  )}
+            {dayOpen && (
+              <>
+                <div className="day-nav">
+                  <button
+                    type="button"
+                    className="btn-sm"
+                    onClick={() => setSelectedDay(addDays(selectedDay, -1))}
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-sm"
+                    onClick={() => setSelectedDay(todayStr)}
+                  >
+                    Today
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-sm"
+                    onClick={() => setSelectedDay(addDays(selectedDay, 1))}
+                  >
+                    ›
+                  </button>
+                  <input
+                    type="date"
+                    value={selectedDay}
+                    onChange={(e) => e.target.value && setSelectedDay(e.target.value)}
+                  />
                 </div>
-                {groupItems.map((item) => (
+
+                {dayRoots.map((item) => (
                   <OutlineRow
                     key={item.id}
                     item={item}
@@ -824,75 +827,189 @@ export default function App() {
                     onToggleCollapse={handleToggleCollapse}
                     onEditTitle={(id, t) => handleEditContent(id, { title: t })}
                     onSetStatus={handleSetStatus}
-                    onAddSubItem={(pid, t) => handleCreate(container, t, pid)}
+                    onAddSubItem={(pid, t) =>
+                      handleCreate({ kind: 'day', key: selectedDay }, t, pid)
+                    }
                     onReorder={handleReorder}
                     onMove={handleMove}
                     onDelete={handleDelete}
                   />
                 ))}
-              </section>
-            );
-          })}
+
+                {addingFor === 'day' ? (
+                  <div className="inline-add-sub">
+                    <input
+                      type="text"
+                      placeholder="New item…"
+                      value={newTitle}
+                      autoFocus
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newTitle.trim()) {
+                          handleCreate({ kind: 'day', key: selectedDay }, newTitle.trim());
+                          setNewTitle('');
+                          setAddingFor(null);
+                        }
+                        if (e.key === 'Escape') {
+                          setNewTitle('');
+                          setAddingFor(null);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (newTitle.trim()) {
+                          handleCreate({ kind: 'day', key: selectedDay }, newTitle.trim());
+                        }
+                        setNewTitle('');
+                        setAddingFor(null);
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="add-plus-btn"
+                    onClick={() => setAddingFor('day')}
+                  >
+                    +
+                  </button>
+                )}
+              </>
+            )}
+          </section>
+
+          {upcomingContainers.length > 0 && (
+            <section className="group-section">
+              <div className="section-header-row">
+                <button
+                  type="button"
+                  className="collapse-header"
+                  onClick={() => setUpcomingOpen((v) => !v)}
+                >
+                  {upcomingOpen ? '▾' : '▸'} Upcoming ({upcomingContainers.length})
+                </button>
+              </div>
+              {upcomingOpen &&
+                upcomingContainers.map((container) => {
+                  const groupItems = items
+                    .filter(
+                      (i) =>
+                        i.container.kind === container.kind &&
+                        i.container.key === container.key &&
+                        !i.parentId &&
+                        i.status !== 'archived' &&
+                        (meta.showDone || i.status !== 'done')
+                    )
+                    .sort((a, b) => a.order - b.order);
+
+                  return (
+                    <div
+                      key={`${container.kind}:${container.key}`}
+                      className="group-section"
+                    >
+                      <div className="group-header">
+                        <h2>{containerDisplayLabel(container)}</h2>
+                        {container.kind === 'day' && (
+                          <button
+                            type="button"
+                            className="btn-sm btn-ghost"
+                            onClick={() => setSelectedDay(container.key)}
+                          >
+                            Open day
+                          </button>
+                        )}
+                      </div>
+                      {groupItems.map((item) => (
+                        <OutlineRow
+                          key={item.id}
+                          item={item}
+                          allItems={items}
+                          showDone={meta.showDone}
+                          todayStr={todayStr}
+                          onZoom={(id) => setZoomStack([id])}
+                          onToggleCollapse={handleToggleCollapse}
+                          onEditTitle={(id, t) => handleEditContent(id, { title: t })}
+                          onSetStatus={handleSetStatus}
+                          onAddSubItem={(pid, t) => handleCreate(container, t, pid)}
+                          onReorder={handleReorder}
+                          onMove={handleMove}
+                          onDelete={handleDelete}
+                        />
+                      ))}
+                    </div>
+                  );
+                })}
+            </section>
+          )}
 
           <section ref={notesSectionRef} className="group-section">
-            <div className="group-header">
-              <h2>Notes</h2>
-            </div>
-            {notesRoots.map((item) => (
-              <OutlineRow
-                key={item.id}
-                item={item}
-                allItems={items}
-                showDone={meta.showDone}
-                todayStr={todayStr}
-                onZoom={(id) => setZoomStack([id])}
-                onToggleCollapse={handleToggleCollapse}
-                onEditTitle={(id, t) => handleEditContent(id, { title: t })}
-                onSetStatus={handleSetStatus}
-                onAddSubItem={(pid, t) =>
-                  handleCreate({ kind: 'notes', key: 'notes' }, t, pid)
-                }
-                onReorder={handleReorder}
-                onMove={handleMove}
-                onDelete={handleDelete}
-              />
-            ))}
-            {addingFor === 'notes' ? (
-              <div className="inline-add-sub">
-                <input
-                  type="text"
-                  placeholder="New note…"
-                  value={newTitle}
-                  autoFocus
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && newTitle.trim()) {
-                      handleCreate({ kind: 'notes', key: 'notes' }, newTitle.trim());
-                      setNewTitle('');
-                      setAddingFor(null);
-                    }
-                    if (e.key === 'Escape') {
-                      setNewTitle('');
-                      setAddingFor(null);
-                    }
-                  }}
-                  onBlur={() => {
-                    if (newTitle.trim()) {
-                      handleCreate({ kind: 'notes', key: 'notes' }, newTitle.trim());
-                    }
-                    setNewTitle('');
-                    setAddingFor(null);
-                  }}
-                />
-              </div>
-            ) : (
+            <div className="section-header-row">
               <button
                 type="button"
-                className="add-plus-btn"
-                onClick={() => setAddingFor('notes')}
+                className="collapse-header"
+                onClick={() => setNotesOpen((v) => !v)}
               >
-                +
+                {notesOpen ? '▾' : '▸'} Notes ({notesRoots.length})
               </button>
+            </div>
+            {notesOpen && (
+              <>
+                {notesRoots.map((item) => (
+                  <OutlineRow
+                    key={item.id}
+                    item={item}
+                    allItems={items}
+                    showDone={meta.showDone}
+                    todayStr={todayStr}
+                    onZoom={(id) => setZoomStack([id])}
+                    onToggleCollapse={handleToggleCollapse}
+                    onEditTitle={(id, t) => handleEditContent(id, { title: t })}
+                    onSetStatus={handleSetStatus}
+                    onAddSubItem={(pid, t) =>
+                      handleCreate({ kind: 'notes', key: 'notes' }, t, pid)
+                    }
+                    onReorder={handleReorder}
+                    onMove={handleMove}
+                    onDelete={handleDelete}
+                  />
+                ))}
+                {addingFor === 'notes' ? (
+                  <div className="inline-add-sub">
+                    <input
+                      type="text"
+                      placeholder="New note…"
+                      value={newTitle}
+                      autoFocus
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newTitle.trim()) {
+                          handleCreate({ kind: 'notes', key: 'notes' }, newTitle.trim());
+                          setNewTitle('');
+                          setAddingFor(null);
+                        }
+                        if (e.key === 'Escape') {
+                          setNewTitle('');
+                          setAddingFor(null);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (newTitle.trim()) {
+                          handleCreate({ kind: 'notes', key: 'notes' }, newTitle.trim());
+                        }
+                        setNewTitle('');
+                        setAddingFor(null);
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="add-plus-btn"
+                    onClick={() => setAddingFor('notes')}
+                  >
+                    +
+                  </button>
+                )}
+              </>
             )}
           </section>
 
@@ -979,34 +1096,16 @@ export default function App() {
         <div className="sync-actions">
           <button
             type="button"
-            className="btn-sm"
-            disabled={syncing || !isOnline}
-            onClick={() => void handlePull()}
-          >
-            Pull
-          </button>
-          <button
-            type="button"
             className="btn-primary btn-sm"
-            disabled={syncing || !isOnline || dirtyCount === 0}
-            onClick={() => void handlePush()}
+            disabled={syncing || !isOnline}
+            onClick={() => void handleSmartSync()}
           >
-            Push {dirtyCount > 0 ? `(${dirtyCount})` : ''}
+            {syncing ? 'Syncing…' : dirtyCount > 0 ? `Sync (${dirtyCount})` : 'Sync'}
           </button>
-          {settings.googleClientId.trim() && (
-            <button
-              type="button"
-              className="btn-sm"
-              disabled={syncing || !isOnline}
-              onClick={() => void handleConnectCalendar()}
-            >
-              📅 Sync Calendar
-            </button>
-          )}
           <span className="sync-status-text">
             {syncStatus ||
               (meta.lastPulledAt
-                ? `Last pull ${new Date(meta.lastPulledAt).toLocaleTimeString()}`
+                ? `Last sync ${new Date(meta.lastPulledAt).toLocaleTimeString()}`
                 : 'Not synced yet')}
           </span>
         </div>
@@ -1019,6 +1118,7 @@ export default function App() {
             className="jump-chip"
             onClick={() => {
               if (searchQuery) setSearchQuery('');
+              setDayOpen(true);
               setTimeout(() => {
                 datedSectionRef.current?.scrollIntoView({
                   behavior: 'smooth',
@@ -1035,6 +1135,7 @@ export default function App() {
             disabled={!hasOpenNotes}
             onClick={() => {
               if (searchQuery) setSearchQuery('');
+              setNotesOpen(true);
               setTimeout(() => {
                 notesSectionRef.current?.scrollIntoView({
                   behavior: 'smooth',
