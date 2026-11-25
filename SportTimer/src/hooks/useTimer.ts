@@ -22,6 +22,7 @@ export type TimerAdvanceResult = {
   nextDeadlineMs: number;
   shouldBeep: boolean;
   announceRemainingSeconds: number | null;
+  announceSegmentName: string | null;
 };
 
 const TICK_INTERVAL_MS = 200;
@@ -62,7 +63,7 @@ export const advanceTimerByTimestamp = ({
   nowMs,
 }: TimerAdvanceInput): TimerAdvanceResult => {
   if (state.isPaused || state.isComplete || program.segments.length === 0) {
-    return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false, announceRemainingSeconds: null };
+    return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false, announceRemainingSeconds: null, announceSegmentName: null };
   }
 
   const currentSegment = program.segments[state.currentSegmentIndex];
@@ -72,6 +73,7 @@ export const advanceTimerByTimestamp = ({
       nextDeadlineMs: deadlineMs,
       shouldBeep: false,
       announceRemainingSeconds: null,
+      announceSegmentName: null,
     };
   }
 
@@ -82,7 +84,7 @@ export const advanceTimerByTimestamp = ({
       Math.max(0, Math.ceil(remainingMs / 1000))
     );
     if (nextRemainingTime === state.remainingTime) {
-      return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false, announceRemainingSeconds: null };
+      return { nextState: state, nextDeadlineMs: deadlineMs, shouldBeep: false, announceRemainingSeconds: null, announceSegmentName: null };
     }
     const nextState = { ...state, remainingTime: nextRemainingTime };
     return {
@@ -90,6 +92,7 @@ export const advanceTimerByTimestamp = ({
       nextDeadlineMs: deadlineMs,
       shouldBeep: false,
       announceRemainingSeconds: getRemainingTimeAnnouncement(state, nextState, program),
+      announceSegmentName: null,
     };
   }
 
@@ -110,6 +113,7 @@ export const advanceTimerByTimestamp = ({
       nextDeadlineMs: deadlineMs,
       shouldBeep: true,
       announceRemainingSeconds: null,
+      announceSegmentName: null,
     };
   }
 
@@ -142,6 +146,7 @@ export const advanceTimerByTimestamp = ({
         nextDeadlineMs: currentDeadline,
         shouldBeep: true,
         announceRemainingSeconds: null,
+        announceSegmentName: null,
       };
     }
 
@@ -162,6 +167,7 @@ export const advanceTimerByTimestamp = ({
           nextDeadlineMs: currentDeadline + (program.rounds - currentRound) * totalRoundDurationMs,
           shouldBeep: true,
           announceRemainingSeconds: null,
+          announceSegmentName: null,
         };
       }
       currentRound += fullRoundsElapsed;
@@ -191,6 +197,7 @@ export const advanceTimerByTimestamp = ({
     nextDeadlineMs: currentDeadline,
     shouldBeep,
     announceRemainingSeconds: null,
+    announceSegmentName: program.segments[currentIndex]?.name ?? null,
   };
 };
 
@@ -311,8 +318,10 @@ export const useTimer = (program: Program | null): UseTimerResult => {
     }
   }, []);
 
-  const announceRemaining = useCallback((seconds: number): void => {
+  const speakText = useCallback((text: string): void => {
+    const trimmed = text.trim();
     if (
+      !trimmed ||
       !program?.beepEnabled ||
       typeof window === 'undefined' ||
       !('speechSynthesis' in window) ||
@@ -323,13 +332,17 @@ export const useTimer = (program: Program | null): UseTimerResult => {
 
     try {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(formatSpokenRemainingTime(seconds));
+      const utterance = new SpeechSynthesisUtterance(trimmed);
       utterance.rate = 1.05;
       window.speechSynthesis.speak(utterance);
     } catch (error) {
-      console.error('Error speaking remaining time:', error);
+      console.error('Error speaking announcement:', error);
     }
   }, [program?.beepEnabled]);
+
+  const announceRemaining = useCallback((seconds: number): void => {
+    speakText(formatSpokenRemainingTime(seconds));
+  }, [speakText]);
 
   const startSilentKeepAlive = useCallback((): void => {
     if (!program?.beepEnabled) return;
@@ -365,12 +378,19 @@ export const useTimer = (program: Program | null): UseTimerResult => {
 
     const now = Date.now();
     if (current.isPaused) {
+      const currentSegment = program.segments[current.currentSegmentIndex];
+      const isAtSegmentStart =
+        currentSegment !== undefined &&
+        remainingMsRef.current >= currentSegment.duration * 1000;
       deadlineMsRef.current = now + remainingMsRef.current;
       const nextState = { ...current, isPaused: false };
       stateRef.current = nextState;
       setTimerState(nextState);
       startSilentKeepAlive();
       playBeep();
+      if (isAtSegmentStart) {
+        speakText(currentSegment.name);
+      }
       return;
     }
 
@@ -401,7 +421,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = pausedState;
       setTimerState(pausedState);
     }
-  }, [program, playBeep, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
+  }, [program, playBeep, speakText, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
 
   const skip = useCallback((): void => {
     if (!program || program.segments.length === 0) return;
@@ -424,6 +444,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = nextState;
       setTimerState(nextState);
       playBeep();
+      speakText(program.segments[nextIndex].name);
       return;
     }
 
@@ -445,6 +466,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = nextState;
       setTimerState(nextState);
       playBeep();
+      speakText(program.segments[0].name);
     } else {
       remainingMsRef.current = 0;
       deadlineMsRef.current = null;
@@ -452,7 +474,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       stateRef.current = nextState;
       setTimerState(nextState);
     }
-  }, [program, playBeep, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
+  }, [program, playBeep, speakText, cancelSpeech, startSilentKeepAlive, stopSilentKeepAlive]);
 
   useEffect(() => {
     if (!program || timerState.isPaused || timerState.isComplete) {
@@ -477,7 +499,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       if (deadline === null) return;
 
       const now = Date.now();
-      const { nextState, nextDeadlineMs, shouldBeep, announceRemainingSeconds } = advanceTimerByTimestamp({
+      const { nextState, nextDeadlineMs, shouldBeep, announceRemainingSeconds, announceSegmentName } = advanceTimerByTimestamp({
         state: stateRef.current,
         program,
         deadlineMs: deadline,
@@ -499,6 +521,9 @@ export const useTimer = (program: Program | null): UseTimerResult => {
 
       if (shouldBeep) {
         playBeep();
+      }
+      if (announceSegmentName) {
+        speakText(announceSegmentName);
       } else if (announceRemainingSeconds !== null) {
         announceRemaining(announceRemainingSeconds);
       }
@@ -521,7 +546,7 @@ export const useTimer = (program: Program | null): UseTimerResult => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       cancelSpeech();
     };
-  }, [program, timerState.isPaused, timerState.isComplete, playBeep, announceRemaining, cancelSpeech, stopSilentKeepAlive]);
+  }, [program, timerState.isPaused, timerState.isComplete, playBeep, speakText, announceRemaining, cancelSpeech, stopSilentKeepAlive]);
 
   return {
     timerState,

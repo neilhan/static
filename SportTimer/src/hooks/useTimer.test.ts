@@ -88,6 +88,7 @@ describe('advanceTimerByTimestamp', () => {
     });
 
     expect(res.shouldBeep).toBe(true);
+    expect(res.announceSegmentName).toBe('Rest');
     expect(res.nextState.currentSegmentIndex).toBe(1);
     expect(res.nextState.currentRound).toBe(1);
     expect(res.nextState.remainingTime).toBe(20);
@@ -131,6 +132,7 @@ describe('advanceTimerByTimestamp', () => {
       nowMs: 90_000,
     });
     expect(exactEnd.shouldBeep).toBe(true);
+    expect(exactEnd.announceSegmentName).toBeNull();
     expect(exactEnd.nextState.isComplete).toBe(true);
     expect(exactEnd.nextState.isPaused).toBe(true);
     expect(exactEnd.nextState.remainingTime).toBe(0);
