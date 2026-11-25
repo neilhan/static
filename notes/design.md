@@ -1,6 +1,6 @@
 # Daily Notes PWA — Design
 
-An offline-first, iPhone-installable static PWA for the [`neilhan/journal/`](https://github.com/neilhan/neilhan/tree/main/journal) Markdown database, hosted in `my-static-site` (`neilhan/static`) with zero backend server.
+An offline-first, iPhone-installable static PWA for a Git-backed `journal/` Markdown database, hosted in `my-static-site` (`neilhan/static`) with zero backend server.
 
 ---
 
@@ -8,8 +8,8 @@ An offline-first, iPhone-installable static PWA for the [`neilhan/journal/`](htt
 
 - **100% static client-side app:** Runs on GitHub Pages under `./notes/dist/index.html` (`base: "./"`), installable as a standalone iPhone Home Screen PWA.
 - **True offline-first:** Cold launches work offline via Service Worker; all reads, edits, moves, reorders, completions, and searches run locally against `IndexedDB` with zero network lag.
-- **Direct GitHub sync:** Reads and writes `neilhan/journal/` directly via GitHub REST / Git Data APIs—no backend, no branch/PR workflow, and 1 atomic commit per Push (no "owed deletions").
-- **Data portability:** Strictly adheres to the `neilhan/journal/README.md` file format, folder tree, frozen slugs, ULIDs, fractional ordering, and `## History` log.
+- **Direct GitHub sync:** Reads and writes `journal/` in a user-configured GitHub repo directly via GitHub REST / Git Data APIs—no backend, no branch/PR workflow, and 1 atomic commit per Push (no "owed deletions").
+- **Data portability:** Strictly adheres to the `journal/README.md` file format, folder tree, frozen slugs, ULIDs, fractional ordering, and `## History` log.
 - **Usable from BC and China:** Core journal + GitHub sync work without Google services; Google Calendar and Gemini AI degrade gracefully when unreachable.
 
 ---
@@ -29,7 +29,7 @@ An offline-first, iPhone-installable static PWA for the [`neilhan/journal/`](htt
 
 ## 3. Data Model & File Format Compatibility
 
-The app treats `neilhan/journal/` as the source of truth and implements the `journal/README.md` spec directly:
+The app treats the configured repo's `journal/` folder as the source of truth and implements the `journal/README.md` spec directly:
 
 - **Item identity:** `id` (26-char Crockford base32 ULID for new items; bare integer/string accepted for legacy items), stored as a string end-to-end.
 - **Frozen slug & path:** `slug` generated once on creation (NFD normalized, ASCII lowercase, `-` separated, max 60 chars, `-2`/`-3` suffix on sibling collision). Title edits update `# Title` only—never `slug` or file path.
@@ -71,7 +71,7 @@ Replaces `localStorage` so the journal isn't capped at ~5 MB and tracks GitHub b
 
 ## 5. GitHub Sync Engine (`main` branch only)
 
-All sync runs directly against `https://api.github.com/repos/neilhan/neilhan` using a Fine-Grained PAT (`Contents: Read & Write` scoped to `neilhan`).
+All sync runs directly against `https://api.github.com/repos/{owner}/{repo}` (configured in Settings, starting empty) using a Fine-Grained PAT (`Contents: Read & Write` scoped to that repo).
 
 ### Pull (Incremental + Merge-by-`id`)
 1. `GET /git/refs/heads/main` → get `headCommitSha`. If equal to `lastCommitSha`, return immediately (1 API call).
@@ -109,7 +109,7 @@ All sync runs directly against `https://api.github.com/repos/neilhan/neilhan` us
   - Past calendar items (before today) stay as history unless rescheduled into the future window (then move file, keeping `id` and history).
   - Items in `[today, +2 months)` missing from fetched events are deleted (queued in `pendingDeletes` + removed from `items`).
 - **Trigger:** Runs automatically after Pull and before Push when signed in; a failed or offline calendar read never blocks GitHub Pull/Push.
-- **China fallback:** Optional scheduled GitHub Action in `neilhan` can sync calendar events headless into `journal/` so the PWA simply pulls them from GitHub.
+- **China fallback:** Optional scheduled GitHub Action in the journal repo can sync calendar events headless into `journal/` so the PWA simply pulls them from GitHub.
 
 ---
 
@@ -132,7 +132,8 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
 ## 8. Auth & Security
 
 - Stored in `localStorage` (entered once in Settings, never committed):
-  - `github_pat` (Fine-Grained PAT scoped only to `neilhan`, `Contents: Read & Write`)
+  - `github_owner` / `github_repo` (empty by default, entered in Settings)
+  - `github_pat` (Fine-Grained PAT scoped only to the journal repo, `Contents: Read & Write`)
   - `gemini_api_key`
   - Optional `google_client_id` for GIS Calendar read
 - No untrusted third-party scripts or CDNs; strict CSP-friendly bundle.
@@ -192,7 +193,7 @@ notes/
     └── components/         # Outline, Row, ZoomView, Overdue, SyncBar, ChatBubble, Settings
 ```
 
-- **Unit tests (`pnpm --filter notes test`):** Vitest suite covering `markdown.ts`, `slug.ts`, `order.ts`, `tree.ts`, `merge.ts`, and `calendar.ts` (round-trip fidelity against real `neilhan/journal/` fixtures).
+- **Unit tests (`pnpm --filter notes test`):** Vitest suite covering `markdown.ts`, `slug.ts`, `order.ts`, `tree.ts`, `merge.ts`, and `calendar.ts` (round-trip fidelity against `journal/` format fixtures).
 - **Build check:** `pnpm --filter @static/shared build && pnpm --filter notes build` (and `./build_all.sh` from root).
 
 ---

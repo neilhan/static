@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { AppSettings } from '../core/types';
 
+const GEMINI_MODEL_PRESETS = [
+  { id: 'gemini-4-hydrogen', label: 'Gemini 4 Hydrogen (Recommended)' },
+  { id: 'gemini-4-argon', label: 'Gemini 4 Argon' },
+  { id: 'gemini-3.8-flash', label: 'Gemini 3.8 Flash' },
+  { id: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite' },
+  { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+];
+
 type SettingsModalProps = {
   settings: AppSettings;
   onSave: (next: AppSettings) => void;
@@ -13,6 +21,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
 }) => {
   const [draft, setDraft] = useState<AppSettings>(settings);
+  const isPreset = GEMINI_MODEL_PRESETS.some((m) => m.id === draft.geminiModel);
+  const [useCustomModel, setUseCustomModel] = useState<boolean>(!isPreset);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -31,13 +41,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               type="text"
               value={draft.githubOwner}
               onChange={(e) => setDraft({ ...draft, githubOwner: e.target.value })}
-              placeholder="neilhan"
+              placeholder="owner"
             />
             <input
               type="text"
               value={draft.githubRepo}
               onChange={(e) => setDraft({ ...draft, githubRepo: e.target.value })}
-              placeholder="neilhan"
+              placeholder="repo"
             />
           </div>
         </label>
@@ -64,12 +74,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <label className="field">
           <span>Gemini Model</span>
-          <input
-            type="text"
-            value={draft.geminiModel}
-            onChange={(e) => setDraft({ ...draft, geminiModel: e.target.value })}
-            placeholder="gemini-2.5-flash"
-          />
+          <select
+            value={useCustomModel ? '__custom__' : draft.geminiModel}
+            onChange={(e) => {
+              if (e.target.value === '__custom__') {
+                setUseCustomModel(true);
+              } else {
+                setUseCustomModel(false);
+                setDraft({ ...draft, geminiModel: e.target.value });
+              }
+            }}
+          >
+            {GEMINI_MODEL_PRESETS.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.label}
+              </option>
+            ))}
+            <option value="__custom__">Custom model ID…</option>
+          </select>
+          {useCustomModel && (
+            <input
+              type="text"
+              value={draft.geminiModel}
+              onChange={(e) => setDraft({ ...draft, geminiModel: e.target.value })}
+              placeholder="e.g. gemini-4-hydrogen"
+            />
+          )}
         </label>
 
         <label className="field">

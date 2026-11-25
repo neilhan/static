@@ -15,10 +15,10 @@ const DEFAULT_META: SyncMeta = {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   githubPat: '',
-  githubOwner: 'neilhan',
-  githubRepo: 'neilhan',
+  githubOwner: '',
+  githubRepo: '',
   geminiApiKey: '',
-  geminiModel: 'gemini-2.5-flash',
+  geminiModel: 'gemini-4-hydrogen',
   googleClientId: '',
 };
 

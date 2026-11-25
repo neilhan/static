@@ -55,8 +55,12 @@ export const pullFromGitHub = async (
   localItems: JournalItem[],
   meta: SyncMeta
 ): Promise<PullOutcome> => {
-  if (!settings.githubPat.trim()) {
-    throw new Error('GitHub PAT is required in Settings.');
+  if (
+    !settings.githubOwner.trim() ||
+    !settings.githubRepo.trim() ||
+    !settings.githubPat.trim()
+  ) {
+    throw new Error('GitHub owner, repo, and PAT are required in Settings.');
   }
 
   const ref = await apiFetch<{ object: { sha: string } }>(
@@ -152,8 +156,12 @@ export const pushToGitHub = async (
   pendingDeletes: string[],
   meta: SyncMeta
 ): Promise<PushOutcome> => {
-  if (!settings.githubPat.trim()) {
-    throw new Error('GitHub PAT is required in Settings.');
+  if (
+    !settings.githubOwner.trim() ||
+    !settings.githubRepo.trim() ||
+    !settings.githubPat.trim()
+  ) {
+    throw new Error('GitHub owner, repo, and PAT are required in Settings.');
   }
 
   let currentItems = localItems;
