@@ -903,22 +903,38 @@ export default function App() {
                     )
                     .sort((a, b) => a.order - b.order);
 
+                  const groupKey = `${container.kind}:${container.key}`;
+
                   return (
                     <div
-                      key={`${container.kind}:${container.key}`}
+                      key={groupKey}
                       className="group-section"
                     >
                       <div className="group-header">
                         <h2>{containerDisplayLabel(container)}</h2>
-                        {container.kind === 'day' && (
+                        <div className="bulk-actions">
+                          {container.kind === 'day' && (
+                            <button
+                              type="button"
+                              className="btn-sm btn-ghost"
+                              onClick={() => setSelectedDay(container.key)}
+                            >
+                              Open day
+                            </button>
+                          )}
                           <button
                             type="button"
                             className="btn-sm btn-ghost"
-                            onClick={() => setSelectedDay(container.key)}
+                            aria-label={`Add item to ${containerDisplayLabel(container)}`}
+                            title="Add item"
+                            onClick={() => {
+                              setAddingFor(groupKey);
+                              setNewTitle('');
+                            }}
                           >
-                            Open day
+                            +
                           </button>
-                        )}
+                        </div>
                       </div>
                       {groupItems.map((item) => (
                         <OutlineRow
@@ -937,6 +953,35 @@ export default function App() {
                           onDelete={handleDelete}
                         />
                       ))}
+                      {addingFor === groupKey && (
+                        <div className="inline-add-sub">
+                          <input
+                            type="text"
+                            placeholder={`New item in ${containerDisplayLabel(container)}…`}
+                            value={newTitle}
+                            autoFocus
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && newTitle.trim()) {
+                                handleCreate(container, newTitle.trim());
+                                setNewTitle('');
+                                setAddingFor(null);
+                              }
+                              if (e.key === 'Escape') {
+                                setNewTitle('');
+                                setAddingFor(null);
+                              }
+                            }}
+                            onBlur={() => {
+                              if (newTitle.trim()) {
+                                handleCreate(container, newTitle.trim());
+                              }
+                              setNewTitle('');
+                              setAddingFor(null);
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -1121,7 +1166,7 @@ export default function App() {
             aria-label="Quick add item"
             onClick={() => setQuickAddOpen(true)}
           >
-            + Add
+            +
           </button>
           <button
             type="button"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { containerDisplayLabel } from '../core/tree';
 import { ContainerRef, ItemStatus, JournalItem } from '../core/types';
 import { MoveForm } from './MoveForm';
@@ -46,13 +46,25 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
   const [addingSub, setAddingSub] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
+  const detailsRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     setTitle(item.title);
     setBody(item.body);
     setTime(item.time ?? '');
     setConfirmDelete(false);
+    setEditingDetails(false);
+    setDetailsExpanded(false);
   }, [item.id, item.title, item.body, item.time]);
+
+  useLayoutEffect(() => {
+    const el = detailsRef.current;
+    if (!editingDetails || !el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [editingDetails, body]);
 
   const isCalendar = Boolean(item.calendar);
 
@@ -219,19 +231,56 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
           />
         )}
 
-        <textarea
-          className="zoom-details-editor"
-          rows={5}
-          readOnly={isCalendar}
-          placeholder="Add details..."
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          onBlur={() => {
-            if (!isCalendar && body.trim() !== item.body) {
-              onEditContent(item.id, { body });
-            }
-          }}
-        />
+        {editingDetails && !isCalendar ? (
+          <div className="zoom-details-block">
+            <textarea
+              ref={detailsRef}
+              className="zoom-details-editor"
+              rows={2}
+              autoFocus
+              placeholder="Add details..."
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              onBlur={() => {
+                if (body.trim() !== item.body) {
+                  onEditContent(item.id, { body });
+                }
+                setEditingDetails(false);
+              }}
+            />
+          </div>
+        ) : body.trim() ? (
+          <div className="zoom-details-block">
+            <div
+              className={`zoom-details-text ${detailsExpanded ? 'expanded' : 'clamped'} ${!isCalendar ? 'editable' : ''}`}
+              onClick={() => {
+                if (!isCalendar) setEditingDetails(true);
+              }}
+              title={!isCalendar ? 'Click to edit details' : undefined}
+            >
+              {body}
+            </div>
+            {(body.split('\n').length > 4 || body.length > 220) && (
+              <button
+                type="button"
+                className="show-more-link"
+                onClick={() => setDetailsExpanded((v) => !v)}
+              >
+                {detailsExpanded ? 'show less' : 'show more'}
+              </button>
+            )}
+          </div>
+        ) : (
+          !isCalendar && (
+            <button
+              type="button"
+              className="btn-sm btn-ghost add-details-btn"
+              onClick={() => setEditingDetails(true)}
+            >
+              + Add details
+            </button>
+          )
+        )}
 
         <div className="zoom-subitems">
           {subItems.map((sub) => (
