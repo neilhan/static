@@ -6,7 +6,12 @@ import { QuickAddModal } from './components/QuickAddModal';
 import { SettingsModal } from './components/SettingsModal';
 import { ZoomView } from './components/ZoomView';
 import { reconcileCalendarEvents } from './core/calendar';
-import { containerDisplayLabel, containerToSortDate, resolveTreeParents } from './core/tree';
+import {
+  containerDisplayLabel,
+  containerToSortDate,
+  formatDateWithWeekday,
+  resolveTreeParents,
+} from './core/tree';
 import {
   AppSettings,
   ContainerRef,
@@ -804,7 +809,11 @@ export default function App() {
                       className="overdue-title"
                       onClick={() => setZoomStack([item.id])}
                     >
-                      <span className="overdue-date">{item.container.key}</span>
+                      <span className="overdue-date">
+                        {item.container.kind === 'day'
+                          ? formatDateWithWeekday(item.container.key)
+                          : item.container.key}
+                      </span>
                       <span>{item.title}</span>
                     </button>
                     <div className="overdue-pills">
@@ -837,7 +846,7 @@ export default function App() {
                 className="collapse-header"
                 onClick={() => setDayOpen((v) => !v)}
               >
-                {dayOpen ? '▾' : '▸'} {selectedDay === todayStr ? 'Today' : selectedDay} ({dayRoots.length})
+                {dayOpen ? '▾' : '▸'} {selectedDay === todayStr ? `Today · ${formatDateWithWeekday(selectedDay)}` : formatDateWithWeekday(selectedDay)} ({dayRoots.length})
               </button>
             </div>
             {dayOpen && (

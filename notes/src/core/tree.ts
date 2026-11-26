@@ -102,10 +102,20 @@ export const containerToSortDate = (container: ContainerRef): string => {
   }
 };
 
+const WEEKDAYS_3 = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
+export const formatDateWithWeekday = (dateStr: string): string => {
+  if (!DAY_RE.test(dateStr)) return dateStr;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  if (Number.isNaN(dt.getTime())) return dateStr;
+  return `${dateStr} ${WEEKDAYS_3[dt.getUTCDay()]}`;
+};
+
 export const containerDisplayLabel = (container: ContainerRef): string => {
   switch (container.kind) {
     case 'day':
-      return container.key;
+      return formatDateWithWeekday(container.key);
     case 'week':
       return `Week of ${container.key.replace(/^week-/, '')}`;
     case 'month':

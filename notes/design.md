@@ -158,8 +158,8 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
 ### Main Page (List View)
 - **Header:** App title, `Online`/`Offline` + unsynced count badge, Search input, `✓ Done` toggle, and **Settings** button.
 - **Overdue:** Collapsible section (`▸ Overdue (N)`, collapsed by default) for past-dated open non-calendar items, with bulk **Mark all done** / **Archive all** and per-row **Today** / **✓** actions.
-- **Today / Selected Day:** Collapsible section (`▾ Today (N)`) with `‹` / `Today` / `›` / date picker navigation, root outline rows, and a `+` button at the bottom to add an item to that day.
-- **Upcoming:** Collapsible section (`▾ Upcoming (N)`) grouping future days and rough plans (week/month/year) in date order; each group header has a compact `+` button (and **Open day** for day groups).
+- **Today / Selected Day:** Collapsible section (`▾ Today · YYYY-MM-DD ddd (N)`) with `‹` / `Today` / `›` / date picker navigation, root outline rows, and a `+` button at the bottom to add an item to that day.
+- **Upcoming:** Collapsible section (`▾ Upcoming (N)`) grouping future days (`YYYY-MM-DD ddd` with 3-letter weekday) and rough plans (week/month/year unchanged) in date order; each group header has a compact `+` button (and **Open day** for day groups).
 - **Notes:** Collapsible section (`▾ Notes (N)`) for undated notes, with a `+` button at the bottom.
 - **Archived:** Collapsible section (`▸ Archived (N)`, collapsed by default) with per-row **Unarchive**.
 - **Floating Bottom-Right Controls:**

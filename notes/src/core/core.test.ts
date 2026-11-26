@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { parseItemMarkdown, serializeItemMarkdown } from './markdown';
 import { generateUniqueSlug, slugifyTitle } from './slug';
 import { midpointOrder, needsRenumber, renumberSiblings } from './order';
-import { moveSubtreePaths, parseJournalPath, resolveTreeParents } from './tree';
+import {
+  containerDisplayLabel,
+  formatDateWithWeekday,
+  moveSubtreePaths,
+  parseJournalPath,
+  resolveTreeParents,
+} from './tree';
 import { reconcilePull } from './merge';
 import { getCalendarWindow, reconcileCalendarEvents } from './calendar';
 import { JournalItem } from './types';
@@ -76,6 +82,13 @@ describe('order', () => {
 });
 
 describe('tree & move', () => {
+  it('formats day labels with 3-letter weekday and leaves date-range labels unchanged', () => {
+    expect(formatDateWithWeekday('2026-11-24')).toBe('2026-11-24 Tue');
+    expect(containerDisplayLabel({ kind: 'day', key: '2026-11-24' })).toBe('2026-11-24 Tue');
+    expect(containerDisplayLabel({ kind: 'month', key: '2026-11' })).toBe('2026-11');
+    expect(containerDisplayLabel({ kind: 'week', key: 'week-2026-11-23' })).toBe('Week of 2026-11-23');
+  });
+
   it('parses containers, sibling folders, and ignores README.md', () => {
     expect(parseJournalPath('journal/README.md').isJournalItem).toBe(false);
     expect(parseJournalPath('journal/2026/2026-11-24/task.md')).toMatchObject({
