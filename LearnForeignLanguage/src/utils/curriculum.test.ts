@@ -3,8 +3,7 @@ import {
   buildSourceCollection,
   getItemSourceId,
   getSourceItems,
-  PHRASE_ITEMS,
-  VOCAB_ITEMS,
+  loadAllCurriculum,
 } from './curriculum';
 import {
   loadState,
@@ -38,9 +37,10 @@ describe('2-source curriculum & localStorage progress', () => {
       createMockStorage();
   });
 
-  it('loads 500 phrases and 3000 vocab words with forms', () => {
-    expect(PHRASE_ITEMS).toHaveLength(500);
-    expect(VOCAB_ITEMS).toHaveLength(3000);
+  it('loads 500 phrases and 3000 vocab words with forms', async () => {
+    const { phrases, vocab } = await loadAllCurriculum();
+    expect(phrases).toHaveLength(500);
+    expect(vocab).toHaveLength(3000);
 
     const hablar = getSourceItems('vocab').find((w) => w.target === 'hablar');
     expect(hablar?.forms?.yo).toBe('hablo');
@@ -50,8 +50,8 @@ describe('2-source curriculum & localStorage progress', () => {
     const vocabCol = buildSourceCollection('vocab');
     expect(phrasesCol.itemCount).toBe(500);
     expect(vocabCol.itemCount).toBe(3000);
-    expect(getItemSourceId(PHRASE_ITEMS[0].id)).toBe('phrases');
-    expect(getItemSourceId(VOCAB_ITEMS[0].id)).toBe('vocab');
+    expect(getItemSourceId(phrases[0].id)).toBe('phrases');
+    expect(getItemSourceId(vocab[0].id)).toBe('vocab');
     expect(getItemSourceId('unknown-id')).toBeUndefined();
   });
 

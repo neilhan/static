@@ -8,5 +8,14 @@ export default defineConfig({
     port: 3003,
     open: true,
   },
+  build: {
+    chunkSizeWarningLimit: 1300,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+        },
+      },
+    },
+  },
 });
-

@@ -1,14 +1,9 @@
-import phrasesData from '../data/spanish-500-phrases.json';
-import wordsData from '../data/spanish-3000-words.json';
 import {
   CollectionProgress,
   ConversationCollection,
   SourceId,
   VocabItem,
 } from '../types';
-
-export const PHRASE_ITEMS: VocabItem[] = phrasesData as VocabItem[];
-export const VOCAB_ITEMS: VocabItem[] = wordsData as VocabItem[];
 
 export const DEFAULT_PROGRESS: CollectionProgress = {
   targetVoiceURI: '',
@@ -22,42 +17,67 @@ export const DEFAULT_PROGRESS: CollectionProgress = {
   srsData: {},
 };
 
-const SOURCE_META: Record<SourceId, { name: string; items: VocabItem[] }> = {
+const SOURCE_META: Record<SourceId, { name: string; itemCount: number }> = {
   phrases: {
     name: 'Spanish Phrases (500)',
-    items: PHRASE_ITEMS,
+    itemCount: 500,
   },
   vocab: {
     name: 'Spanish Vocab (3,000)',
-    items: VOCAB_ITEMS,
+    itemCount: 3000,
   },
 };
 
-const ITEM_SOURCE_MAP = new Map<string, SourceId>(
-  (Object.entries(SOURCE_META) as [SourceId, { name: string; items: VocabItem[] }][]).flatMap(
-    ([sourceId, meta]) => meta.items.map((item) => [item.id, sourceId] as const)
-  )
-);
+const loadedItems: Partial<Record<SourceId, VocabItem[]>> = {};
+const itemSourceMap = new Map<string, SourceId>();
+
+export async function loadSourceItems(sourceId: SourceId): Promise<VocabItem[]> {
+  const cached = loadedItems[sourceId];
+  if (cached) return cached;
+
+  const mod =
+    sourceId === 'phrases'
+      ? await import('../data/spanish-500-phrases.json')
+      : await import('../data/spanish-3000-words.json');
+
+  const items = mod.default as VocabItem[];
+  loadedItems[sourceId] = items;
+  for (const item of items) {
+    itemSourceMap.set(item.id, sourceId);
+  }
+  return items;
+}
+
+export async function loadAllCurriculum(): Promise<{
+  phrases: VocabItem[];
+  vocab: VocabItem[];
+}> {
+  const [phrases, vocab] = await Promise.all([
+    loadSourceItems('phrases'),
+    loadSourceItems('vocab'),
+  ]);
+  return { phrases, vocab };
+}
 
 export function getSourceItems(sourceId: SourceId): VocabItem[] {
-  return SOURCE_META[sourceId].items;
+  return loadedItems[sourceId] ?? [];
 }
 
 export function getItemSourceId(itemId: string): SourceId | undefined {
-  return ITEM_SOURCE_MAP.get(itemId);
+  return itemSourceMap.get(itemId);
 }
 
 export function buildSourceCollection(
   sourceId: SourceId,
   progress: Partial<CollectionProgress> = {}
 ): ConversationCollection {
-  const { name, items } = SOURCE_META[sourceId];
+  const { name, itemCount } = SOURCE_META[sourceId];
 
   return {
     id: sourceId,
     packId: sourceId,
     name,
-    itemCount: items.length,
+    itemCount,
     targetVoiceURI: progress.targetVoiceURI ?? DEFAULT_PROGRESS.targetVoiceURI,
     targetLang: progress.targetLang ?? DEFAULT_PROGRESS.targetLang,
     nativeVoiceURI: progress.nativeVoiceURI ?? DEFAULT_PROGRESS.nativeVoiceURI,

@@ -3,11 +3,11 @@ import "./App.css";
 import "./components/CollectionManager.css";
 import { loadState, saveState, recordDailyReview, createDefaultState } from "./utils/storage";
 import { calculateNextReview, markAsIntroduced, markAsWellKnown } from "./utils/srs";
-import { getItemSourceId, getSourceItems } from "./utils/curriculum";
+import { getItemSourceId, loadAllCurriculum } from "./utils/curriculum";
 import { shouldUpdateSrsOnGrade } from "./utils/recall";
 import { InputSection } from "./components/InputSection";
 import { CollectionManager } from "./components/CollectionManager";
-import { AppState, ConversationCollection, SourceId } from "./types";
+import { AppState, ConversationCollection, SourceId, VocabItem } from "./types";
 import { ActiveRecallCard } from "./components/ActiveRecallCard";
 import languageIcon from "@static/shared/assets/icons/language.svg?raw";
 import homeIcon from "@static/shared/assets/home.svg?raw";
@@ -17,6 +17,20 @@ function App() {
   // Initialize state from storage or default
   const [state, setState] = useState<AppState>(() => loadState());
   const [resetVersion, setResetVersion] = useState(0);
+  const [curriculum, setCurriculum] = useState<{
+    phrases: VocabItem[];
+    vocab: VocabItem[];
+  } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    loadAllCurriculum().then((data) => {
+      if (active) setCurriculum(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Persist state on changes
   useEffect(() => {
@@ -162,7 +176,7 @@ function App() {
     setResetVersion((v) => v + 1);
   };
 
-  if (!activeCollection) return <div>Loading...</div>;
+  if (!activeCollection || !curriculum) return <div>Loading...</div>;
 
   return (
     <div className="app-shell">
@@ -207,9 +221,9 @@ function App() {
 
             <ActiveRecallCard
               key={resetVersion}
-              phraseItems={getSourceItems("phrases")}
+              phraseItems={curriculum.phrases}
               phraseSrs={phrasesCollection?.srsData ?? {}}
-              vocabItems={getSourceItems("vocab")}
+              vocabItems={curriculum.vocab}
               vocabSrs={vocabCollection?.srsData ?? {}}
               phraseNewCap={state.dailyProgress.newCapBySource.phrases ?? 2}
               phraseNewToday={state.dailyProgress.newLearnedBySource.phrases ?? 0}
