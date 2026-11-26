@@ -71,12 +71,16 @@ export default function App() {
   const [newTitle, setNewTitle] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
+  const [undoCount, setUndoCount] = useState(0);
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== 'undefined' ? navigator.onLine : true
   );
 
   const itemsRef = useRef<JournalItem[]>(items);
   itemsRef.current = items;
+  const undoStackRef = useRef<
+    Array<{ items: JournalItem[]; pendingDeletes: string[] }>
+  >([]);
   const pendingDeletesRef = useRef<string[]>(pendingDeletes);
   pendingDeletesRef.current = pendingDeletes;
   const metaRef = useRef<SyncMeta>(meta);
@@ -118,17 +122,66 @@ export default function App() {
   }, []);
 
   const persistItems = useCallback(
-    async (nextItems: JournalItem[], newDeletes: string[] = []) => {
+    async (
+      nextItems: JournalItem[],
+      newDeletes: string[] = [],
+      recordUndo = true
+    ) => {
+      if (recordUndo && nextItems !== itemsRef.current) {
+        undoStackRef.current = [
+          ...undoStackRef.current.slice(-19),
+          {
+            items: itemsRef.current,
+            pendingDeletes: [...pendingDeletesRef.current],
+          },
+        ];
+        setUndoCount(undoStackRef.current.length);
+      }
       setItems(nextItems);
       itemsRef.current = nextItems;
       await replaceAllItems(nextItems);
       if (newDeletes.length > 0) {
         await addPendingDeletes(newDeletes);
-        setPendingDeletes((prev) => Array.from(new Set([...prev, ...newDeletes])));
+        setPendingDeletes((prev) => {
+          const next = Array.from(new Set([...prev, ...newDeletes]));
+          pendingDeletesRef.current = next;
+          return next;
+        });
       }
     },
     []
   );
+
+  const handleUndo = useCallback(async () => {
+    const entry = undoStackRef.current.pop();
+    if (!entry) return;
+    setUndoCount(undoStackRef.current.length);
+    setItems(entry.items);
+    itemsRef.current = entry.items;
+    await replaceAllItems(entry.items);
+    await clearPendingDeletes();
+    if (entry.pendingDeletes.length > 0) {
+      await addPendingDeletes(entry.pendingDeletes);
+    }
+    setPendingDeletes(entry.pendingDeletes);
+    pendingDeletesRef.current = entry.pendingDeletes;
+    const validIds = new Set(entry.items.map((i) => i.id));
+    setZoomStack((stack) => stack.filter((id) => validIds.has(id)));
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        const tag = (document.activeElement as HTMLElement | null)?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (undoStackRef.current.length === 0) return;
+        e.preventDefault();
+        void handleUndo();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [handleUndo]);
 
   const updateMeta = useCallback(async (nextMeta: SyncMeta) => {
     setMeta(nextMeta);
@@ -293,7 +346,7 @@ export default function App() {
         }
       }
 
-      await persistItems(currentItems, allDeletes);
+      await persistItems(currentItems, allDeletes, false);
       await updateMeta(currentMeta);
 
       const hasDirty =
@@ -349,7 +402,7 @@ export default function App() {
         metaRef.current
       );
       const cal = await runCalendarSync(pulled.items);
-      await persistItems(cal.items, cal.deletedPaths);
+      await persistItems(cal.items, cal.deletedPaths, false);
       await updateMeta(pulled.meta);
       setSyncStatus(`Pulled (${pulled.downloadedCount} updated)`);
     } catch (err) {
@@ -1216,6 +1269,17 @@ export default function App() {
             🔍
           </button>
         </nav>
+      )}
+
+      {undoCount > 0 && (
+        <button
+          type="button"
+          className="undo-fab"
+          onClick={() => void handleUndo()}
+          title="Undo last edit (Ctrl/Cmd+Z)"
+        >
+          ↶ Undo
+        </button>
       )}
 
       <ChatBubble

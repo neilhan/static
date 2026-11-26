@@ -3,6 +3,7 @@ import "./App.css";
 import homeIcon from "@static/shared/assets/home.svg?raw";
 import { IconGraphic } from "@static/shared";
 import { Fretboard, makeFretKey, PatternFilter } from "./components/Fretboard";
+import { RandomNoteBox } from "./components/RandomNoteBox";
 import { RepeatingTilesBoard } from "./components/RepeatingTilesBoard";
 import { ChordStudyBoard } from "./components/ChordStudyBoard";
 import { PentatonicBoard } from "./components/PentatonicBoard";
@@ -430,6 +431,10 @@ function App() {
             )}
               </div>
             </main>
+
+            <div style={{ marginTop: "1rem" }}>
+              <RandomNoteBox />
+            </div>
 
             <div style={{ marginTop: "1.5rem" }}>
               <RepeatingTilesBoard

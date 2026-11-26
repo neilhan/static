@@ -148,17 +148,35 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
 
 ## 9. UI & Views
 
-Shared `56rem` centered column on desktop, full-width on phone, minimal UI (no empty-state clutter):
+### App-Level Behaviour
+- **Layout:** Shared `56rem` centered column on desktop, full-width on phone, minimal UI with no empty-state clutter.
+- **Instant offline writes & Undo:** All edits, moves, reorders, status changes, and deletes write to `IndexedDB` immediately, mark items dirty, and push onto a 20-step Undo stack (floating bottom-left `↶ Undo` pill when non-empty + `Cmd/Ctrl+Z`).
+- **`✓ Done` filter:** Persisted toggle in the header; when off, hides `done` items and their subtrees across all sections and Zoom sub-items.
+- **Search:** Live filter in the header (`≥ 2` chars) showing matching non-archived items with container + status; tapping a result opens its Zoom view.
+- **Sync Bar (bottom):** Single smart **Sync** button (`Sync (N)` when dirty) running Calendar → Pull → Push, status text, and per-item **Keep Local** / **Use Remote** conflict resolution.
 
-- **Main list:** Collapsible `Overdue (N)`, `Today / Selected Day (N)` (with `‹` / `›` / `Today` / date picker), `Upcoming (N)` (each group header has a compact `+` button to add items directly), `Notes (N)`, and `Archived (N)`.
-- **Overdue:** Collapsed section at top for past-dated open non-calendar items, with count badge and bulk/per-row Done, Move to Today, Archive.
-- **Outline rows:**
-  - Circled bullet = has sub-items; plain dot = leaf. Clicking bullet zooms in.
-  - `▸`/`▾` collapse toggle at right beside `⋯` menu (only when item has sub-items).
-  - Tap title for inline edit; list rows clamp details to 3 lines with ellipsis.
-  - `⋯` menu (closes on outside click/touch or `Escape`): `✓ Done`/Reopen, `+ Add sub-item`, Move up/down, `MoveForm` (Day, Week snapping to Monday, Month, Year, Notes), Archive/Unarchive, Delete (two-tap confirm).
-- **Zoom view:** Single-item focus with breadcrumb ancestors, `‹ Back` trail, title, time-of-day editor, `MoveForm`, two-tap `Delete`, compact 4-line details preview with plain-text `show more` / `show less` toggle (or `+ Add details` when empty) that opens a full-height auto-growing `<textarea>` on tap, sub-item outline, and collapsible `## History`.
-- **Header / Controls, Settings & Jump Navigation:** Search input (`≥ 2` chars), `✓ Done` filter toggle (persisted, hides done items + subtrees when off), mobile bottom-sheet `SettingsModal` (`≤ 600px`, sticky header/footer, scrollable body, `16px` mobile inputs), bottom Sync bar (one smart `Sync` button running Calendar → Pull → Push, dirty count, Keep Local / Use Remote conflict resolution), and vertical bottom-right chips above the Gemini chat button (`+` Quick Add modal with Title + `Shift+Enter` Details + When + Time, `办点事儿`, `Notes`, `🔍`).
+### Main Page (List View)
+- **Header:** App title, `Online`/`Offline` + unsynced count badge, Search input, `✓ Done` toggle, and **Settings** button.
+- **Overdue:** Collapsible section (`▸ Overdue (N)`, collapsed by default) for past-dated open non-calendar items, with bulk **Mark all done** / **Archive all** and per-row **Today** / **✓** actions.
+- **Today / Selected Day:** Collapsible section (`▾ Today (N)`) with `‹` / `Today` / `›` / date picker navigation, root outline rows, and a `+` button at the bottom to add an item to that day.
+- **Upcoming:** Collapsible section (`▾ Upcoming (N)`) grouping future days and rough plans (week/month/year) in date order; each group header has a compact `+` button (and **Open day** for day groups).
+- **Notes:** Collapsible section (`▾ Notes (N)`) for undated notes, with a `+` button at the bottom.
+- **Archived:** Collapsible section (`▸ Archived (N)`, collapsed by default) with per-row **Unarchive**.
+- **Floating Bottom-Right Controls:**
+  - **Vertical Chips** (above chat): `+` (opens Quick Add), `办点事儿` (expands & scrolls to Today), `Notes` (expands & scrolls to Notes; disabled if no open Notes), `🔍` (scrolls to & focuses Search).
+  - **Gemini Chat (`✦`):** Floating panel for text/voice queries and local edits with **Undo**.
+
+### Zoom View (Item Detail Page)
+- **Navigation:** `‹ Back` button and clickable ancestor breadcrumbs (`Container / Parent / …`).
+- **Header & Actions:** Inline editable title, status pill, time-of-day editor (day items only), `✓ Done`/Reopen, `→ Move…`, Archive/Unarchive, and two-tap `Delete`.
+- **Details:** Clamped 4-line preview with plain-text `show more` / `show less` toggle (or `+ Add details` when empty); tapping details opens a full-height auto-growing `<textarea>` that saves and collapses on blur.
+- **Sub-items & History:** Nested `OutlineRow` list with `+` to add sub-items, plus collapsible `▸ History (N)` log at the bottom.
+
+### Components & Modals
+- **`OutlineRow`:** Circled bullet = has sub-items, plain dot = leaf (clicking bullet zooms in); `▸`/`▾` collapse toggle beside `⋯`; tap title for inline edit; 3-line clamped details preview; `⋯` menu (closes on outside click/touch or `Escape`) with `✓ Done`/Reopen, `+ Add sub-item`, Move up/down, `Move…`, Archive/Unarchive, and two-tap `Delete`. Calendar items are read-only with a clickable `📅` link.
+- **`MoveForm`:** Shared inline move bar in `OutlineRow` and `ZoomView` supporting **Day**, **Week** (snaps to Monday), **Month**, **Year**, and **Notes**.
+- **`QuickAddModal`:** Mobile-friendly bottom sheet opened from the `+` chip — Title + `Shift+Enter` Details textarea, **When** (`Today`, `Tomorrow`, `Day`, `Week`, `Month`, `Year`, `Notes`), and optional **Time**.
+- **`SettingsModal`:** Mobile bottom-sheet (`≤ 600px`, sticky header/footer, scrollable body, `16px` mobile inputs) with **GitHub Sync** (owner, repo, PAT, auto-sync) and **Time & Integrations** (Time Zone, Gemini API key & model dropdown, Google OAuth Client ID).
 
 ---
 

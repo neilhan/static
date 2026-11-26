@@ -280,3 +280,46 @@ h1 {
   border: 1.5px solid #fbbf24;
   color: var(--text-primary);
 }
+
+.random-note-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.random-note-box {
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
+  border: 2px solid var(--accent);
+  background: var(--bg-panel-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.random-note-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.random-note-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.random-note-next-btn {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  font-weight: 600;
+}
