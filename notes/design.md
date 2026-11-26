@@ -87,7 +87,7 @@ All sync runs directly against `https://api.github.com/repos/{owner}/{repo}` (co
    - Remote item matches local `id` with `dirty: false` → accept remote update (including path move).
    - Remote item matches local `id` with `dirty: true`:
      - If remote `sha === local.remoteSha` → keep local edit.
-     - If remote `sha !== local.remoteSha` → **conflict**: keep local version, update `remoteSha`, and record in `syncMeta.conflicts` for a dismissible notice.
+     - If remote `sha !== local.remoteSha` → **conflict**: keep local version, update `remoteSha`, and record in `syncMeta.conflicts` (with `remoteItem`) so the user can choose **Keep Local** or **Use Remote**.
    - Remote path disappeared and `id` is `dirty: false` → delete from `IndexedDB` (unless it's in `pendingDeletes`).
 5. Save `lastCommitSha` and `lastTreeSha`.
 
@@ -97,7 +97,7 @@ All sync runs directly against `https://api.github.com/repos/{owner}/{repo}` (co
 3. For each dirty item, serialize Markdown and `POST /git/blobs` → get new `blobSha`.
 4. Build `tree` entries for `POST /git/trees` with `base_tree: lastTreeSha`:
    - Dirty items: `{ path, mode: "100644", type: "blob", sha: blobSha }`
-   - Deleted/moved-away paths in `pendingDeletes` (not re-occupied by a current item): `{ path, mode: "100644", type: "blob", sha: null }`
+   - Deleted/moved-away paths in `pendingDeletes` (filtered against `base_tree` so paths that don't exist on GitHub are skipped, avoiding `422 GitRPC::BadObjectState`): `{ path, mode: "100644", type: "blob", sha: null }`
 5. `POST /git/commits` (parent: `headCommitSha`, tree: `newTreeSha`, message: `"Journal sync (<N> updated, <M> deleted)"`).
 6. `PATCH /git/refs/heads/main` with `{ sha: newCommitSha }`.
 7. On success, clear `dirty`, update `remoteSha` & `lastCommitSha` / `lastTreeSha`, and clear `pendingDeletes`.
@@ -107,7 +107,8 @@ All sync runs directly against `https://api.github.com/repos/{owner}/{repo}` (co
 ## 6. Google Calendar Sync (One-Way, Optional)
 
 - **Window:** Today through +2 months (exclusive end, month-end clamped per `journal/README.md`).
-- **Browser flow:** Google Identity Services (GIS) OAuth token (read-only `calendar.readonly`) → `GET /calendar/v3/calendars/primary/events`.
+- **Browser flow:** Google Identity Services (GIS) OAuth token (read-only `calendar.readonly`, cached in `sessionStorage` ~1 hr) → `GET /calendar/v3/calendars/primary/events`. Requested synchronously on **Sync** tap so browsers don't block the popup; background auto-sync only uses a cached token.
+- **Time Zone support:** Configurable **Time Zone** in Settings (`Browser default`, `America/Vancouver (BC, Canada)`, `America/Edmonton`, `America/Toronto`, `Asia/Shanghai`, `UTC`) formats both `todayStr` and event times via `Intl.DateTimeFormat`; when on Browser default, explicit `±HH:MM` offsets from Google Calendar are preserved.
 - **Reconciliation:**
   - Match by `calendar` (`event.id`). Update `title`, `time`, and address in details in place.
   - Past calendar items (before today) stay as history unless rescheduled into the future window (then move file, keeping `id` and history).
@@ -139,6 +140,7 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
   - `github_owner` / `github_repo` (empty by default, entered in Settings)
   - `github_pat` (Fine-Grained PAT scoped only to the journal repo, `Contents: Read & Write`)
   - `gemini_api_key` and `gemini_model` (preset dropdown or custom model ID)
+  - `time_zone` and `auto_sync` (`true` by default)
   - Optional `google_client_id` for GIS Calendar read
 - No untrusted third-party scripts or CDNs; strict CSP-friendly bundle.
 
@@ -148,15 +150,15 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
 
 Shared `56rem` centered column on desktop, full-width on phone, minimal UI (no empty-state clutter):
 
-- **Main list:** Merged time-ordered view — Today (with `‹` / `›` / `Today` / date picker), upcoming days, rough plans (week/month/year at period start), and `Notes` last.
-- **Overdue:** Collapsed section at top for past-dated open non-calendar items, with count badge and bulk/per-row Done, Move, Archive, Delete.
+- **Main list:** Collapsible `Overdue (N)`, `Today / Selected Day (N)` (with `‹` / `›` / `Today` / date picker), `Upcoming (N)` (each group header has a compact `+` button to add items directly), `Notes (N)`, and `Archived (N)`.
+- **Overdue:** Collapsed section at top for past-dated open non-calendar items, with count badge and bulk/per-row Done, Move to Today, Archive.
 - **Outline rows:**
   - Circled bullet = has sub-items; plain dot = leaf. Clicking bullet zooms in.
   - `▸`/`▾` collapse toggle at right beside `⋯` menu (only when item has sub-items).
-  - Tap title or details for inline edit; list rows clamp details to 3 lines with ellipsis.
-  - Drag grip `⋮⋮` for reorder/move/nest, plus `⋯` menu (Add sub-item, Indent, Outdent, Move up/down, Move to Day/Week/Month/Year/Notes, Done/Reopen, Archive, Delete with two-tap confirm).
-- **Zoom view:** Single-item focus with breadcrumb ancestors, `‹ Back` trail, full details editor, time-of-day editor, `MoveForm` (Day, Week snapping to Monday, Month, Year, Notes), sub-item outline, and collapsible `## History`.
-- **Header / Controls & Jump Navigation:** Search input (`≥ 2` chars), `✓ Done` filter toggle (persisted, hides done items + subtrees when off), bottom Sync bar (smart `Sync` button, dirty count, conflict resolution), and fixed bottom-right chips above the Gemini chat button (`+ Add` Quick Add modal, `办点事儿`, `Notes`, `🔍`).
+  - Tap title for inline edit; list rows clamp details to 3 lines with ellipsis.
+  - `⋯` menu (closes on outside click/touch or `Escape`): `✓ Done`/Reopen, `+ Add sub-item`, Move up/down, `MoveForm` (Day, Week snapping to Monday, Month, Year, Notes), Archive/Unarchive, Delete (two-tap confirm).
+- **Zoom view:** Single-item focus with breadcrumb ancestors, `‹ Back` trail, title, time-of-day editor, `MoveForm`, two-tap `Delete`, compact 4-line details preview with plain-text `show more` / `show less` toggle (or `+ Add details` when empty) that opens a full-height auto-growing `<textarea>` on tap, sub-item outline, and collapsible `## History`.
+- **Header / Controls, Settings & Jump Navigation:** Search input (`≥ 2` chars), `✓ Done` filter toggle (persisted, hides done items + subtrees when off), mobile bottom-sheet `SettingsModal` (`≤ 600px`, sticky header/footer, scrollable body, `16px` mobile inputs), bottom Sync bar (one smart `Sync` button running Calendar → Pull → Push, dirty count, Keep Local / Use Remote conflict resolution), and vertical bottom-right chips above the Gemini chat button (`+` Quick Add modal with Title + `Shift+Enter` Details + When + Time, `办点事儿`, `Notes`, `🔍`).
 
 ---
 
@@ -197,7 +199,7 @@ notes/
     │   └── gcal.ts         # GIS + Google Calendar REST fetch
     ├── ai/
     │   └── gemini.ts       # Gemini REST + voice/text + function calling tools
-    └── components/         # OutlineRow, ZoomView, MoveForm, ChatBubble, SettingsModal
+    └── components/         # OutlineRow, ZoomView, MoveForm, QuickAddModal, ChatBubble, SettingsModal
 ```
 
 - **Unit tests (`pnpm --filter notes test`):** Vitest suite covering `markdown.ts`, `slug.ts`, `order.ts`, `tree.ts`, `merge.ts`, and `calendar.ts` (round-trip fidelity against `journal/` format fixtures).
