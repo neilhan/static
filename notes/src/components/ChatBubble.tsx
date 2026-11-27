@@ -6,6 +6,7 @@ type ChatMessage = {
   role: 'user' | 'assistant';
   text: string;
   mutated?: boolean;
+  audioBlob?: Blob;
 };
 
 type ChatBubbleProps = {
@@ -66,7 +67,12 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     const userDisplay = opts.text?.trim() || '🎤 Voice message';
     setMessages((prev) => [
       ...prev,
-      { id: `${Date.now()}-u`, role: 'user', text: userDisplay },
+      {
+        id: `${Date.now()}-u`,
+        role: 'user',
+        text: userDisplay,
+        audioBlob: opts.audioBlob,
+      },
     ]);
 
     try {
@@ -187,6 +193,24 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
             {messages.map((m) => (
               <div key={m.id} className={`chat-msg ${m.role}`}>
                 <div className="chat-msg-text">{m.text}</div>
+                {m.role === 'user' && (
+                  <button
+                    type="button"
+                    className="speak-msg-btn"
+                    disabled={pending || !isOnline}
+                    onClick={() =>
+                      void sendTurn({
+                        text: m.audioBlob ? undefined : m.text,
+                        audioBlob: m.audioBlob,
+                        fromVoice: Boolean(m.audioBlob),
+                      })
+                    }
+                    title="Resend message"
+                    aria-label="Resend message"
+                  >
+                    ↻
+                  </button>
+                )}
                 {m.role === 'assistant' && (
                   <button
                     type="button"

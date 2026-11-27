@@ -226,6 +226,41 @@ export const blobToBase64 = (blob: Blob): Promise<string> =>
     reader.readAsDataURL(blob);
   });
 
+const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-2.5-flash'];
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+const generateContentWithRetry = async (
+  apiKey: string,
+  primaryModel: string,
+  payload: unknown
+): Promise<Response> => {
+  const candidates = Array.from(
+    new Set([primaryModel, ...FALLBACK_MODELS])
+  );
+
+  let lastRes: Response | null = null;
+  for (let i = 0; i < candidates.length; i += 1) {
+    const candidateModel = candidates[i];
+    const maxAttempts = i === 0 ? 2 : 1;
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      if (attempt > 0) await sleep(900);
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candidateModel)}:generateContent?key=${encodeURIComponent(apiKey.trim())}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return res;
+      lastRes = res;
+      if (res.status !== 503 && res.status !== 429) {
+        return res;
+      }
+    }
+  }
+  return lastRes!;
+};
+
 export const runGeminiTurn = async (params: {
   apiKey: string;
   model: string;
@@ -281,15 +316,10 @@ export const runGeminiTurn = async (params: {
   ]);
 
   for (let step = 0; step < 6; step += 1) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey.trim())}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction,
-        contents,
-        tools: [{ functionDeclarations: TOOL_DECLARATIONS }],
-      }),
+    const res = await generateContentWithRetry(apiKey, model, {
+      systemInstruction,
+      contents,
+      tools: [{ functionDeclarations: TOOL_DECLARATIONS }],
     });
 
     if (!res.ok) {
