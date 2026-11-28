@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createExecutorFromItems } from './ai/gemini';
 import { ChatBubble } from './components/ChatBubble';
-import { OutlineRow } from './components/OutlineRow';
+import { DragHoverState, OutlineRow } from './components/OutlineRow';
 import { QuickAddModal } from './components/QuickAddModal';
 import { SettingsModal } from './components/SettingsModal';
 import { ZoomView } from './components/ZoomView';
@@ -25,8 +25,12 @@ import {
   addDays,
   createJournalItem,
   deleteJournalSubtree,
+  dropJournalItem,
+  DropPosition,
   getTodayDateStr,
+  indentItem,
   moveJournalItem,
+  outdentItem,
   reorderItemInSiblings,
   setItemStatus,
   toggleItemCollapsed,
@@ -80,6 +84,9 @@ export default function App() {
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
   const [undoCount, setUndoCount] = useState(0);
+  const [dragState, setDragState] = useState<DragHoverState | null>(null);
+  const dragStateRef = useRef<DragHoverState | null>(null);
+  dragStateRef.current = dragState;
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== 'undefined' ? navigator.onLine : true
   );
@@ -242,6 +249,79 @@ export default function App() {
   const handleReorder = (id: string, direction: 'up' | 'down') => {
     void persistItems(reorderItemInSiblings(itemsRef.current, id, direction));
   };
+
+  const handleIndent = (id: string) => {
+    const { items: nextItems, deletedPaths } = indentItem(itemsRef.current, id);
+    if (nextItems !== itemsRef.current) {
+      void persistItems(nextItems, deletedPaths);
+    }
+  };
+
+  const handleOutdent = (id: string) => {
+    const { items: nextItems, deletedPaths } = outdentItem(itemsRef.current, id);
+    if (nextItems !== itemsRef.current) {
+      void persistItems(nextItems, deletedPaths);
+    }
+  };
+
+  const handleDropItem = useCallback(
+    (draggedId: string, targetId: string, position: DropPosition) => {
+      const { items: nextItems, deletedPaths } = dropJournalItem(
+        itemsRef.current,
+        draggedId,
+        targetId,
+        position
+      );
+      if (nextItems !== itemsRef.current) {
+        void persistItems(nextItems, deletedPaths);
+      }
+    },
+    [persistItems]
+  );
+
+  useEffect(() => {
+    if (!dragState) return;
+    const onPointerMove = (e: PointerEvent) => {
+      const el = document
+        .elementFromPoint(e.clientX, e.clientY)
+        ?.closest<HTMLElement>('[data-item-id]');
+      const overId = el?.dataset.itemId ?? null;
+      if (!el || !overId || overId === dragStateRef.current?.draggedId) {
+        setDragState((prev) =>
+          prev ? { ...prev, overId: null, position: null } : null
+        );
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      const ratio = (e.clientY - rect.top) / Math.max(1, rect.height);
+      const isCal = el.dataset.isCalendar === 'true';
+      let position: DropPosition;
+      if (ratio < 0.28) position = 'before';
+      else if (ratio > 0.72) position = 'after';
+      else position = isCal ? 'after' : 'inside';
+
+      setDragState((prev) =>
+        prev && (prev.overId !== overId || prev.position !== position)
+          ? { ...prev, overId, position }
+          : prev
+      );
+    };
+    const onPointerUp = () => {
+      const current = dragStateRef.current;
+      setDragState(null);
+      if (current?.overId && current.position) {
+        handleDropItem(current.draggedId, current.overId, current.position);
+      }
+    };
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [Boolean(dragState), handleDropItem]);
 
   const handleDelete = (id: string) => {
     const { items: nextItems, deletedPaths } = deleteJournalSubtree(
@@ -707,8 +787,14 @@ export default function App() {
             onSetStatus={handleSetStatus}
             onAddSubItem={(pid, t) => handleCreate(container, t, pid)}
             onReorder={handleReorder}
+            onIndent={handleIndent}
+            onOutdent={handleOutdent}
             onMove={handleMove}
             onDelete={handleDelete}
+            dragState={dragState}
+            onStartDrag={(id) =>
+              setDragState({ draggedId: id, overId: null, position: null })
+            }
           />
         ))}
         {addingFor === groupKey && (
@@ -876,8 +962,14 @@ export default function App() {
             if (parent) handleCreate(parent.container, title, parentId);
           }}
           onReorder={handleReorder}
+          onIndent={handleIndent}
+          onOutdent={handleOutdent}
           onMove={handleMove}
           onDelete={handleDelete}
+          dragState={dragState}
+          onStartDrag={(id) =>
+            setDragState({ draggedId: id, overId: null, position: null })
+          }
         />
       ) : searchQuery.trim().length >= 2 ? (
         <section className="search-results">
@@ -1038,8 +1130,14 @@ export default function App() {
                       handleCreate({ kind: 'day', key: selectedDay }, t, pid)
                     }
                     onReorder={handleReorder}
+                    onIndent={handleIndent}
+                    onOutdent={handleOutdent}
                     onMove={handleMove}
                     onDelete={handleDelete}
+                    dragState={dragState}
+                    onStartDrag={(id) =>
+                      setDragState({ draggedId: id, overId: null, position: null })
+                    }
                   />
                 ))}
 
@@ -1202,8 +1300,14 @@ export default function App() {
                       handleCreate({ kind: 'notes', key: 'notes' }, t, pid)
                     }
                     onReorder={handleReorder}
+                    onIndent={handleIndent}
+                    onOutdent={handleOutdent}
                     onMove={handleMove}
                     onDelete={handleDelete}
+                    dragState={dragState}
+                    onStartDrag={(id) =>
+                      setDragState({ draggedId: id, overId: null, position: null })
+                    }
                   />
                 ))}
                 {addingFor === 'notes' ? (

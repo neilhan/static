@@ -201,6 +201,39 @@ button:disabled {
   background: rgba(255, 255, 255, 0.03);
 }
 
+.outline-row.is-dragging {
+  opacity: 0.45;
+}
+
+.outline-row.drop-before {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.outline-row.drop-after {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.outline-row.drop-inside {
+  background: rgba(78, 205, 196, 0.14);
+  outline: 1px dashed var(--accent);
+}
+
+.drag-grip {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.2;
+  padding: 2px 2px 0 0;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  opacity: 0.55;
+}
+
+.drag-grip:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
 .outline-row.is-done .row-title {
   color: var(--muted);
   text-decoration: line-through;
@@ -243,6 +276,10 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.row-title-line.editable {
+  cursor: text;
+}
+
 .time-badge {
   font-size: 0.78rem;
   color: var(--accent);
@@ -264,6 +301,34 @@ button:disabled {
   resize: none;
   overflow: hidden;
   font-size: 0.85rem;
+}
+
+.edit-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 3px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.edit-tool-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.edit-tool-btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--accent);
 }
 
 .row-details-preview {

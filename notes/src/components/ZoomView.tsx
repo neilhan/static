@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { containerDisplayLabel } from '../core/tree';
 import { ContainerRef, ItemStatus, JournalItem } from '../core/types';
 import { MoveForm } from './MoveForm';
-import { OutlineRow } from './OutlineRow';
+import { DragHoverState, OutlineRow } from './OutlineRow';
 
 type ZoomViewProps = {
   item: JournalItem;
@@ -19,8 +19,12 @@ type ZoomViewProps = {
   onSetStatus: (id: string, status: ItemStatus) => void;
   onAddSubItem: (parentId: string, title: string) => void;
   onReorder: (id: string, direction: 'up' | 'down') => void;
+  onIndent: (id: string) => void;
+  onOutdent: (id: string) => void;
   onMove: (id: string, target: ContainerRef) => void;
   onDelete: (id: string) => void;
+  dragState?: DragHoverState | null;
+  onStartDrag?: (id: string) => void;
 };
 
 export const ZoomView: React.FC<ZoomViewProps> = ({
@@ -35,8 +39,12 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
   onSetStatus,
   onAddSubItem,
   onReorder,
+  onIndent,
+  onOutdent,
   onMove,
   onDelete,
+  dragState,
+  onStartDrag,
 }) => {
   const [title, setTitle] = useState(item.title);
   const [body, setBody] = useState(item.body);
@@ -315,8 +323,12 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
               onSetStatus={onSetStatus}
               onAddSubItem={onAddSubItem}
               onReorder={onReorder}
+              onIndent={onIndent}
+              onOutdent={onOutdent}
               onMove={onMove}
               onDelete={onDelete}
+              dragState={dragState}
+              onStartDrag={onStartDrag}
             />
           ))}
 

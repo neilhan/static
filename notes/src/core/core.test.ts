@@ -13,6 +13,7 @@ import {
 } from './tree';
 import { reconcilePull } from './merge';
 import { getCalendarWindow, reconcileCalendarEvents } from './calendar';
+import { dropJournalItem } from '../state/journalActions';
 import { JournalItem } from './types';
 
 describe('slug', () => {
@@ -257,5 +258,48 @@ describe('merge & calendar', () => {
     const res = reconcileCalendarEvents(existing, [], '2026-11-24');
     expect(res.deletedIds).toEqual(['cal-1']);
     expect(res.deletedPaths).toEqual(['journal/2026/2026-11-25/dentist.md']);
+  });
+
+  it('supports drag-to-sort and drag-to-nest via dropJournalItem', () => {
+    const base: JournalItem[] = [
+      {
+        id: 'a',
+        slug: 'a',
+        status: 'open',
+        order: 1,
+        created: '2026-11-24',
+        title: 'A',
+        body: '',
+        history: [],
+        path: 'journal/notes/a.md',
+        parentId: null,
+        container: { kind: 'notes', key: 'notes' },
+        dirty: false,
+        updatedAt: 1,
+      },
+      {
+        id: 'b',
+        slug: 'b',
+        status: 'open',
+        order: 2,
+        created: '2026-11-24',
+        title: 'B',
+        body: '',
+        history: [],
+        path: 'journal/notes/b.md',
+        parentId: null,
+        container: { kind: 'notes', key: 'notes' },
+        dirty: false,
+        updatedAt: 1,
+      },
+    ];
+
+    const sorted = dropJournalItem(base, 'b', 'a', 'before');
+    expect(sorted.items.find((i) => i.id === 'b')!.order).toBe(0);
+
+    const nested = dropJournalItem(base, 'b', 'a', 'inside');
+    const movedB = nested.items.find((i) => i.id === 'b')!;
+    expect(movedB.parentId).toBe('a');
+    expect(movedB.path).toBe('journal/notes/a/b.md');
   });
 });

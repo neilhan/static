@@ -1,6 +1,13 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ContainerRef, ItemStatus, JournalItem } from '../core/types';
+import { DropPosition } from '../state/journalActions';
 import { MoveForm } from './MoveForm';
+
+export type DragHoverState = {
+  draggedId: string;
+  overId: string | null;
+  position: DropPosition | null;
+};
 
 type OutlineRowProps = {
   item: JournalItem;
@@ -15,8 +22,12 @@ type OutlineRowProps = {
   onSetStatus: (id: string, status: ItemStatus) => void;
   onAddSubItem: (parentId: string, title: string) => void;
   onReorder: (id: string, direction: 'up' | 'down') => void;
+  onIndent?: (id: string) => void;
+  onOutdent?: (id: string) => void;
   onMove: (id: string, target: ContainerRef) => void;
   onDelete: (id: string) => void;
+  dragState?: DragHoverState | null;
+  onStartDrag?: (id: string) => void;
 };
 
 const renderTextWithLinks = (text: string) => {
@@ -52,8 +63,12 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
   onSetStatus,
   onAddSubItem,
   onReorder,
+  onIndent,
+  onOutdent,
   onMove,
   onDelete,
+  dragState,
+  onStartDrag,
 }) => {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(item.title);
@@ -112,6 +127,23 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
     (c) => c.parentId === item.id && c.status !== 'archived'
   );
 
+  const siblingList = allItems
+    .filter(
+      (s) =>
+        s.parentId === item.parentId &&
+        s.container.kind === item.container.kind &&
+        s.container.key === item.container.key &&
+        s.status !== 'archived' &&
+        (showDone || s.status !== 'done')
+    )
+    .sort((a, b) => a.order - b.order);
+  const myIdx = siblingList.findIndex((s) => s.id === item.id);
+  const canIndent =
+    Boolean(onIndent) && myIdx > 0 && !siblingList[myIdx - 1]?.calendar;
+  const canOutdent = Boolean(onOutdent) && item.parentId !== null;
+  const canMoveUp = myIdx > 0;
+  const canMoveDown = myIdx !== -1 && myIdx < siblingList.length - 1;
+
   const commitTitle = () => {
     setEditingTitle(false);
     const cleaned = titleDraft.replace(/\r?\n/g, ' ').trim();
@@ -131,9 +163,35 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
     setAddingSub(false);
   };
 
+  const isDraggingThis = dragState?.draggedId === item.id;
+  const dropClass =
+    dragState &&
+    dragState.overId === item.id &&
+    dragState.draggedId !== item.id &&
+    dragState.position
+      ? `drop-${dragState.position}`
+      : '';
+
   return (
     <div className="outline-node" style={{ marginLeft: depth > 0 ? '18px' : 0 }}>
-      <div className={`outline-row ${item.status === 'done' ? 'is-done' : ''}`}>
+      <div
+        data-item-id={item.id}
+        data-is-calendar={isCalendar ? 'true' : 'false'}
+        className={`outline-row ${item.status === 'done' ? 'is-done' : ''} ${isDraggingThis ? 'is-dragging' : ''} ${dropClass}`}
+      >
+        {!isCalendar && onStartDrag && (
+          <span
+            className="drag-grip"
+            title="Drag to reorder or nest"
+            aria-label="Drag handle"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              onStartDrag(item.id);
+            }}
+          >
+            ⋮⋮
+          </span>
+        )}
         <button
           type="button"
           className={`bullet-btn ${hasAnyChildren ? 'has-children' : ''}`}
@@ -145,7 +203,18 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
         </button>
 
         <div className="row-content">
-          <div className="row-title-line">
+          <div
+            className={`row-title-line ${!isCalendar ? 'editable' : ''}`}
+            onClick={() => {
+              if (editingTitle) return;
+              if (isCalendar && item.calendarUrl) {
+                window.open(item.calendarUrl, '_blank', 'noopener');
+              } else if (!isCalendar) {
+                setTitleDraft(item.title);
+                setEditingTitle(true);
+              }
+            }}
+          >
             {item.time && <span className="time-badge">{item.time}</span>}
             {isCalendar && item.calendarUrl && (
               <a
@@ -169,6 +238,13 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
                 onChange={(e) => setTitleDraft(e.target.value)}
                 onBlur={commitTitle}
                 onKeyDown={(e) => {
+                  if (e.key === 'Tab') {
+                    e.preventDefault();
+                    commitTitle();
+                    if (e.shiftKey && canOutdent) onOutdent?.(item.id);
+                    else if (!e.shiftKey && canIndent) onIndent?.(item.id);
+                    return;
+                  }
                   if (e.key === 'Enter' && e.shiftKey) {
                     e.preventDefault();
                     commitTitle();
@@ -186,17 +262,7 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
                 }}
               />
             ) : (
-              <span
-                className="row-title"
-                onClick={() => {
-                  if (isCalendar && item.calendarUrl) {
-                    window.open(item.calendarUrl, '_blank', 'noopener');
-                  } else if (!isCalendar) {
-                    setTitleDraft(item.title);
-                    setEditingTitle(true);
-                  }
-                }}
-              >
+              <span className="row-title">
                 {item.status === 'done' && <span className="done-check">✓ </span>}
                 {renderTextWithLinks(item.title)}
               </span>
@@ -242,6 +308,55 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
                 {renderTextWithLinks(item.body)}
               </div>
             )
+          )}
+
+          {(editingTitle || editingDetails) && !isCalendar && (
+            <div className="edit-toolbar" role="toolbar" aria-label="Edit item position">
+              <button
+                type="button"
+                className="edit-tool-btn"
+                disabled={!canOutdent}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => onOutdent?.(item.id)}
+                title="Outdent (Shift+Tab)"
+                aria-label="Outdent"
+              >
+                ⇤
+              </button>
+              <button
+                type="button"
+                className="edit-tool-btn"
+                disabled={!canIndent}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => onIndent?.(item.id)}
+                title="Indent (Tab)"
+                aria-label="Indent"
+              >
+                ⇥
+              </button>
+              <button
+                type="button"
+                className="edit-tool-btn"
+                disabled={!canMoveUp}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => onReorder(item.id, 'up')}
+                title="Move up"
+                aria-label="Move up"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                className="edit-tool-btn"
+                disabled={!canMoveDown}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => onReorder(item.id, 'down')}
+                title="Move down"
+                aria-label="Move down"
+              >
+                ↓
+              </button>
+            </div>
           )}
 
           {moveOpen && (
@@ -341,6 +456,28 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
                   >
                     ↓ Move down
                   </button>
+                  {canIndent && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onIndent?.(item.id);
+                        setMenuOpen(false);
+                      }}
+                    >
+                      →| Indent
+                    </button>
+                  )}
+                  {canOutdent && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onOutdent?.(item.id);
+                        setMenuOpen(false);
+                      }}
+                    >
+                      |← Outdent
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => {
@@ -399,8 +536,12 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
             onSetStatus={onSetStatus}
             onAddSubItem={onAddSubItem}
             onReorder={onReorder}
+            onIndent={onIndent}
+            onOutdent={onOutdent}
             onMove={onMove}
             onDelete={onDelete}
+            dragState={dragState}
+            onStartDrag={onStartDrag}
           />
         ))}
     </div>

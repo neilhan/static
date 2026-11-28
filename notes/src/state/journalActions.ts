@@ -304,6 +304,144 @@ export const reorderItemInSiblings = (
   return maybeRenumberGroup(nextItems, target.container, target.parentId);
 };
 
+export const indentItem = (
+  items: JournalItem[],
+  id: string
+): { items: JournalItem[]; deletedPaths: string[] } => {
+  const target = items.find((i) => i.id === id);
+  if (!target || target.calendar) return { items, deletedPaths: [] };
+
+  const siblings = getSiblings(items, target.container, target.parentId).filter(
+    (s) => s.status !== 'archived'
+  );
+  const idx = siblings.findIndex((s) => s.id === id);
+  if (idx <= 0) return { items, deletedPaths: [] };
+
+  const prevSibling = siblings[idx - 1];
+  if (prevSibling.calendar) return { items, deletedPaths: [] };
+
+  // Uncollapse new parent so the newly indented item stays visible
+  const uncollapsed = prevSibling.collapsed
+    ? items.map((i) =>
+        i.id === prevSibling.id
+          ? { ...i, collapsed: undefined, dirty: true, updatedAt: Date.now() }
+          : i
+      )
+    : items;
+
+  return moveJournalItem(uncollapsed, id, target.container, prevSibling.id);
+};
+
+export const outdentItem = (
+  items: JournalItem[],
+  id: string
+): { items: JournalItem[]; deletedPaths: string[] } => {
+  const target = items.find((i) => i.id === id);
+  if (!target || !target.parentId || target.calendar) {
+    return { items, deletedPaths: [] };
+  }
+
+  const parent = items.find((i) => i.id === target.parentId);
+  if (!parent) return { items, deletedPaths: [] };
+
+  const moved = moveJournalItem(items, id, parent.container, parent.parentId);
+  const parentSiblings = getSiblings(
+    moved.items,
+    parent.container,
+    parent.parentId
+  );
+  const parentIdx = parentSiblings.findIndex((s) => s.id === parent.id);
+  if (parentIdx === -1) return moved;
+
+  const afterParent =
+    parentIdx + 1 < parentSiblings.length &&
+    parentSiblings[parentIdx + 1].id !== id
+      ? parentSiblings[parentIdx + 1].order
+      : null;
+  const newOrder = midpointOrder(parent.order, afterParent);
+  const positioned = moved.items.map((i) =>
+    i.id === id ? { ...i, order: newOrder, dirty: true, updatedAt: Date.now() } : i
+  );
+  return {
+    items: maybeRenumberGroup(positioned, parent.container, parent.parentId),
+    deletedPaths: moved.deletedPaths,
+  };
+};
+
+export type DropPosition = 'before' | 'after' | 'inside';
+
+export const dropJournalItem = (
+  items: JournalItem[],
+  draggedId: string,
+  targetId: string,
+  position: DropPosition
+): { items: JournalItem[]; deletedPaths: string[] } => {
+  if (draggedId === targetId) return { items, deletedPaths: [] };
+  const dragged = items.find((i) => i.id === draggedId);
+  const target = items.find((i) => i.id === targetId);
+  if (!dragged || !target || dragged.calendar) {
+    return { items, deletedPaths: [] };
+  }
+
+  const subtree = collectSubtreeIds(items, draggedId);
+  if (subtree.has(targetId)) {
+    return { items, deletedPaths: [] };
+  }
+
+  if (position === 'inside') {
+    if (target.calendar) return { items, deletedPaths: [] };
+    const uncollapsed = target.collapsed
+      ? items.map((i) =>
+          i.id === target.id
+            ? { ...i, collapsed: undefined, dirty: true, updatedAt: Date.now() }
+            : i
+        )
+      : items;
+    return moveJournalItem(uncollapsed, draggedId, target.container, target.id);
+  }
+
+  // 'before' or 'after' target
+  const moved = moveJournalItem(
+    items,
+    draggedId,
+    target.container,
+    target.parentId
+  );
+  const siblings = getSiblings(
+    moved.items,
+    target.container,
+    target.parentId
+  ).filter((s) => s.id !== draggedId);
+
+  const targetIdx = siblings.findIndex((s) => s.id === targetId);
+  if (targetIdx === -1) return moved;
+
+  const beforeOrder =
+    position === 'before'
+      ? targetIdx > 0
+        ? siblings[targetIdx - 1].order
+        : null
+      : siblings[targetIdx].order;
+  const afterOrder =
+    position === 'before'
+      ? siblings[targetIdx].order
+      : targetIdx + 1 < siblings.length
+        ? siblings[targetIdx + 1].order
+        : null;
+
+  const newOrder = midpointOrder(beforeOrder, afterOrder);
+  const positioned = moved.items.map((i) =>
+    i.id === draggedId
+      ? { ...i, order: newOrder, dirty: true, updatedAt: Date.now() }
+      : i
+  );
+
+  return {
+    items: maybeRenumberGroup(positioned, target.container, target.parentId),
+    deletedPaths: moved.deletedPaths,
+  };
+};
+
 export const deleteJournalSubtree = (
   items: JournalItem[],
   rootId: string
