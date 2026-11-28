@@ -8,6 +8,7 @@ import { ZoomView } from './components/ZoomView';
 import { reconcileCalendarEvents } from './core/calendar';
 import {
   containerDisplayLabel,
+  containerToEndDate,
   containerToSortDate,
   formatDateWithWeekday,
   resolveTreeParents,
@@ -560,7 +561,7 @@ export default function App() {
             i.status === 'open' &&
             !i.calendar &&
             i.container.kind !== 'notes' &&
-            containerToSortDate(i.container) < todayStr
+            containerToEndDate(i.container) < todayStr
         )
         .sort((a, b) =>
           containerToSortDate(a.container).localeCompare(
@@ -591,8 +592,11 @@ export default function App() {
       if (item.status === 'archived' || item.parentId) continue;
       if (!meta.showDone && item.status === 'done') continue;
       if (item.container.kind === 'notes') continue;
-      const sortDate = containerToSortDate(item.container);
-      if (sortDate > selectedDay) {
+      const include =
+        item.container.kind === 'day'
+          ? item.container.key > selectedDay
+          : containerToEndDate(item.container) >= selectedDay;
+      if (include) {
         const key = `${item.container.kind}:${item.container.key}`;
         map.set(key, item.container);
       }

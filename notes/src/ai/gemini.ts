@@ -1,4 +1,4 @@
-import { containerToSortDate } from '../core/tree';
+import { containerToEndDate } from '../core/tree';
 import { ContainerRef, ItemStatus, JournalItem } from '../core/types';
 
 export type GeminiToolExecutor = {
@@ -407,7 +407,7 @@ export const createExecutorFromItems = (
         i.status === 'open' &&
         !i.calendar &&
         i.container.kind !== 'notes' &&
-        containerToSortDate(i.container) < todayStr
+        containerToEndDate(i.container) < todayStr
     ),
   listNotes: () =>
     getItems()

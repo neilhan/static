@@ -102,6 +102,30 @@ export const containerToSortDate = (container: ContainerRef): string => {
   }
 };
 
+export const containerToEndDate = (container: ContainerRef): string => {
+  switch (container.kind) {
+    case 'day':
+      return container.key;
+    case 'week': {
+      const monday = container.key.replace(/^week-/, '');
+      if (!DAY_RE.test(monday)) return monday;
+      const [y, m, d] = monday.split('-').map(Number);
+      const sunday = new Date(Date.UTC(y, m - 1, d + 6));
+      return sunday.toISOString().slice(0, 10);
+    }
+    case 'month': {
+      if (!MONTH_RE.test(container.key)) return `${container.key}-31`;
+      const [y, m] = container.key.split('-').map(Number);
+      const lastDay = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      return `${container.key}-${String(lastDay).padStart(2, '0')}`;
+    }
+    case 'year':
+      return `${container.key}-12-31`;
+    case 'notes':
+      return '9999-12-31';
+  }
+};
+
 const WEEKDAYS_3 = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 
 export const formatDateWithWeekday = (dateStr: string): string => {

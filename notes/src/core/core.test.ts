@@ -4,6 +4,7 @@ import { generateUniqueSlug, slugifyTitle } from './slug';
 import { midpointOrder, needsRenumber, renumberSiblings } from './order';
 import {
   containerDisplayLabel,
+  containerToEndDate,
   formatDateWithWeekday,
   moveSubtreePaths,
   parseJournalPath,
@@ -87,6 +88,9 @@ describe('tree & move', () => {
     expect(containerDisplayLabel({ kind: 'day', key: '2026-11-24' })).toBe('2026-11-24 Tue');
     expect(containerDisplayLabel({ kind: 'month', key: '2026-11' })).toBe('2026-11');
     expect(containerDisplayLabel({ kind: 'week', key: 'week-2026-11-23' })).toBe('Week of 2026-11-23');
+    expect(containerToEndDate({ kind: 'week', key: 'week-2026-11-23' })).toBe('2026-11-29');
+    expect(containerToEndDate({ kind: 'month', key: '2026-11' })).toBe('2026-11-30');
+    expect(containerToEndDate({ kind: 'year', key: '2026' })).toBe('2026-12-31');
   });
 
   it('parses containers, sibling folders, and ignores README.md', () => {
