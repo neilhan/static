@@ -79,7 +79,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               checked={draft.autoSync}
               onChange={(e) => setDraft({ ...draft, autoSync: e.target.checked })}
             />
-            <span>Auto-sync (15m pull, 45s push)</span>
+            <span>Auto-sync (15m pull, 5s push + on open)</span>
           </label>
 
           <div className="modal-section-title">Time &amp; Integrations</div>

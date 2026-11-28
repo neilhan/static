@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ContainerRef, ItemStatus, JournalItem } from '../core/types';
 import { MoveForm } from './MoveForm';
 
@@ -11,6 +11,7 @@ type OutlineRowProps = {
   onZoom: (id: string) => void;
   onToggleCollapse: (id: string) => void;
   onEditTitle: (id: string, title: string) => void;
+  onEditDetails?: (id: string, body: string) => void;
   onSetStatus: (id: string, status: ItemStatus) => void;
   onAddSubItem: (parentId: string, title: string) => void;
   onReorder: (id: string, direction: 'up' | 'down') => void;
@@ -47,6 +48,7 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
   onZoom,
   onToggleCollapse,
   onEditTitle,
+  onEditDetails,
   onSetStatus,
   onAddSubItem,
   onReorder,
@@ -55,12 +57,22 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
 }) => {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(item.title);
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [detailsDraft, setDetailsDraft] = useState(item.body);
+  const detailsRef = useRef<HTMLTextAreaElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [addingSub, setAddingSub] = useState(false);
   const [subTitle, setSubTitle] = useState('');
   const [moveOpen, setMoveOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    const el = detailsRef.current;
+    if (!editingDetails || !el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [editingDetails, detailsDraft]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -157,6 +169,15 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
                 onChange={(e) => setTitleDraft(e.target.value)}
                 onBlur={commitTitle}
                 onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.shiftKey) {
+                    e.preventDefault();
+                    commitTitle();
+                    if (onEditDetails) {
+                      setDetailsDraft(item.body);
+                      setEditingDetails(true);
+                    }
+                    return;
+                  }
                   if (e.key === 'Enter') commitTitle();
                   if (e.key === 'Escape') {
                     setTitleDraft(item.title);
@@ -182,10 +203,45 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
             )}
           </div>
 
-          {item.body && (
-            <div className="row-details-preview" onClick={() => onZoom(item.id)}>
-              {renderTextWithLinks(item.body)}
-            </div>
+          {editingDetails && onEditDetails ? (
+            <textarea
+              ref={detailsRef}
+              className="inline-details-editor"
+              rows={2}
+              autoFocus
+              placeholder="Add details..."
+              value={detailsDraft}
+              onChange={(e) => setDetailsDraft(e.target.value)}
+              onBlur={() => {
+                if (detailsDraft.trim() !== item.body) {
+                  onEditDetails(item.id, detailsDraft);
+                }
+                setEditingDetails(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setDetailsDraft(item.body);
+                  setEditingDetails(false);
+                }
+              }}
+            />
+          ) : (
+            item.body && (
+              <div
+                className="row-details-preview"
+                onClick={() => {
+                  if (!isCalendar && onEditDetails) {
+                    setDetailsDraft(item.body);
+                    setEditingDetails(true);
+                  } else {
+                    onZoom(item.id);
+                  }
+                }}
+                title={!isCalendar && onEditDetails ? 'Click to edit details' : undefined}
+              >
+                {renderTextWithLinks(item.body)}
+              </div>
+            )
           )}
 
           {moveOpen && (
@@ -339,6 +395,7 @@ export const OutlineRow: React.FC<OutlineRowProps> = ({
             onZoom={onZoom}
             onToggleCollapse={onToggleCollapse}
             onEditTitle={onEditTitle}
+            onEditDetails={onEditDetails}
             onSetStatus={onSetStatus}
             onAddSubItem={onAddSubItem}
             onReorder={onReorder}

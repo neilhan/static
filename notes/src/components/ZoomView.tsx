@@ -135,6 +135,24 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
             className="zoom-title-input"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                const cleaned = title.replace(/\r?\n/g, ' ').trim();
+                if (cleaned && cleaned !== item.title) {
+                  onEditContent(item.id, { title: cleaned });
+                }
+                setEditingDetails(true);
+                return;
+              }
+              if (e.key === 'Enter') {
+                e.currentTarget.blur();
+              }
+              if (e.key === 'Escape') {
+                setTitle(item.title);
+                e.currentTarget.blur();
+              }
+            }}
             onBlur={() => {
               const cleaned = title.replace(/\r?\n/g, ' ').trim();
               if (cleaned && cleaned !== item.title) {
@@ -293,6 +311,7 @@ export const ZoomView: React.FC<ZoomViewProps> = ({
               onZoom={onZoom}
               onToggleCollapse={onToggleCollapse}
               onEditTitle={(id, t) => onEditContent(id, { title: t })}
+              onEditDetails={(id, b) => onEditContent(id, { body: b })}
               onSetStatus={onSetStatus}
               onAddSubItem={onAddSubItem}
               onReorder={onReorder}

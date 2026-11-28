@@ -75,7 +75,7 @@ All sync runs directly against `https://api.github.com/repos/{owner}/{repo}` (co
 
 - **Auto-sync (toggleable in Settings, default ON):**
   - **Auto-Pull:** Runs on app open, foreground (`visibilitychange`), reconnect (`online`), and every 15 minutes while visible (15-min cooldown).
-  - **Auto-Push:** Debounced 45 seconds after the last local edit, plus immediately on page hide or reconnect when dirty (paused if unresolved pull conflicts exist).
+  - **Auto-Push:** Debounced 5 seconds after the last local edit, plus immediately on app open/foreground (after pull), `pagehide`/page hide, or reconnect when dirty (paused if unresolved pull conflicts exist).
 
 ### Pull (Incremental + Merge-by-`id`)
 1. `GET /git/refs/heads/main` → get `headCommitSha`. If equal to `lastCommitSha`, return immediately (1 API call).
@@ -159,7 +159,7 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
 - **Header:** App title, `Online`/`Offline` + unsynced count badge, Search input, `✓ Done` toggle, and **Settings** button.
 - **Overdue:** Collapsible section (`▸ Overdue (N)`, collapsed by default) for past-dated open non-calendar items whose period end date is before today (current week, month, and year items are not overdue), with bulk **Mark all done** / **Archive all** and per-row **Today** / **✓** actions.
 - **Today / Selected Day:** Collapsible section (`▾ Today · YYYY-MM-DD ddd (N)`) with `‹` / `Today` / `›` / date picker navigation, root outline rows, and a `+` button at the bottom to add an item to that day.
-- **Upcoming:** Collapsible section (`▾ Upcoming (N)`) showing current week/month/year plans first after Today, followed by future days (`YYYY-MM-DD ddd` with 3-letter weekday) and future rough plans in date order; each group header has a compact `+` button (and **Open day** for day groups).
+- **Upcoming:** Collapsible section (`▾ Upcoming (N)`) showing current week/month/year plans first after Today and keeping the next 1 month open (`YYYY-MM-DD ddd` with 3-letter weekday). Items beyond 1 month are collapsed by default: grouped by month (`▸ YYYY-MM`) for the current year, and by year then month (`▸ YYYY` → `▸ YYYY-MM`) for future years. Each group header has a compact `+` button (and **Open day** for day groups).
 - **Notes:** Collapsible section (`▾ Notes (N)`) for undated notes, with a `+` button at the bottom.
 - **Archived:** Collapsible section (`▸ Archived (N)`, collapsed by default) with per-row **Unarchive**.
 - **Floating Bottom-Right Controls:**
@@ -168,12 +168,12 @@ Implemented after the core offline `IndexedDB` store, GitHub sync, UI views, and
 
 ### Zoom View (Item Detail Page)
 - **Navigation:** `‹ Back` button and clickable ancestor breadcrumbs (`Container / Parent / …`).
-- **Header & Actions:** Inline editable title, status pill, time-of-day editor (day items only), `✓ Done`/Reopen, `→ Move…`, Archive/Unarchive, and two-tap `Delete`.
+- **Header & Actions:** Inline editable title (`Shift+Enter` saves and opens the details editor), status pill, time-of-day editor (day items only), `✓ Done`/Reopen, `→ Move…`, Archive/Unarchive, and two-tap `Delete`.
 - **Details:** Clamped 4-line preview with plain-text `show more` / `show less` toggle (or `+ Add details` when empty); tapping details opens a full-height auto-growing `<textarea>` that saves and collapses on blur.
 - **Sub-items & History:** Nested `OutlineRow` list with `+` to add sub-items, plus collapsible `▸ History (N)` log at the bottom.
 
 ### Components & Modals
-- **`OutlineRow`:** Circled bullet = has sub-items, plain dot = leaf (clicking bullet zooms in); `▸`/`▾` collapse toggle beside `⋯`; tap title for inline edit; 3-line clamped details preview; `⋯` menu (closes on outside click/touch or `Escape`) with `✓ Done`/Reopen, `+ Add sub-item`, Move up/down, `Move…`, Archive/Unarchive, and two-tap `Delete`. Calendar items are read-only with a clickable `📅` link.
+- **`OutlineRow`:** Circled bullet = has sub-items, plain dot = leaf (clicking bullet zooms in); `▸`/`▾` collapse toggle beside `⋯`; tap title or details preview for inline edit without leaving the current view (`Enter` on title saves, `Shift+Enter` saves and opens inline auto-grow details editor); 3-line clamped details preview; `⋯` menu (closes on outside click/touch or `Escape`) with `✓ Done`/Reopen, `+ Add sub-item`, Move up/down, `Move…`, Archive/Unarchive, and two-tap `Delete`. Calendar items are read-only with a clickable `📅` link.
 - **`MoveForm`:** Shared inline move bar in `OutlineRow` and `ZoomView` supporting **Day**, **Week** (snaps to Monday), **Month**, **Year**, and **Notes**.
 - **`QuickAddModal`:** Mobile-friendly bottom sheet opened from the `+` chip — Title + `Shift+Enter` Details textarea, **When** (`Today`, `Tomorrow`, `Day`, `Week`, `Month`, `Year`, `Notes`), and optional **Time**.
 - **`SettingsModal`:** Mobile bottom-sheet (`≤ 600px`, sticky header/footer, scrollable body, `16px` mobile inputs) with **GitHub Sync** (owner, repo, PAT, auto-sync) and **Time & Integrations** (Time Zone, Gemini API key & model dropdown, Google OAuth Client ID).

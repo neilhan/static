@@ -173,6 +173,22 @@ button:disabled {
   padding: 4px 0;
 }
 
+.bucket-group {
+  margin-top: 6px;
+}
+
+.bucket-group > .collapse-header {
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.bucket-children {
+  margin-left: 14px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
+
 .outline-row {
   display: flex;
   align-items: flex-start;
@@ -242,6 +258,14 @@ button:disabled {
   width: 100%;
 }
 
+.inline-details-editor {
+  width: 100%;
+  margin-top: 4px;
+  resize: none;
+  overflow: hidden;
+  font-size: 0.85rem;
+}
+
 .row-details-preview {
   color: var(--muted);
   font-size: 0.85rem;
@@ -251,6 +275,7 @@ button:disabled {
   -webkit-box-orient: vertical;
   overflow: hidden;
   white-space: pre-wrap;
+  cursor: text;
 }
 
 .inline-link {

@@ -7,6 +7,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { ZoomView } from './components/ZoomView';
 import { reconcileCalendarEvents } from './core/calendar';
 import {
+  addMonthsClamped,
   containerDisplayLabel,
   containerToEndDate,
   containerToSortDate,
@@ -68,6 +69,7 @@ export default function App() {
   const [overdueOpen, setOverdueOpen] = useState(false);
   const [dayOpen, setDayOpen] = useState(true);
   const [upcomingOpen, setUpcomingOpen] = useState(true);
+  const [expandedBuckets, setExpandedBuckets] = useState<Record<string, boolean>>({});
   const [notesOpen, setNotesOpen] = useState(true);
   const [archivedOpen, setArchivedOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -456,7 +458,7 @@ export default function App() {
   }, [updateMeta]);
 
   const AUTO_PULL_MS = 15 * 60 * 1000;
-  const AUTO_PUSH_DEBOUNCE_MS = 45 * 1000;
+  const AUTO_PUSH_DEBOUNCE_MS = 5 * 1000;
 
   const maybeAutoPull = useCallback(async () => {
     const s = settingsRef.current;
@@ -484,28 +486,31 @@ export default function App() {
     [items, pendingDeletes]
   );
 
-  // Auto-pull on load, foreground, online, and every 15 minutes
+  // Auto-pull & push unsynced on load, foreground, reconnect, and every 15 minutes
   useEffect(() => {
     if (!loaded) return;
-    void maybeAutoPull();
-
-    const onVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        void maybeAutoPull();
-      } else if (document.visibilityState === 'hidden') {
-        if (autoPushTimerRef.current !== null) {
-          window.clearTimeout(autoPushTimerRef.current);
-          autoPushTimerRef.current = null;
-        }
-        void maybeAutoPushNow();
-      }
-    };
-
-    const onReconnect = () => {
+    const syncOnActivate = () => {
       void (async () => {
         await maybeAutoPull();
         await maybeAutoPushNow();
       })();
+    };
+    syncOnActivate();
+
+    const flushPushOnLeave = () => {
+      if (autoPushTimerRef.current !== null) {
+        window.clearTimeout(autoPushTimerRef.current);
+        autoPushTimerRef.current = null;
+      }
+      void maybeAutoPushNow();
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        syncOnActivate();
+      } else if (document.visibilityState === 'hidden') {
+        flushPushOnLeave();
+      }
     };
 
     const intervalId = window.setInterval(() => {
@@ -515,15 +520,17 @@ export default function App() {
     }, AUTO_PULL_MS);
 
     document.addEventListener('visibilitychange', onVisibility);
-    window.addEventListener('online', onReconnect);
+    window.addEventListener('pagehide', flushPushOnLeave);
+    window.addEventListener('online', syncOnActivate);
     return () => {
       window.clearInterval(intervalId);
       document.removeEventListener('visibilitychange', onVisibility);
-      window.removeEventListener('online', onReconnect);
+      window.removeEventListener('pagehide', flushPushOnLeave);
+      window.removeEventListener('online', syncOnActivate);
     };
   }, [loaded, maybeAutoPull, maybeAutoPushNow]);
 
-  // Debounced auto-push 45s after edits
+  // Debounced auto-push 5s after edits
   useEffect(() => {
     if (autoPushTimerRef.current !== null) {
       window.clearTimeout(autoPushTimerRef.current);
@@ -605,6 +612,137 @@ export default function App() {
       containerToSortDate(a).localeCompare(containerToSortDate(b))
     );
   }, [items, selectedDay, meta.showDone]);
+
+  const upcomingGrouped = useMemo(() => {
+    const oneMonthCutoff = addMonthsClamped(todayStr, 1);
+    const currentYear = todayStr.slice(0, 4);
+
+    const nearContainers: ContainerRef[] = [];
+    const thisYearMonths = new Map<string, ContainerRef[]>();
+    const futureYears = new Map<string, Map<string, ContainerRef[]>>();
+
+    for (const c of upcomingContainers) {
+      const sortDate = containerToSortDate(c);
+      if (sortDate <= oneMonthCutoff) {
+        nearContainers.push(c);
+        continue;
+      }
+      const year = sortDate.slice(0, 4);
+      const month = sortDate.slice(0, 7);
+      if (year === currentYear) {
+        const list = thisYearMonths.get(month) ?? [];
+        list.push(c);
+        thisYearMonths.set(month, list);
+      } else {
+        let yearMap = futureYears.get(year);
+        if (!yearMap) {
+          yearMap = new Map();
+          futureYears.set(year, yearMap);
+        }
+        const list = yearMap.get(month) ?? [];
+        list.push(c);
+        yearMap.set(month, list);
+      }
+    }
+
+    return { nearContainers, thisYearMonths, futureYears };
+  }, [upcomingContainers, todayStr]);
+
+  const toggleBucket = (key: string) =>
+    setExpandedBuckets((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const renderContainerGroup = (container: ContainerRef) => {
+    const groupItems = items
+      .filter(
+        (i) =>
+          i.container.kind === container.kind &&
+          i.container.key === container.key &&
+          !i.parentId &&
+          i.status !== 'archived' &&
+          (meta.showDone || i.status !== 'done')
+      )
+      .sort((a, b) => a.order - b.order);
+
+    const groupKey = `${container.kind}:${container.key}`;
+
+    return (
+      <div key={groupKey} className="group-section">
+        <div className="group-header">
+          <h2>{containerDisplayLabel(container)}</h2>
+          <div className="bulk-actions">
+            {container.kind === 'day' && (
+              <button
+                type="button"
+                className="btn-sm btn-ghost"
+                onClick={() => setSelectedDay(container.key)}
+              >
+                Open day
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-sm btn-ghost"
+              aria-label={`Add item to ${containerDisplayLabel(container)}`}
+              title="Add item"
+              onClick={() => {
+                setAddingFor(groupKey);
+                setNewTitle('');
+              }}
+            >
+              +
+            </button>
+          </div>
+        </div>
+        {groupItems.map((item) => (
+          <OutlineRow
+            key={item.id}
+            item={item}
+            allItems={items}
+            showDone={meta.showDone}
+            todayStr={todayStr}
+            onZoom={(id) => setZoomStack([id])}
+            onToggleCollapse={handleToggleCollapse}
+            onEditTitle={(id, t) => handleEditContent(id, { title: t })}
+            onEditDetails={(id, b) => handleEditContent(id, { body: b })}
+            onSetStatus={handleSetStatus}
+            onAddSubItem={(pid, t) => handleCreate(container, t, pid)}
+            onReorder={handleReorder}
+            onMove={handleMove}
+            onDelete={handleDelete}
+          />
+        ))}
+        {addingFor === groupKey && (
+          <div className="inline-add-sub">
+            <input
+              type="text"
+              placeholder={`New item in ${containerDisplayLabel(container)}…`}
+              value={newTitle}
+              autoFocus
+              onChange={(e) => setNewTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && newTitle.trim()) {
+                  handleCreate(container, newTitle.trim());
+                  setNewTitle('');
+                  setAddingFor(null);
+                }
+                if (e.key === 'Escape') {
+                  setNewTitle('');
+                  setAddingFor(null);
+                }
+              }}
+              onBlur={() => {
+                if (newTitle.trim()) {
+                  handleCreate(container, newTitle.trim());
+                }
+                setNewTitle('');
+                setAddingFor(null);
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const notesRoots = useMemo(
     () =>
@@ -894,6 +1032,7 @@ export default function App() {
                     onZoom={(id) => setZoomStack([id])}
                     onToggleCollapse={handleToggleCollapse}
                     onEditTitle={(id, t) => handleEditContent(id, { title: t })}
+                    onEditDetails={(id, b) => handleEditContent(id, { body: b })}
                     onSetStatus={handleSetStatus}
                     onAddSubItem={(pid, t) =>
                       handleCreate({ kind: 'day', key: selectedDay }, t, pid)
@@ -956,101 +1095,82 @@ export default function App() {
                   {upcomingOpen ? '▾' : '▸'} Upcoming ({upcomingContainers.length})
                 </button>
               </div>
-              {upcomingOpen &&
-                upcomingContainers.map((container) => {
-                  const groupItems = items
-                    .filter(
-                      (i) =>
-                        i.container.kind === container.kind &&
-                        i.container.key === container.key &&
-                        !i.parentId &&
-                        i.status !== 'archived' &&
-                        (meta.showDone || i.status !== 'done')
-                    )
-                    .sort((a, b) => a.order - b.order);
+              {upcomingOpen && (
+                <>
+                  {upcomingGrouped.nearContainers.map(renderContainerGroup)}
 
-                  const groupKey = `${container.kind}:${container.key}`;
-
-                  return (
-                    <div
-                      key={groupKey}
-                      className="group-section"
-                    >
-                      <div className="group-header">
-                        <h2>{containerDisplayLabel(container)}</h2>
-                        <div className="bulk-actions">
-                          {container.kind === 'day' && (
-                            <button
-                              type="button"
-                              className="btn-sm btn-ghost"
-                              onClick={() => setSelectedDay(container.key)}
-                            >
-                              Open day
-                            </button>
-                          )}
+                  {Array.from(upcomingGrouped.thisYearMonths.entries()).map(
+                    ([month, containers]) => {
+                      const open = Boolean(expandedBuckets[month]);
+                      return (
+                        <div key={month} className="bucket-group">
                           <button
                             type="button"
-                            className="btn-sm btn-ghost"
-                            aria-label={`Add item to ${containerDisplayLabel(container)}`}
-                            title="Add item"
-                            onClick={() => {
-                              setAddingFor(groupKey);
-                              setNewTitle('');
-                            }}
+                            className="collapse-header"
+                            onClick={() => toggleBucket(month)}
                           >
-                            +
+                            {open ? '▾' : '▸'} {month} ({containers.length})
                           </button>
+                          {open && (
+                            <div className="bucket-children">
+                              {containers.map(renderContainerGroup)}
+                            </div>
+                          )}
                         </div>
-                      </div>
-                      {groupItems.map((item) => (
-                        <OutlineRow
-                          key={item.id}
-                          item={item}
-                          allItems={items}
-                          showDone={meta.showDone}
-                          todayStr={todayStr}
-                          onZoom={(id) => setZoomStack([id])}
-                          onToggleCollapse={handleToggleCollapse}
-                          onEditTitle={(id, t) => handleEditContent(id, { title: t })}
-                          onSetStatus={handleSetStatus}
-                          onAddSubItem={(pid, t) => handleCreate(container, t, pid)}
-                          onReorder={handleReorder}
-                          onMove={handleMove}
-                          onDelete={handleDelete}
-                        />
-                      ))}
-                      {addingFor === groupKey && (
-                        <div className="inline-add-sub">
-                          <input
-                            type="text"
-                            placeholder={`New item in ${containerDisplayLabel(container)}…`}
-                            value={newTitle}
-                            autoFocus
-                            onChange={(e) => setNewTitle(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && newTitle.trim()) {
-                                handleCreate(container, newTitle.trim());
-                                setNewTitle('');
-                                setAddingFor(null);
-                              }
-                              if (e.key === 'Escape') {
-                                setNewTitle('');
-                                setAddingFor(null);
-                              }
-                            }}
-                            onBlur={() => {
-                              if (newTitle.trim()) {
-                                handleCreate(container, newTitle.trim());
-                              }
-                              setNewTitle('');
-                              setAddingFor(null);
-                            }}
-                          />
+                      );
+                    }
+                  )}
+
+                  {Array.from(upcomingGrouped.futureYears.entries()).map(
+                    ([year, monthMap]) => {
+                      const yearOpen = Boolean(expandedBuckets[year]);
+                      const totalGroups = Array.from(monthMap.values()).reduce(
+                        (s, arr) => s + arr.length,
+                        0
+                      );
+                      return (
+                        <div key={year} className="bucket-group">
+                          <button
+                            type="button"
+                            className="collapse-header"
+                            onClick={() => toggleBucket(year)}
+                          >
+                            {yearOpen ? '▾' : '▸'} {year} ({totalGroups})
+                          </button>
+                          {yearOpen && (
+                            <div className="bucket-children">
+                              {Array.from(monthMap.entries()).map(
+                                ([month, containers]) => {
+                                  const monthOpen = Boolean(
+                                    expandedBuckets[month]
+                                  );
+                                  return (
+                                    <div key={month} className="bucket-group">
+                                      <button
+                                        type="button"
+                                        className="collapse-header"
+                                        onClick={() => toggleBucket(month)}
+                                      >
+                                        {monthOpen ? '▾' : '▸'} {month} (
+                                        {containers.length})
+                                      </button>
+                                      {monthOpen && (
+                                        <div className="bucket-children">
+                                          {containers.map(renderContainerGroup)}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                }
+                              )}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+                      );
+                    }
+                  )}
+                </>
+              )}
             </section>
           )}
 
@@ -1076,6 +1196,7 @@ export default function App() {
                     onZoom={(id) => setZoomStack([id])}
                     onToggleCollapse={handleToggleCollapse}
                     onEditTitle={(id, t) => handleEditContent(id, { title: t })}
+                    onEditDetails={(id, b) => handleEditContent(id, { body: b })}
                     onSetStatus={handleSetStatus}
                     onAddSubItem={(pid, t) =>
                       handleCreate({ kind: 'notes', key: 'notes' }, t, pid)

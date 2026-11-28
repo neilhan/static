@@ -87,6 +87,18 @@ export const buildItemPath = (
   return `${containerBaseDir(container)}/${slug}.md`;
 };
 
+export const addMonthsClamped = (dateStr: string, months: number): string => {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const targetMonthZero = m - 1 + months;
+  const targetYear = y + Math.floor(targetMonthZero / 12);
+  const normalizedMonth = ((targetMonthZero % 12) + 12) % 12;
+  const daysInTargetMonth = new Date(
+    Date.UTC(targetYear, normalizedMonth + 1, 0)
+  ).getUTCDate();
+  const clampedDay = Math.min(d, daysInTargetMonth);
+  return `${targetYear}-${String(normalizedMonth + 1).padStart(2, '0')}-${String(clampedDay).padStart(2, '0')}`;
+};
+
 export const containerToSortDate = (container: ContainerRef): string => {
   switch (container.kind) {
     case 'day':

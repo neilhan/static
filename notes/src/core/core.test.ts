@@ -3,6 +3,7 @@ import { parseItemMarkdown, serializeItemMarkdown } from './markdown';
 import { generateUniqueSlug, slugifyTitle } from './slug';
 import { midpointOrder, needsRenumber, renumberSiblings } from './order';
 import {
+  addMonthsClamped,
   containerDisplayLabel,
   containerToEndDate,
   formatDateWithWeekday,
@@ -91,6 +92,8 @@ describe('tree & move', () => {
     expect(containerToEndDate({ kind: 'week', key: 'week-2026-11-23' })).toBe('2026-11-29');
     expect(containerToEndDate({ kind: 'month', key: '2026-11' })).toBe('2026-11-30');
     expect(containerToEndDate({ kind: 'year', key: '2026' })).toBe('2026-12-31');
+    expect(addMonthsClamped('2026-11-27', 1)).toBe('2026-12-27');
+    expect(addMonthsClamped('2026-01-31', 1)).toBe('2026-02-28');
   });
 
   it('parses containers, sibling folders, and ignores README.md', () => {
